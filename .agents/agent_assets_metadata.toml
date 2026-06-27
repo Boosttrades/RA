@@ -1,0 +1,14 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "-pC3OQxhKtr1xQ20uYyJv"
+uri = "file://artifacts/royal-ambassadors/assets/images/icon.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "BTYhG9uBU6amzK_hU2ZBx"
+uri = "file://artifacts/royal-ambassadors/assets/images/rank-badge.png"
+type = "image"
+title = "generated_image"
