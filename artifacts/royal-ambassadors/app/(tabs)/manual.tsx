@@ -1,244 +1,53 @@
-import { Ionicons } from "@expo/vector-icons";
-import * as Haptics from "expo-haptics";
-import React, { useState } from "react";
+import { Feather, Ionicons } from "@expo/vector-icons";
+import { Image } from "expo-image";
+import React, { useCallback, useRef, useState } from "react";
 import {
+  Dimensions,
+  FlatList,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
   Platform,
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from "react-native";
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useApp } from "@/context/AppContext";
-import { MANUAL_CHAPTERS, ManualChapter, ManualSection } from "@/data/manual";
 import { useColors } from "@/hooks/useColors";
+import {
+  MANUAL_PAGE_IMAGES,
+  TABLE_OF_CONTENTS,
+  TocEntry,
+  searchToc,
+} from "@/data/manualPages";
 
-function SectionItem({
-  section,
-  isCompleted,
-  onComplete,
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
+const PAGE_HEIGHT = Math.round(SCREEN_WIDTH * 1.38);
+
+function TocView({
+  onOpenReader,
+  topPadding,
+  bottomPadding,
 }: {
-  section: ManualSection;
-  isCompleted: boolean;
-  onComplete: () => void;
+  onOpenReader: (pageIndex: number) => void;
+  topPadding: number;
+  bottomPadding: number;
 }) {
   const colors = useColors();
-  const [expanded, setExpanded] = useState(false);
-  const height = useSharedValue(0);
-  const opacity = useSharedValue(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  const results = searchToc(searchQuery);
+  const hasQuery = searchQuery.trim().length > 0;
 
-  const toggle = () => {
-    if (!expanded) {
-      height.value = withTiming(1, { duration: 250 });
-      opacity.value = withTiming(1, { duration: 200 });
-    } else {
-      height.value = withTiming(0, { duration: 200 });
-      opacity.value = withTiming(0, { duration: 150 });
-    }
-    setExpanded((v) => !v);
+  const getMatchedKeywords = (entry: TocEntry) => {
+    if (!hasQuery) return null;
+    const lower = searchQuery.toLowerCase();
+    const matched = entry.keywords.filter((k) => k.toLowerCase().includes(lower));
+    const titleMatch = entry.title.toLowerCase().includes(lower);
+    if (titleMatch && matched.length === 0) return null;
+    return matched.slice(0, 4).join(" · ");
   };
-
-  const contentStyle = useAnimatedStyle(() => ({
-    maxHeight: height.value === 0 ? 0 : 2000,
-    opacity: opacity.value,
-    overflow: "hidden",
-  }));
-
-  return (
-    <View
-      style={[
-        styles.sectionItem,
-        { borderBottomColor: colors.border },
-      ]}
-    >
-      <Pressable style={styles.sectionHeader} onPress={toggle} hitSlop={4}>
-        <View style={styles.sectionTitleRow}>
-          <Pressable
-            style={[
-              styles.sectionCheckbox,
-              {
-                borderColor: isCompleted ? colors.primary : colors.border,
-                backgroundColor: isCompleted ? colors.primary : "transparent",
-              },
-            ]}
-            onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-              onComplete();
-            }}
-            hitSlop={6}
-          >
-            {isCompleted && (
-              <Ionicons name="checkmark" size={12} color="#FFFFFF" />
-            )}
-          </Pressable>
-          <Text
-            style={[
-              styles.sectionTitle,
-              {
-                color: isCompleted ? colors.mutedForeground : colors.navy,
-                textDecorationLine: isCompleted ? "line-through" : "none",
-              },
-            ]}
-          >
-            {section.title}
-          </Text>
-        </View>
-        <Ionicons
-          name={expanded ? "chevron-up" : "chevron-down"}
-          size={16}
-          color={colors.mutedForeground}
-        />
-      </Pressable>
-      <Animated.View style={contentStyle}>
-        <Text
-          style={[styles.sectionContent, { color: colors.foreground }]}
-        >
-          {section.content}
-        </Text>
-        {!isCompleted && (
-          <Pressable
-            style={[
-              styles.markDoneBtn,
-              { backgroundColor: colors.primary },
-            ]}
-            onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-              onComplete();
-            }}
-          >
-            <Ionicons name="checkmark-circle-outline" size={16} color="#FFFFFF" />
-            <Text style={styles.markDoneText}>Mark as Complete</Text>
-          </Pressable>
-        )}
-      </Animated.View>
-    </View>
-  );
-}
-
-function ChapterCard({ chapter }: { chapter: ManualChapter }) {
-  const colors = useColors();
-  const { completedSectionIds, completeSection } = useApp();
-  const [expanded, setExpanded] = useState(false);
-
-  const completedCount = chapter.sections.filter((s) =>
-    completedSectionIds.includes(s.id)
-  ).length;
-  const total = chapter.sections.length;
-  const progress = total > 0 ? completedCount / total : 0;
-  const isDone = completedCount === total;
-
-  const toggle = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setExpanded((v) => !v);
-  };
-
-  return (
-    <View
-      style={[
-        styles.chapterCard,
-        {
-          backgroundColor: colors.card,
-          borderColor: isDone ? colors.primary : colors.border,
-        },
-      ]}
-    >
-      <Pressable style={styles.chapterHeader} onPress={toggle}>
-        <View
-          style={[
-            styles.chapterIconWrapper,
-            {
-              backgroundColor: isDone ? colors.primary : colors.secondary,
-            },
-          ]}
-        >
-          <Ionicons
-            name={chapter.iconName as never}
-            size={22}
-            color={isDone ? "#FFFFFF" : colors.primary}
-          />
-        </View>
-        <View style={styles.chapterInfo}>
-          <Text style={[styles.chapterTitle, { color: colors.navy }]}>
-            {chapter.title}
-          </Text>
-          <Text
-            style={[styles.chapterDesc, { color: colors.mutedForeground }]}
-          >
-            {chapter.description}
-          </Text>
-          <View style={styles.progressRow}>
-            <View
-              style={[
-                styles.progressTrack,
-                { backgroundColor: colors.muted },
-              ]}
-            >
-              <View
-                style={[
-                  styles.progressFill,
-                  {
-                    backgroundColor: isDone ? colors.primary : colors.primary,
-                    width: `${progress * 100}%`,
-                  },
-                ]}
-              />
-            </View>
-            <Text
-              style={[styles.progressText, { color: colors.mutedForeground }]}
-            >
-              {completedCount}/{total}
-            </Text>
-          </View>
-        </View>
-        <Ionicons
-          name={expanded ? "chevron-up" : "chevron-down"}
-          size={18}
-          color={colors.mutedForeground}
-        />
-      </Pressable>
-
-      {expanded && (
-        <View
-          style={[styles.sectionsWrapper, { borderTopColor: colors.border }]}
-        >
-          {chapter.sections.map((section) => (
-            <SectionItem
-              key={section.id}
-              section={section}
-              isCompleted={completedSectionIds.includes(section.id)}
-              onComplete={() => completeSection(section.id)}
-            />
-          ))}
-        </View>
-      )}
-    </View>
-  );
-}
-
-export default function ManualScreen() {
-  const colors = useColors();
-  const insets = useSafeAreaInsets();
-  const { completedSectionIds } = useApp();
-
-  const totalSections = MANUAL_CHAPTERS.reduce(
-    (acc, ch) => acc + ch.sections.length,
-    0
-  );
-  const completedTotal = MANUAL_CHAPTERS.reduce(
-    (acc, ch) =>
-      acc + ch.sections.filter((s) => completedSectionIds.includes(s.id)).length,
-    0
-  );
-
-  const topPadding = Platform.OS === "web" ? 67 : insets.top;
-  const bottomPadding = Platform.OS === "web" ? 118 : insets.bottom + 80;
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -256,22 +65,345 @@ export default function ManualScreen() {
           Study Manual
         </Text>
         <Text style={[styles.headerSub, { color: colors.mutedForeground }]}>
-          {completedTotal} of {totalSections} sections complete
+          Royal Ambassadors of Nigeria
         </Text>
       </View>
 
-      <ScrollView
-        contentContainerStyle={[
-          styles.scrollContent,
-          { paddingBottom: bottomPadding },
+      <View
+        style={[
+          styles.searchWrapper,
+          {
+            backgroundColor: colors.card,
+            borderBottomColor: colors.border,
+          },
         ]}
-        showsVerticalScrollIndicator={false}
       >
-        {MANUAL_CHAPTERS.map((chapter) => (
-          <ChapterCard key={chapter.id} chapter={chapter} />
-        ))}
-      </ScrollView>
+        <View
+          style={[
+            styles.searchBar,
+            {
+              backgroundColor: colors.muted,
+              borderColor: colors.border,
+            },
+          ]}
+        >
+          <Feather name="search" size={16} color={colors.mutedForeground} />
+          <TextInput
+            style={[styles.searchInput, { color: colors.navy }]}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholder="Search sections, topics, keywords..."
+            placeholderTextColor={colors.mutedForeground}
+            returnKeyType="search"
+            autoCorrect={false}
+          />
+          {searchQuery.length > 0 && (
+            <Pressable onPress={() => setSearchQuery("")} hitSlop={10}>
+              <Ionicons
+                name="close-circle"
+                size={18}
+                color={colors.mutedForeground}
+              />
+            </Pressable>
+          )}
+        </View>
+      </View>
+
+      <FlatList
+        data={results}
+        keyExtractor={(item) => item.id}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          paddingTop: 10,
+          paddingHorizontal: 16,
+          paddingBottom: bottomPadding,
+          gap: 10,
+        }}
+        ListHeaderComponent={
+          !hasQuery ? (
+            <Pressable
+              style={[styles.readFromStartBtn, { backgroundColor: colors.primary }]}
+              onPress={() => onOpenReader(0)}
+            >
+              <Ionicons name="book-outline" size={20} color="#FFFFFF" />
+              <Text style={styles.readFromStartText}>Read from Beginning</Text>
+              <Feather name="chevron-right" size={18} color="rgba(255,255,255,0.8)" />
+            </Pressable>
+          ) : null
+        }
+        ListEmptyComponent={
+          <View style={styles.emptyWrapper}>
+            <Ionicons
+              name="search-outline"
+              size={44}
+              color={colors.mutedForeground}
+            />
+            <Text style={[styles.emptyTitle, { color: colors.navy }]}>
+              No results found
+            </Text>
+            <Text style={[styles.emptyDesc, { color: colors.mutedForeground }]}>
+              Try different keywords like "pledge", "ranks", "emblem", or "meetings"
+            </Text>
+          </View>
+        }
+        renderItem={({ item }) => {
+          const matchedKw = getMatchedKeywords(item);
+          return (
+            <Pressable
+              style={[
+                styles.tocItem,
+                {
+                  backgroundColor: colors.card,
+                  borderColor: colors.border,
+                },
+              ]}
+              onPress={() => onOpenReader(item.pageIndex)}
+            >
+              <View
+                style={[
+                  styles.tocPageBadge,
+                  { backgroundColor: colors.secondary },
+                ]}
+              >
+                <Text style={[styles.tocPageText, { color: colors.primary }]}>
+                  pg.{item.bookPage}
+                </Text>
+              </View>
+              <View style={styles.tocItemBody}>
+                <Text style={[styles.tocTitle, { color: colors.navy }]}>
+                  {item.title}
+                </Text>
+                {matchedKw && (
+                  <Text
+                    style={[styles.tocMatch, { color: colors.mutedForeground }]}
+                    numberOfLines={1}
+                  >
+                    {matchedKw}
+                  </Text>
+                )}
+              </View>
+              <Ionicons
+                name="chevron-forward"
+                size={18}
+                color={colors.mutedForeground}
+              />
+            </Pressable>
+          );
+        }}
+      />
     </View>
+  );
+}
+
+function ReaderView({
+  startIndex,
+  onBack,
+  topPadding,
+  bottomPadding,
+}: {
+  startIndex: number;
+  onBack: () => void;
+  topPadding: number;
+  bottomPadding: number;
+}) {
+  const colors = useColors();
+  const [currentPage, setCurrentPage] = useState(startIndex);
+  const flatListRef = useRef<FlatList>(null);
+  const [showTocOverlay, setShowTocOverlay] = useState(false);
+
+  const getItemLayout = useCallback(
+    (_: unknown, index: number) => ({
+      length: PAGE_HEIGHT,
+      offset: PAGE_HEIGHT * index,
+      index,
+    }),
+    []
+  );
+
+  const handleScroll = useCallback(
+    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+      const y = e.nativeEvent.contentOffset.y;
+      const page = Math.round(y / PAGE_HEIGHT);
+      setCurrentPage(
+        Math.max(0, Math.min(page, MANUAL_PAGE_IMAGES.length - 1))
+      );
+    },
+    []
+  );
+
+  const jumpToPage = useCallback((pageIndex: number) => {
+    setShowTocOverlay(false);
+    setCurrentPage(pageIndex);
+    flatListRef.current?.scrollToIndex({ index: pageIndex, animated: false });
+  }, []);
+
+  const renderPage = useCallback(
+    ({ item, index }: { item: (typeof MANUAL_PAGE_IMAGES)[number]; index: number }) => (
+      <View style={styles.pageWrapper}>
+        <Image
+          source={item}
+          style={styles.pageImage}
+          contentFit="contain"
+          priority="normal"
+          recyclingKey={String(index)}
+        />
+      </View>
+    ),
+    []
+  );
+
+  return (
+    <View style={[styles.container, { backgroundColor: "#111111" }]}>
+      <View
+        style={[
+          styles.readerHeader,
+          { paddingTop: topPadding + 10, backgroundColor: colors.navy },
+        ]}
+      >
+        <Pressable
+          style={styles.readerBackBtn}
+          onPress={onBack}
+          hitSlop={10}
+        >
+          <Ionicons name="arrow-back" size={20} color="#FFFFFF" />
+          <Text style={styles.readerBackText}>Contents</Text>
+        </Pressable>
+
+        <Text style={styles.readerPageCounter}>
+          {currentPage + 1} / {MANUAL_PAGE_IMAGES.length}
+        </Text>
+
+        <Pressable
+          style={styles.readerTocBtn}
+          onPress={() => setShowTocOverlay(true)}
+          hitSlop={10}
+        >
+          <Ionicons name="list-outline" size={20} color="#FFFFFF" />
+          <Text style={styles.readerTocBtnText}>Sections</Text>
+        </Pressable>
+      </View>
+
+      <FlatList
+        ref={flatListRef}
+        data={MANUAL_PAGE_IMAGES}
+        keyExtractor={(_, index) => index.toString()}
+        renderItem={renderPage}
+        getItemLayout={getItemLayout}
+        initialScrollIndex={startIndex}
+        onScroll={handleScroll}
+        scrollEventThrottle={100}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: bottomPadding }}
+      />
+
+      {showTocOverlay && (
+        <View
+          style={[
+            StyleSheet.absoluteFill,
+            styles.tocOverlay,
+            { paddingTop: topPadding + 56 },
+          ]}
+        >
+          <View
+            style={[
+              styles.tocOverlayCard,
+              { backgroundColor: colors.card, borderColor: colors.border },
+            ]}
+          >
+            <View
+              style={[
+                styles.tocOverlayHeader,
+                { borderBottomColor: colors.border },
+              ]}
+            >
+              <Text style={[styles.tocOverlayTitle, { color: colors.navy }]}>
+                Jump to Section
+              </Text>
+              <Pressable onPress={() => setShowTocOverlay(false)} hitSlop={10}>
+                <Ionicons name="close" size={22} color={colors.navy} />
+              </Pressable>
+            </View>
+            <FlatList
+              data={TABLE_OF_CONTENTS}
+              keyExtractor={(item) => item.id}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{ paddingVertical: 6 }}
+              renderItem={({ item }) => (
+                <Pressable
+                  style={[
+                    styles.tocOverlayItem,
+                    {
+                      backgroundColor:
+                        currentPage >= item.pageIndex &&
+                        (() => {
+                          const next = TABLE_OF_CONTENTS.find(
+                            (e) => e.pageIndex > item.pageIndex
+                          );
+                          return !next || currentPage < next.pageIndex;
+                        })()
+                          ? colors.secondary
+                          : "transparent",
+                      borderBottomColor: colors.border,
+                    },
+                  ]}
+                  onPress={() => jumpToPage(item.pageIndex)}
+                >
+                  <Text
+                    style={[
+                      styles.tocOverlayItemTitle,
+                      { color: colors.navy },
+                    ]}
+                    numberOfLines={1}
+                  >
+                    {item.title}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.tocOverlayPageNum,
+                      { color: colors.primary },
+                    ]}
+                  >
+                    pg.{item.bookPage}
+                  </Text>
+                </Pressable>
+              )}
+            />
+          </View>
+          <Pressable
+            style={StyleSheet.absoluteFill}
+            onPress={() => setShowTocOverlay(false)}
+          />
+        </View>
+      )}
+    </View>
+  );
+}
+
+export default function ManualScreen() {
+  const insets = useSafeAreaInsets();
+  const [readerPage, setReaderPage] = useState<number | null>(null);
+
+  const topPadding = Platform.OS === "web" ? 67 : insets.top;
+  const bottomPadding = Platform.OS === "web" ? 118 : insets.bottom + 80;
+
+  if (readerPage !== null) {
+    return (
+      <ReaderView
+        startIndex={readerPage}
+        onBack={() => setReaderPage(null)}
+        topPadding={topPadding}
+        bottomPadding={bottomPadding}
+      />
+    );
+  }
+
+  return (
+    <TocView
+      onOpenReader={(page) => setReaderPage(page)}
+      topPadding={topPadding}
+      bottomPadding={bottomPadding}
+    />
   );
 }
 
@@ -293,116 +425,183 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontFamily: "Inter_400Regular",
   },
-  scrollContent: {
-    padding: 16,
-    gap: 12,
+  searchWrapper: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
   },
-  chapterCard: {
-    borderRadius: 16,
-    borderWidth: 1,
-    overflow: "hidden",
-    shadowColor: "#1A3BAE",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  chapterHeader: {
+  searchBar: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 16,
-    gap: 12,
+    gap: 10,
+    borderRadius: 12,
+    borderWidth: 1,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
   },
-  chapterIconWrapper: {
-    width: 48,
-    height: 48,
+  searchInput: {
+    flex: 1,
+    fontSize: 14,
+    fontFamily: "Inter_400Regular",
+    padding: 0,
+  },
+  readFromStartBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
     borderRadius: 14,
+    paddingVertical: 14,
+    paddingHorizontal: 18,
+    marginBottom: 4,
+    justifyContent: "space-between",
+  },
+  readFromStartText: {
+    flex: 1,
+    fontSize: 15,
+    fontFamily: "Inter_700Bold",
+    color: "#FFFFFF",
+  },
+  tocItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderRadius: 14,
+    borderWidth: 1,
+    padding: 14,
+    gap: 12,
+    shadowColor: "#1A3BAE",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 4,
+    elevation: 1,
+  },
+  tocPageBadge: {
+    minWidth: 44,
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
   },
-  chapterInfo: {
+  tocPageText: {
+    fontSize: 11,
+    fontFamily: "Inter_700Bold",
+    letterSpacing: 0.3,
+  },
+  tocItemBody: {
     flex: 1,
   },
-  chapterTitle: {
-    fontSize: 15,
-    fontFamily: "Inter_700Bold",
-    marginBottom: 3,
+  tocTitle: {
+    fontSize: 14,
+    fontFamily: "Inter_600SemiBold",
+    lineHeight: 20,
   },
-  chapterDesc: {
+  tocMatch: {
     fontSize: 12,
     fontFamily: "Inter_400Regular",
-    marginBottom: 8,
-    lineHeight: 17,
+    marginTop: 3,
+    lineHeight: 16,
   },
-  progressRow: {
-    flexDirection: "row",
+  emptyWrapper: {
     alignItems: "center",
-    gap: 8,
+    paddingTop: 48,
+    gap: 12,
+    paddingHorizontal: 32,
   },
-  progressTrack: {
-    flex: 1,
-    height: 5,
-    borderRadius: 3,
-    overflow: "hidden",
+  emptyTitle: {
+    fontSize: 17,
+    fontFamily: "Inter_700Bold",
   },
-  progressFill: {
-    height: 5,
-    borderRadius: 3,
+  emptyDesc: {
+    fontSize: 14,
+    fontFamily: "Inter_400Regular",
+    textAlign: "center",
+    lineHeight: 21,
   },
-  progressText: {
-    fontSize: 11,
-    fontFamily: "Inter_600SemiBold",
-  },
-  sectionsWrapper: {
-    borderTopWidth: 1,
-  },
-  sectionItem: {
-    borderBottomWidth: 1,
-    paddingHorizontal: 16,
-  },
-  sectionHeader: {
+  readerHeader: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingVertical: 12,
+    paddingHorizontal: 16,
+    paddingBottom: 12,
   },
-  sectionTitleRow: {
+  readerBackBtn: {
     flexDirection: "row",
     alignItems: "center",
-    flex: 1,
-    gap: 10,
+    gap: 6,
   },
-  sectionCheckbox: {
-    width: 22,
-    height: 22,
-    borderRadius: 6,
-    borderWidth: 2,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  sectionTitle: {
+  readerBackText: {
     fontSize: 14,
-    fontFamily: "Inter_600SemiBold",
-    flex: 1,
-  },
-  sectionContent: {
-    fontSize: 14,
-    fontFamily: "Inter_400Regular",
-    lineHeight: 22,
-    paddingBottom: 16,
-  },
-  markDoneBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    borderRadius: 12,
-    paddingVertical: 10,
-    marginBottom: 16,
-  },
-  markDoneText: {
-    fontSize: 14,
-    fontFamily: "Inter_600SemiBold",
+    fontFamily: "Inter_500Medium",
     color: "#FFFFFF",
+  },
+  readerPageCounter: {
+    fontSize: 13,
+    fontFamily: "Inter_500Medium",
+    color: "rgba(255,255,255,0.6)",
+  },
+  readerTocBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+  },
+  readerTocBtnText: {
+    fontSize: 14,
+    fontFamily: "Inter_500Medium",
+    color: "#FFFFFF",
+  },
+  pageWrapper: {
+    width: SCREEN_WIDTH,
+    height: PAGE_HEIGHT,
+    backgroundColor: "#1a1a1a",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  pageImage: {
+    width: SCREEN_WIDTH,
+    height: PAGE_HEIGHT,
+  },
+  tocOverlay: {
+    zIndex: 100,
+    backgroundColor: "rgba(0,0,0,0.6)",
+    justifyContent: "flex-start",
+    paddingHorizontal: 16,
+    paddingBottom: 40,
+  },
+  tocOverlayCard: {
+    borderRadius: 20,
+    borderWidth: 1,
+    maxHeight: "75%",
+    overflow: "hidden",
+    zIndex: 101,
+  },
+  tocOverlayHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 18,
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+  },
+  tocOverlayTitle: {
+    fontSize: 16,
+    fontFamily: "Inter_700Bold",
+  },
+  tocOverlayItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+  },
+  tocOverlayItemTitle: {
+    fontSize: 14,
+    fontFamily: "Inter_500Medium",
+    flex: 1,
+    paddingRight: 12,
+  },
+  tocOverlayPageNum: {
+    fontSize: 12,
+    fontFamily: "Inter_600SemiBold",
   },
 });
