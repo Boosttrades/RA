@@ -717,6 +717,9 @@ f. Association Commandant: He dresses like the Counsellor using white whistle ro
 g. The Associational RA Director: He dresses like the counsellor using a white staff taped gold.
 h. The Conference Commandant: He dresses like the counsellor using white whistle rope, chevron, and beret. He wears his current ranks on his shoulder and carries a white staff taped gold.
 i. RA Marshal: He dresses like the counsellor, using yellow whistle rope, chevron, and a beret. He wears a long elective bar and five Marshal's special ranks (4 gold stars with the Marshal's crossed swords) on his shoulders and carries a gold staff taped white.`,
+s. Missionary Organizations Director: Wearing a ministers' dress, he uses long elective bar and 4 gold stars on each shoulder, carries gold stars on each shoulder, carries gold staff taped whitee and uses whistle rope, chevron, and a beret cap.
+t. MMU National President: The National Ambassador-At-Large uses long elective bar and 4 white stripes on each shoulder. He holds gold staff taped white. He uses a white whistle rope, chevron and a beret cap.
+u. President, NBC: The Ambassador-in-Chief wears a minister's uniform with 4 gold stripes on each shoulder; a long elective bar and gold staff taped white, he also uses a whistle rope chevron and a beret cap.
   },
   {
     id: "programmes",
