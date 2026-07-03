@@ -126,13 +126,14 @@ function RankCard({
             </View>
             <Text
               style={[
-                styles.rankDesc,
-                {
-                  color: isLocked
-                    ? colors.mutedForeground
-                    : colors.mutedForeground,
-                },
+                styles.ageGroup,
+                { color: isLocked ? colors.mutedForeground : colors.primary },
               ]}
+            >
+              {rank.ageGroup}
+            </Text>
+            <Text
+              style={[styles.rankDesc, { color: colors.mutedForeground }]}
               numberOfLines={2}
             >
               {rank.description}
@@ -355,6 +356,13 @@ const styles = StyleSheet.create({
   currentBadgeText: {
     fontSize: 11,
     fontFamily: "Inter_600SemiBold",
+  },
+  ageGroup: {
+    fontSize: 11,
+    fontFamily: "Inter_600SemiBold",
+    marginBottom: 2,
+    textTransform: "uppercase",
+    letterSpacing: 0.3,
   },
   rankDesc: {
     fontSize: 12,

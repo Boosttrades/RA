@@ -30,7 +30,7 @@ interface StoredState {
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [userName, setUserNameState] = useState("Ambassador");
-  const [currentRankId, setCurrentRankIdState] = useState("intern");
+  const [currentRankId, setCurrentRankIdState] = useState("candidate");
   const [bookmarkedVerseIds, setBookmarkedVerseIds] = useState<string[]>([]);
   const [completedSectionIds, setCompletedSectionIds] = useState<string[]>([]);
   const [quizScores, setQuizScores] = useState<Record<string, number>>({});
