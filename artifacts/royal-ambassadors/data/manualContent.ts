@@ -1009,49 +1009,83 @@ If none of these organizations can sponsor the Royal Ambassadors and the church 
     group: "main",
     content: `THE COUNSELOR'S CORNER
 
-Congratulations upon being chosen to work with Royal Ambassadors! Your church has shown their confidence in you by electing you for this service. Leading boys is an important task. It will involve many hours of planning, praying, and working. But to be able to see the boys become Christians under your guidance, and to see them grow in the Christian faith, will be worth every hour you will spend in this work!
+Congratulations upon being chosen to work with Royal Ambassadors! Your church has shown their confidence in you by electing you for this service. Leading boys is an important task. It will involve many hours of planning, praying, and working. But to be able to see the boys become Christians under your guidance, and to see them grow in the Christian faith, will worth every hour you will spend in this work! You may see some of the Royal Ambassadors accept call into the ministry as pastors, missionaries, or denominational workers. Others will serve Christ as Christian farmers, businessmen, and in other kinds of work. It will be rewarding to know that you have had a part in their spiritual development.
 
-YOUR PREPARATION AS A COUNSELLOR
+Your Preparation as a Counsellor
 
-The desire of a Royal Ambassadors counsellor is to be a good counsellor. This calls for much study and effort! You will want to read and understand the Royal Ambassadors Manual carefully and become familiar with it.
+The desire of a Royal Ambassadors counsellor is to be a good counsellor. This calls for much study and efforts! You will want to read and understand the Royal Ambassadors Manual carefully and become familiar with it. But do not stop with a study of this manual. Be sure to study and observe the boys and young men as well as literatures about them. You will want to know how they act and why they act that way. You will want to know how best to teach and work with boys and young men. You will find some help from books and Sunday School teachers, Other help will come by Royal Ambassadors work. Certainly you will want and some help from experienced school teachers to ask for God's guidance as you do your work. Working with young people will give you valuable experience in becoming a leader among them.
 
-Be sure to study and observe the boys and young men as well as literature about them. You will want to know how they act and why they act that way. You will want to know how best to teach and work with boys and young men. Certainly you will want to ask for God's guidance as you do your work.
+Know Each Boy
 
-KNOW EACH BOY
+In order to be your best in working as a RA counselor, you should work very closely with each boy in the chapter. Learn as much information as possible about the boys. Keep this information in a notebook you will use in working with boys. For example, such information as given below would be helpful to the counsellor.
 
-In order to be your best in working as a RA counselor, you should work very closely with each boy in the chapter. Learn as much information as possible about the boys. Keep this information in a notebook you will use in working with boys.
+Boy's Family
 
-Boy's Information to Record:
-• Name of boy
-• Age
-• Address
-• Class in School
-• Father's Name and Religion
-• Mother's Name and Religion
-• Brothers' Names, Religions and Ages
-• Sisters' Names, Religions and Ages
-• Friends' Names, Religions and Ages
+Name of boy ..................................................................................................
+Age ............................................................................................................
+Address ......................................................................................................
+Class in School..............................................................................................
+Father's Name...............................................................................................
+Religion.......................................................................................................
+Mother's Name ............................................................................................
+Religion.......................................................................................................
+Brother's Name............................................................................................
+Religion.............................................................................. Age ................
+Brother's Name............................................................................................
+Religion.............................................................................. Age ................
+Brother's Name............................................................................................
+Religion.............................................................................. Age ................
+Brother's Name............................................................................................
+Religion.............................................................................. Age ................
+Brother's Name............................................................................................
+Age..............................................................................................................
+Religion.............................................................................. Age ................
+Sister's Name...............................................................................................
+Religion.............................................................................. Age ................
+Sister's Name...............................................................................................
+Religion.............................................................................. Age ................
+Sister's Name...............................................................................................
+Religion.............................................................................. Age ................
+Sister's Name...............................................................................................
+Religion.............................................................................. Age ................
+Sister's Name...............................................................................................
+Religion .............................................................................Age ................
+Friend's Name ............................................................................................
+Religion.............................................................................. Age ................
+Friend's Name...............................................................................................
+Religion.............................................................................Age ................
+Friend's Name...............................................................................................
+Religion.............................................................................. Age ................
+Friend's Name...............................................................................................
+Religion........................................................................ Age ................
 
-Boy's Church Life:
-• Church attended
-• Is he a member of Sunday School? Yes / No
-• Rank in Royal Ambassador
-• Is he a member of Church Training Programme? Yes / No
-• Is he a member of the choir? Yes / No
-• Is he a member of Boy Scouts or Boy's Brigade? Yes / No
+Boy's Religion
 
-Boy's Interests:
-• Kinds of hobbies
-• Favourite games
-• Sports he enjoys
-• Other interests
+Boy's Religion...............................................................................................
+Church Attended.........................................................................................
+Is he a member of Sunday School? Yes............... /No..............
+Rank in Royal Ambassador...........................................................................
+Is he a member of Church Training Programme Yes...../No........
+Is he a member of the choir? Yes............ /No.............
+Is he a membe of Boy Scouts or Boy's Brigade? Yes....../No.......
 
-Boy's Needs:
-• List areas where the boy needs help
+Boy's Interests
 
-USE OF MANUAL
+Kinds of hobbies..............................................................................................
+Favourite games ............................................................................................
+Sports he enjoys...........................................................................................
+Other interests................................................................................................
 
-The purpose of this manual is to serve as a guidebook to you as a counsellor, and to the boys. You may not have to use it as the law of Medes and Persia that cannot be changed; but they form suggestions on the various parts of Royal Ambassadors work. You are however saddled with the responsibility of drawing out the best from it for the best use of your chapter.
+Boy's Needs
+
+List areas where the boy needs help
+.........................................................................................................................
+.........................................................................................................................
+.........................................................................................................................
+
+Use of Manual
+
+The purpose of this manual is to serve as a guidebook to you as a counsellor, and to the boys. You may not have to use it as the law of Medes and Persia that cannot be changed; but they form Suggestions on the various parts of Royal Ambassadors work. You are however saddled with the responsibility of drawing out the best from it for the best use of your chapter.
 
 As a counsellor, you will need imagination and initiative in planning your work. You may want to experiment with programmes or activities in order to determine what is best for your own particular church or chapter situation.
 
@@ -1059,42 +1093,59 @@ Please consider the importance of your work as a counsellor, and give yourself t
 
 We welcome you to the group of men who are interested in, and who are working with, boys of Baptist churches in Nigeria. Helping boys to become "Ambassadors for Christ" is a privilege and an honour.
 
-WORKING WITH THE ROYAL AMBASSADORS COMMITTEE
+Working with the Royal Ambassadors Committee
 
-As a counsellor you should work closely with the Royal Ambassadors Committee of the sponsoring organization. You will inform them about the needs of the chapter. This committee will help in planning activities of the chapter such as camping, sporting events, and other special events. They will also help to secure the materials needed for the work of the chapter.`,
+As a counsellor you should work closely with the Royal Ambassadors Committee of the sponsoring organization. You will inform them about the needs of the chapter. This committee will help in planning activities of the chapter such as camping, sporting events, and other special events. They will also help to secure the materials needed for the work of the chapter.
+
+The counsellor may want to let members of this committee help to examine the members to see if they have successfully passed their ranks and are ready to recognized. This committee can be a valuable asset to the counsellor and to his work.`,
   },
   {
     id: "books",
     title: "Suggested Books for RA Leaders and Members",
     group: "main",
-    content: `SOME SUGGESTED BOOKS FOR RA LEADERS AND MEMBERS
+    content: `Some Suggested Books for RA Leaders and Members
 
-The counsellor and the entire members of the Royal Ambassadors (Junior, Intermediate and Senior) may find help in some of the following books. Some of the books are about mission work in Nigeria, other African countries, and other countries of the world.
+The counsellor and the entire members of the Royal Ambassadors (Junior, Intermediate and Senior) may find help in some of the following books. Some of the books are about mission work in Nigeria, other African countries, and other countries of the world. They will particularly help a counsellor to properly understand the age group with whom he is working.
 
 Some of these books may be purchased from the Baptist Bookstore or other bookstores, or borrowed from a public/Christian library, from a lending library of a church/a pastor or missionary.
 
-1. Anderson, Susan, May Perry of Africa (Nigeria). Nashville, Tennessee: Broadman Press, 1966.
-2. Aworinde, Sola, Blest Be the Tie. Lagos: Charisma Creations, 1990.
-3. Bagudu, Gideon Bala, Drawing Out the Anointing. Surulere, Lagos: The Agape Publications, 1998.
-4. Baruch, Dorothy W., How to live with Your Teen-Ager. New York: McGraw Hill Book Company, Inc., 1953.
-5. Beveridge, W. M., Child Study. Accra: Scottish Mission Book Depot, n.d.
-6. Borthwick, Paul, Leading the Way: Leadership IS not just for Super Christians. Waynesboro, Atlanta: OM Literature, 2000.
-7. Borthwick, Paul, Youth and Mission. Waynesboro, Atlanta: OM Literature, 2000.
-8. Brown, Malcolm, A Helping Hand. Accra, Ghana: African Christian Press, 1969.
-9. Carson, Ben, Think Big: Unleashing your Potential for Excellence. Grand Rapids, Michigan: Zondervan Pub., House, 1992.
-10. Doggett, Charles and Frank Black, Royal Ambassador Campcraft. Memphis, Tennessee: Broadman Commission, 1975.
-11. Evans, A. R., Mary Slessor: The White Queen of Calabar. London: Oliphants Ltd., 1956.
-12. Fletcher, Jess C., Bill Wallace of China. Nashville, Tennessee: Broadman Press, 1963.
-13. Getz, Gene A., The Measure of a Man. California: Regal Books, 1974.
-14. Graham, Billy, The Jesus Generation. Minneapolis, Minnesota: World Wide Publications, 1971.
-15. Maxwell, John C., Developing the Leader Within You. Argentina: EQUIP, 1993.
-16. Northcutt, Cecil and Joyce Reason, Six Missionaries in Africa. London: Oxford University Press, 1960.
-17. Olaniyan, Samson Ola, On Course for Missions: The Story of Baptist Men in Nigeria. Oyeku Printing Works, Ibadan, 2002.
-18. Olatunji, Simon O., Destined and Daring Unto Greatness: Unleashing Your Potentialities for Greatness. Ibadan: Charisa Information Network, 2003.
-19. Olatunji, Simon O., The Reaching Hands Missions Advancement Through Equipping Believers — RA Missions Action Workbook. Ibadan: Baptist, 2005.
-20. Olatunji, Simon O., The Praying Hearts: Watchmen on the Walls of Israel — RA Prayer Workbook. Ibadan: Charisa Information Network, 2003.
-21. Stanko, John W., So Many Leaders, So Little Leadership. Kaduna: Evangel Publication, 2000.
-22. Stevenson, P. M., William Carey. London: Oliphants Ltd., 1956.`,
+ 1. Anderson, Susan, May Perry of Africa (Nigeria). Nashville, Tennessee: Broadman Press, 1966.
+ 2. Aworinde, Sola, Blest Be the Tie. Lagos: Charisma Creations, 1990.
+ 3. Bagudu, Gideon Bala, Drawing Out the Anointing. Surulere, Lagos: The Agape Publications, 1998.
+ 4. Baruch, Dorothy W., How to live with Your Teen-Ager. New York: McGraw Hill Book Company, Inc., 1953.
+ 5. Beveridge, W. M., Child Study. Accra: Scottish Mission Book Depot, n.d.
+ 6. Borthwick, Paul, Leading the Way: Leadership IS not just for Super Christians. Waynesboro, Atlanta: OM Literature, 2000.
+ 7. Borthwick, Paul, Youth and Mission. Waynesboro, Atlanta: OM Literature, 2000.
+ 8. Britten, Bruce and Carol, Answers for Your Marriage. Isolo, Lagos: Integrated Press Ltd., 1997.
+ 9. Brown, Malcolm, A Helping Hand. Accra, Ghana: African Christian Press, 1969.
+10. Burks, Edgar and Urban Green, Christian Stewardship. Ibadan: Baptist Press, 1968.
+11. Capper, W. Melville, and H. Morgan William, Towards Christian Marriage. London: Inter Varsity Press, 1966.
+12. Carson, Ben., Think Big: Unleashing your Potential for Excellence. Grand Rapids, Michigan: Zondervan Pub., House, 1992.
+13. Carter, John T., Witness in Israel: The Story of Paul Rowden. Nashville, Tennessee: Broadman Press, 1969.
+14. Doggett, Charles and Frank Black, Royal Ambassador Campcraft. Memphis, Tennessee: Broadman Commission, 1975.
+15. Edwards-Rees, Desiree, Christianity and Adolescence. Surrey, England: The Religious Education Press, Ltd., 1947
+16. Epperson, Barbara, Out of Shango's Shadows: The Story of Dr. J. T Ayorinde. Nashville, Tennessee: Convention Press, 1967.
+17. Evans, A. R., Mary Slessor: The White Queen of Calabar. London: Oliphants Ltd., 1956.
+18. Fletcher, Jess C., Bill Wallace of China. Nashville, Tennessee: Broadman Press, 1963.
+19. Fletcher, Jess C., The Wimpy Harper Story (Nigeria and East Africa). Nashville, Tennessee: Broadman Press, 1966.
+20. Fuller, Lois K., Rescue the Trophies: An Ethnic Survey of Benue State. Jos CAPRO Media, n. d.
+21. Getz, Gene A., The Measure of a Man. California: Regal Books, 1974.
+22. Graham, Billy, The Jesus Generation. Minneapolis, Minnesota: World Wide Publications, 1971.
+23. Ikpong, Benjamin, and Others, Friendship Between Boys and Girls. Ibadan: Daystar Press, 1966.
+24. Lackey, James V., Understanding and Developing Young People. Nashville, Tennessee: Convention Press, 1959.
+25. Maxwell John C., Developing the Leader Within You. Argentina: EQUIP, 1993.
+26. Nihinlola, Emiola, F. Olola and Kayode Oyedemi, Christian Sexuality: A Youth Discipleship Handbook. Ibadan: Sceptre Prints Ltd., 2005.
+27. Northcuttl, Cecil, and Joyce Reason, Six Missionaries in Africa. London: Oxford University Press, 1960.
+28. Olaniyan, Samson Ola., On Course for Missions. The Story of Baptist Men in Nigeria. Oyeku Printing Works, Ibadan, 2002.
+29. Olatunji, Simon O., Destined and Daring Unto Greatness: Unleashing Your Potentialities for Greatness. Ibadan: Charisa Information Network, 2003.
+30. Olatunji, Simon O., Jesus Second Coming: The Believers' Beatific Vision. Ibadan: Charisa Information Network, 2005.
+31. Olatunji, Simon O., The Reaching Hands Missions Advancement Through Equipping Believers-RA Missions Action Workbook. Ibadan: Baptist, 2005.
+32. Olatunji, Simon O., The Praying Hearts: Watchmen on the Walls of Israel-RA Prayer Workbook. Ibadan: Charisa Information Network, 2003.
+33. Omotoso, S. O., The Exemplary Pastor: The Story of the Rev. E. O. Agboola. Ibadan: Baptist Press, 1970.
+34. Pool, Elizabeth R., The Beadmaker's Son: The Story of Tutor S. A. Adegbite. Nashville, Tennessee: Convention Press, 1957.
+35. Roome, W. J. W., Aggrey: The African Teacher. London: Marshall, Morgan and Scott, n. d.
+36. Stanko, John W., So Many Leaders, So Little Leadership. Kaduna: Evangel Publication, 2000.
+37. Stevenson, P. M., William Carey. London: Oliphants Ltd., 1956.`,
   },
 ];
 
