@@ -14,7 +14,7 @@ The app has five tabs:
 |---|---|
 | **Home** | Greeting, current rank card, daily memory verse, "Continue Studying" shortcut |
 | **Manual** | All 46 scanned pages of the real RAN Manual as a searchable, image-based reader with a clickable Table of Contents |
-| **Ranks** | All 10 official RA ranks (Candidate → Ambassador Extraordinary) with age groups and full requirements from the manual |
+| **Ranks** | All 11 official RA ranks (Candidate → Ambassador Plenipotentiary) with age groups and full requirements from the manual |
 | **Quiz** | 10-question Bible/RA knowledge quiz with score tracking |
 | **Profile** | Member name editor and stats, persisted with AsyncStorage |
 
@@ -179,8 +179,11 @@ EAS builds in the cloud (~10–15 min) and gives you a download link for the `.a
 | 8 | Dean | 16 years old |
 | 9 | Ambassador | 17–19 years old |
 | 10 | Ambassador Extraordinary | 20–22 years old |
+| 11 | Ambassador Plenipotentiary | 23–24 years old |
 
 Full requirements for each rank are in `artifacts/royal-ambassadors/data/ranks.ts`.
+
+> **For AI collaborators:** `data/ranks.ts` is the single source of truth for all rank data. Requirements were transcribed word-for-word from the official RAN Manual. Do not summarise, shorten, or paraphrase requirements — preserve exact wording from the manual. The `manualContent.ts` file (in `data/`) is the canonical reference for cross-checking rank text against the manual.
 
 ---
 
@@ -224,3 +227,6 @@ pnpm --filter @workspace/db run push
 - **APK build config added** — `eas.json` created with `preview` profile (downloadable `.apk`) and `production` profile (Play Store `.aab`).
 - **README overhauled** — Added collaborator quick-start guide, known Replit limitations, and import instructions so any new collaborator can get up and running immediately.
 - **Fixed Expo origin config** — Removed hardcoded `origin: https://replit.com/` from `app.json` that caused web preview routing to break when importing to a different Replit account.
+- **Added Ambassador Plenipotentiary** — Rank 11 (ages 23–24) added to `data/ranks.ts` with all 11 requirements from the manual. Also corrected Ambassador Extraordinary which was missing 4 requirements (I, J, K, L) from the manual.
+- **Special Programs chapter completed** — Full unabridged text of the "Special Programs Suggestions for RA Activities" chapter added to `data/manualContent.ts`, replacing the previous summarised version.
+- **"Amb." prefix added** — Name display on Home and Profile screens now automatically prefixes the user's name with "Amb." — users type their name without it.

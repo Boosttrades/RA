@@ -476,8 +476,79 @@ export const RANKS: Rank[] = [
         id: "ae8",
         text: 'To demonstrate your purpose in life, write on "What God is calling me to do in this life"',
       },
+      {
+        id: "ae9",
+        text: "What is the Federation of International Football Association (FIFA) all about? What are its major competitions (see FIFA Website)?",
+      },
+      {
+        id: "ae10",
+        text: "Organise a community service project for boys in your chapter and lead them in carrying it out with the cooperation of your chapter leaders",
+      },
+      {
+        id: "ae11",
+        text: "All conditions on attendance and basic knowledge of RA are a pre-requisite",
+      },
+      {
+        id: "ae12",
+        text: "Communicate with RAs or an RA chapter outside Nigeria by email (attach computer printout as evidence)",
+      },
     ],
     color: "#7C3AED",
+  },
+  {
+    id: "ambassador-plenipotentiary",
+    name: "Ambassador Plenipotentiary",
+    level: 11,
+    ageGroup: "23–24 years old",
+    description:
+      "The highest rank in Royal Ambassadors — demonstrate mastery of missions, leadership, and Christian service through a comprehensive project booklet and chapter defence.",
+    requirements: [
+      {
+        id: "ap1",
+        text: "Write a biography of the person after whom your chapter is named. Read it in a chapter meeting and include it in your project booklet",
+      },
+      {
+        id: "ap2",
+        text: "Make a chart of maps showing Paul's missionary journeys. Present a report on it to your chapter and include it in your project booklet",
+      },
+      {
+        id: "ap3",
+        text: "Read two books about missions and write a summary review on each in your project booklet",
+      },
+      {
+        id: "ap4",
+        text: "Using the Internet, keep up correspondences with RA chapters from three other countries and include evidence of your exchanged correspondence in the project booklet",
+      },
+      {
+        id: "ap5",
+        text: "Interview a Home or Foreign missionary either personally or by correspondence, and use your findings to develop a mission plan for the RAs of Nigeria in your conference, association or chapter",
+      },
+      {
+        id: "ap6",
+        text: "Help to start a Sunday School class, preaching station, House Fellowship or serve in a place of leadership in the Sunday School, Church Training or assist the Counsellor in your chapter for at least a year",
+      },
+      {
+        id: "ap7",
+        text: "Train an intermediate RA to pass his rank",
+      },
+      {
+        id: "ap8",
+        text: "Produce a handcraft work and explain its relevance to our ministry of reconciliation (the craft must be submitted with the project booklet)",
+      },
+      {
+        id: "ap9",
+        text: "Attend the leadership training for that year to defend your project",
+      },
+      {
+        id: "ap10",
+        text: "Write a drama on missions",
+      },
+      {
+        id: "ap11",
+        text: "Describe the current state of the country in writing. Include your suggestions and expected reforms in the write-up; or preach hope to a hopeless Nigerian",
+      },
+    ],
+    color: "#991B1B",
   },
 ];
 
