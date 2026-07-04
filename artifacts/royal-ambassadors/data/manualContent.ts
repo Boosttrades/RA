@@ -725,20 +725,56 @@ u. President, NBC: The Ambassador-in-Chief wears a minister's uniform with 4 gol
     id: "programmes",
     title: "Special Programme Suggestions for RA Activities",
     group: "main",
-    content: `SPECIAL PROGRAMME SUGGESTIONS FOR ROYAL AMBASSADORS ACTIVITIES
+    content: `SPECIAL PROGRAMS SUGGESTIONS FOR ROYAL AMBASSADORS ACTIVITIES
 
-A. WEEKLY MEETINGS
+A. Weekly Meetings
 
-Chapter meetings should include a regular programme that involves all members. The counsellor's responsibility is to ensure that a suitable calendar of activity is planned for the year.
+It is recommended that a chapter of the Royal Ambassadors meets weekly. The meeting should take place on a particular day and time of the week throughout the year (for at least an hour and a half). One hour dedicated for the programme of the day itself, and the remaining 30 minutes for recreation or sports, or any other activity of interest. This may be before or after the main meeting.
 
-B. ORDER OF SERVICE FOR THE LAUNCHING OF A NEW RA CHAPTER
+The programme for the first week of the month may be business meeting, efforts on ranks and insight to the month's study. The second meeting may be for a Bible study. The third meeting could be given to Christian service or to a study of stewardship. The fourth meeting may be used for studies about prayer/lessons on mission work. And when a month has five weeks, the fifth meeting may be used for some type of special programme or activity. (See column for "Special Programme" and Christ Ambassadors: Life & Work Series RA Yearbook for detailed annual programme.)
 
+B. Fortnightly Meetings
+
+Fortnight meetings are only encouraged if and when a chapter is completely unable for genuine reasons to hold weekly meetings. A fortnight meeting may be held twice a month. Chapters that meet fortnightly may wish to combine some of the programmes for weekly meetings. For example, the first meeting could be used for Bible study for one month and for mission study the second month etc. (See column for "Special Series RA Yearbook for detailed annual programme.)
+
+C. New Chapter Inauguration/Launching
+
+1. Statement of Launching for a new RA Chapter:
+(Conference Director/Convention Officer shall say as follows:) In response to the command of Jesus: "Go therefore and make disciples of all nations, baptizing them in the name of the Father and of the Son and of the Holy Spirit, teaching them to observe all that I have commanded you and lo, I am with you always, to the close of the age." (Matthew 28:19-20), and since it is the wish of the Minister-In-Charge of this church, members of the Church Council, the Men's Missionary Union, and the entire members of the church, to launch the chapter of Royal Ambassadors of this church, with the activities and zeal displayed by the officers and members of the organization, we are convinced that you wish that this chapter be formally launched today.
+
+We have carried out every examination necessary before any chapter could be launched, and we have seen clearly that it is necessary for the Royal Ambassadors of this church to be so formally organized with the……........... Association.
+
+Therefore, with the power vested on me by the national body, Royal Ambassadors of Nigeria, the leadership of Men's Missionary Union and the Nigerian Baptist Convention, I hereby launch this organization in this church; in the name of God, the Father and the Son, and the Holy Spirit. (Amen)
+
+Also, we authorize you to join other organizations in the ...............Baptist Association, ............... Conference, and in the Convention in general.
+
+May God help you that you may shine brightly in the darkness of the world and be useful instruments of evangelization in this locality, throughout the length and breadth of Nigeria and in the entire world in the precious name of our Lord and Master, Jesus Christ. Amen.
+
+…………………….                    …………………..
+RA Secretary                          Counsellor
+
+…………………..                       ……………………..
+MMU President                         Minister-In-Charge
+
+                    …………………………….
+          Name/signature of the launching officer
+
+                    …………………………….
+                              Date
+
+2. Order of Service for the Launching of a new RA Chapter
+
+A. Preliminary: (Before the worship service, take a 10 minutes short RA ceremony around the national flag, Christian flag, and RA flag hosted outside the church. Also allow the organ prelude to go on).
 1. Parade and march past of honour mounted by the RAs.
 2. Inspection of guard of honour by the programme personnel.
 3. The hearty cheers.
 4. Dismissal.
 
-ORDER OF WORSHIP SERVICE:
+B. Service Begins: Take a few minutes guard of honour mounted at the main entrance of the church and crossing of the swords. Commands must be non-verbal to avoid distraction of the service.
+
+C. Processional: (With music/singing led by the church choir, the processional being led by celebrants and programme personnel).
+
+D. Order of Worship Service:
 1. A call to worship
 2. Hymn: The King's Business / Onward Christian Soldiers
 3. Invocation
@@ -751,7 +787,7 @@ ORDER OF WORSHIP SERVICE:
 10. Procedure for the Launching:
     a. History of RA work in the church
     b. Presentation of members and officers
-    c. Demonstration of members' knowledge of RA work
+    c. Demonstration of members' knowledge of RA work through some aspects of the manuals
     d. Motion for launching of the chapter
     e. Statement of launching
     f. Hand of fellowship by the association and conference
@@ -761,79 +797,195 @@ ORDER OF WORSHIP SERVICE:
 12. Prayer and Benediction
 13. Recessional Hymn
 
-C. CHAPTER MEETING FORMAT
+D. Planning a Calendar Programme
 
-TimeActivityPerson in Charge
-30 mins — Recreation/Sport — Sports Committee
-5 mins — Opening of Meeting — President
-10 mins — Business — President
+It is the counsellor's responsibility to ensure that a suitable calendar of activity is planned for the year, following the Convention Activity Plan book for the year as a guide. The officers of the chapter should work hand in hand with him to plan the calendar.
 
-D. SUGGESTED PROCEEDING OF MEETINGS
+Much prayer and planning should go into every chapter meeting to make it as meaningful, blessing and interesting as possible for members to be willing to take part in all the meetings. Although the counsellor will lead in planning the programme, it is not his duty to assign the programme. The boys are to be responsible to locate their programme with the counsellor's guidance. The counselor may however use any of the following outlines in planning and evaluating the chapter meetings.
 
-1. President: (Give three taps of the gavel.) The [name] Chapter of Royal Ambassadors is called to order. Let us stand and repeat our Royal Ambassadors Motto.
+E. Chapter Meeting
+
+Date of meeting...............................
+
+Time        Activity                    Person in Charge
+30 mins     Recreation / Sport          Sports Committee
+5 mins      Opening of Meeting          President
+10 mins     Business                    President
+
+F. A Suggested Proceeding (Activity) of Meetings
+
+Arrangement of room: A small table may be placed at the front of the room where the Royal Ambassadors meet (for the President and the Recorder's use). The Vice President may sit near the door both to welcome the boys and also receive any visitor.
+
+(The programme may follow this outline.)
+1. President: (Give three taps of the gavel.) The ............... (Mentions the name of chapter) Chapter of Royal Ambassadors is come to order. Let us stand and repeat our Royal Ambassadors Motto.
 2. All Boys: "We are ambassadors for Christ" (2 Corinthians 5:20.)
 3. President: Let us sing the Royal Ambassadors Hymn while we are standing.
 4. All Boys: (Sing together the Royal Ambassadors Hymn.)
-5. President: Let us pray together while [name] leads us in prayer.
-6. Recorder: (Calls the roll.) Each boy may answer by saying a Scripture memory verse, the name of a missionary, or by saying "present."
-7. President: May we listen to the Recorder as he reads the minutes of the last meeting.
-8. Recorder: (Reads the minutes.)
-9. President: (Calls for amendments, and then the approval and seconder for the minutes adoption.)
-10. Vice-President: (Introduces visitors or new members.)
-11. President: May all officers and committees please present the reports of their works.
-12. President: It's time for the AOB. Is there any business?
-13. President: It is Counsellor's time. Let us all listen to what our counsellor has for us.
-14. President: Let us form the Royal Ambassadors friendship circle as we take the closing prayer.
-15. All Boys: (Form the friendship circle and place their hands on the shoulders of the boys on either side while they say the Royal Ambassadors pledge and have the closing prayer.)
+5. President: Let us pray together while ................(mentions a name of a person) will lead us in prayer. (After the prayer, taps the gavel one time to symbolize that members should sit or says let us be seated. The Recorder will now call the roll.)
+6. Recorder: (Calls the roll.)
+7. Each Boy: (Each boy may answer by saying a Scripture memory verse, the name of a missionary, or by saying "here" or "present.")
+8. President: May we listen to the Recorder as he reads the minutes of the last meeting.
+9. Recorder: (Reads the minutes that he may have prepared with the counsellor's help.) In case of no addition or any correction from those present in the last meeting, I present these minutes for acceptance for discussions.
+10. President: (Calls for amendments, and then thereafter, the approval and seconder for the minutes adoption.)
+11. Vice-President: (Introduces visitors or new members.)
+12. President: May all officers and committees please present the reports of their works. (This will be the time for reports or plans for future work or matters of business.)
+13. President: It's time for the AOB. Is there any business?
 
-E. EVALUATING A CHAPTER'S MEETING
+Or if it is a Day of Programme (Not Meeting):
+14. President: (He says) Let us be attentive as our programme for today is presented at this time. (He announces that all members should bring out their copy of Christ Ambassadors or as the case may be.)
 
-Number of boys enrolled: ___________
-Number Present: ___________
+After the programme of the day, the President continues to preside.
+15. President: It is Counsellor's time. Let us all listen to what our counsellor has for us.
+16. Counsellor: (He speaks for about 10 minutes on variety of things to be sure that the boys understood the programme and are getting along. He may encourage them in reading their Bibles, praying, giving, witnessing or by being faithful in church attendance, or about plans for future programmes or activities that he would encourage the boys to participate in, or explain how to become a Christian and how the person should live in union with Christ. He will want to plan his talk carefully in order to meet the needs of the boys.)
+17. President: Let us form the Royal Ambassadors friendship circle as we take the closing prayer and benediction.
+18. All Boys: (Form the friendship circle and place their hands on the shoulders of the boys on either side while they say the Royal Ambassadors pledge and have the closing prayer. They may also say the Lord's Prayer together or sing a hymn for the closing prayer as it may be suggested by the President.)
 
-1. Were plans for meetings made? Yes / No
-2. Were plans for future meeting made? Yes / No
-3. How do you grade the meeting? Excellent / Good / Fair / Poor
-4. How many prospects attended the meeting?
-5. What is the future prospect for your meetings?
-6. How much members' participation did you enjoy?
-7. What could be done to improve the meeting?
+NOTE: After the meeting, the counsellor and officers may remain to evaluate the meeting and make plans for the next or future meetings. The room should be cleaned and re-arranged in order to be ready for use when it is needed.
 
-F. OTHER SUGGESTED PROGRAMMES FOR ALL LEVELS OF RA
+G. Evaluating a Chapter's Meeting
 
-BIBLE STUDY — Bible Characters:
+Number of boys enrolled...............
+Number Present.......................
+
+1. Were plans for meetings made? Yes..... / No.....
+2. Were plans for future meeting made? Yes..... / No.....
+3. How do you grade the meeting? Excellent...... Good.... Fair.... Poor.....
+4. How many prospects attended the meeting? ...........
+5. What is the future prospect for your meetings? .........................................................
+6. How much members' participation did you enjoy? .................................................
+7. What could be done to improve the meeting? .....................................................
+
+H. Other Suggested Programme for all levels of RA Bible Study
+
+1. Bible Characters
 a. Abraham: Father of the Faith. Genesis 12:1-19; Hebrews 11:8-10
 b. Joseph: A Dreamer. Genesis 30:22-24; 37:1-35
-c. David: The Giant Killer. 1 Samuel 17:17-51
-d. The Boy Jesus in the Temple. Luke 2:41-52
-e. Timothy: A young man who knows the Bible. 2 Timothy 3:14-17
+c. Joseph: A Slave and a Prisoner. Genesis 37:36; 39:1-23
+d. Joseph: A Leader of Men. Genesis 41:1-34; 45:1-10
+e. Joseph: A Man of Forgiveness. Genesis 44:1-34; 45:1-10
+f. A Shepherd Boy Becomes King. 1 Samuel 16:1-13
+g. David: The Gifted Musician and Poet. 1 Samuel 16:14-23
+h. David: The Giant Killer. 1 Samuel 17:17-51
+i. Amos: A Shepherd and a Preacher. Amos 7:12-15; 5:12-12
+j. The Boy Jesus in the Temple. Luke 2:41-52
+k. Jesus: The Man who conquered the Devil. Matthew 4:1-11
+l. Timothy: A young man who knows the Bible. 2 Timothy 3:14-17
+m. He Brought his Brother to Jesus. John 1:35-42
+n. A Boy and his Lunch. John 6:1-15
+o. The Lost Son. Luke 15:11-24
 
-CHRISTIAN LIVING:
+2. Christian Living
 a. Becoming a Christian. Romans 3:23; Acts 16:31; Revelation 3:20; Romans 10:9
 b. Why be Baptised? Matthew 3:1-17; Romans 6:4
 c. Witnessing to others. John 3:16; Romans 6:23; Luke 13:3; 1 John 1:9
 d. Being a Good Neighbour. Luke 10:30-37
-e. Be a Good Example. John 13:15; 1 Timothy 4:12; 1 Peter 2:21
+e. Faithfulness in Worship. Psalm 122:1; Joshua 24:15, 24; John 4:23-24
+f. Be a Good Example. John 13:15; 1 Timothy 4:12; 1 Peter 2:21; Jude 7
+g. Labourers Together with God. 1 Corinthians 3:4-9
+h. Respect for Others. James 2:1-9; Romans 12:9-10
+i. Serving God through Singing. Psalm 33:1-5; 95:1-2; 108:1-4
+j. Making the Best Use of your Abilities. Matthew 25:14-30; Romans 12:6-8
 
-MISSIONS IN THE BIBLE:
+3. Missions in the Bible
 a. Watchmen for God. Ezekiel 33:1-9
 b. An Absconding Missionary. Jonah 1:1-17; 2:1, 10; 3:1-5
 c. The Good News is for Everyone. Acts 10:9-15, 34-35
 d. Paul's First Missionary Journey. Acts 13-14
 e. Paul's Second Missionary Journey. Acts 15:36-18:22
+f. Paul's Third Missionary Journey. Acts 18:23-21:15
+g. Luke: A Missionary Doctor. Luke 1:3; Acts 1:1; Colossians 4:14; 2 Timothy 4:11; Philemon 24
+h. Philip: A Faithful Witness. Acts 8:35-39
+i. Barnabas: A Missionary Helper and Child of Consolation. Acts 4:36-37; 9:26-27; 11:29-30; 13:15; Acts 4:9; 11; 13; 14
+j. Silas: A Companion in Sorrow. Acts 15:22, 40; 16:16-34
+k. A Young Christian Helper. 2 Timothy 1:5; 3:15; Acts 16:1-5
+l. A Christian as a Missionary. Matthew 28:19-20; Mark 16:15; Romans 10:12-15
 
-STEWARDSHIP:
+4. Mission Study
+a. Home Missions (all RA must participate in the observance of Home Mission Week of Emphasis March.)
+b. Foreign Missions (all RA must participate in the observance of International Missions Week of Emphasis in December.)
+c. Study the lives of missionaries. (See books under Counsellor's Corner or meet the church pastor for help.)
+
+5. Prayer
+a. How to pray. 1 Thessalonians 5:17-18
+b. The Model Prayer. Luke 11:1-13
+c. Prayer in Secret. Matthew 6:5-13
+d. When Should we Pray? Psalm 85:17; 26:41; Luke 18:1; James 5:13
+e. Praying for Others. James 5:13-15; Acts 12:5; Luke 22:31-32
+
+6. Service Programmes
+a. Helping others. Matthew 5:14-16; 25:34-40; Luke 14:16-21; James 2:15-16
+b. Visit the home of sick or invalid persons. Read the Bible, Sing hymns and Pray for the sick person.
+c. Present an Easter play in the community and invite all the people to come.
+d. Present a Christmas play or sing Christmas carols and invite people to come.
+e. Help to clean up the church building or church grounds.
+f. Help to clean up the community or neighbourhood.
+
+7. Stewardship
 a. Stewardship of Life: Genesis 2:7; Matthew 18:1-6; Luke 2:52
-b. Purity of Life. Genesis 39:1-23; 1 Corinthians 6:19
+b. Purity of Life. Genesis 39:1-23; 1 Corinthians 6:19; Philippians 1:20
 c. Stewardship of Service. Matthew 25:34-40; Luke 6:31
 d. Stewardship of Time. Ephesians 5:16; James 4:14
-e. Stewardship of Money. Leviticus 27:30-32; Psalm 24:1
+e. How should a Christian give? Malachi 3:10; 1 Corinthians 4:2; Matthew 10:8
+f. Treasures in Heaven. Matthew 6:19-20; Luke 12:13-31
+g. Stewardship of Money. Leviticus 27:30-32; Deuteronomy 8:18; Psalm 24:1; Haggai 2:8
 
-GAMES AND SPORTS:
-• Local Free-cells (Ayo), Scrabble, Ludo, Chess, Whot, Checkers
-• Organized Games: Dodge Ball, Snatch the Cloth, Hide-and-Seek
-• Single Sports: Table tennis, Lawn tennis
-• Team Sports: Soccer, Netball, Volleyball, Track and Field-meet`,
+8. Special Programmes
+a. Health lecture on First Aid by a doctor, nurse or other specialized health worker.
+b. Hygiene seminar on the need of good health by a qualified person.
+c. A lecture on the harmful effect of alcohol and tobacco on the body.
+d. A discussion on the part a boy can play in making a Christian home.
+e. Premarital seminar or discussion on the characteristics needed in choosing the right future partner for life.
+
+Specials Activities
+
+9. Games
+a. Local Free-cells (Ayo)
+b. Scrabble
+c. Ludo
+d. Chess
+e. Whot
+f. Checkers
+g. Others
+
+Collections and Nature Study
+a. Collection of insects and butterflies
+b. Collection of special leaves
+c. Collection of rocks
+d. Collection of small animals
+e. Identification of animals
+f. Identification of birds
+g. Identification of snakes
+h. Identification of trees
+
+Hobbies
+a. Carving of wood, calabash etc.
+b. Collection of stamps
+c. Crafts learning and practising. E.g. making of brooms, cage (animal trap), basket weaving etc.
+d. Fishing
+e. Hunting
+f. Gardening
+g. Music making
+h. Painting and drawing
+i. Photography
+j. Reading
+k. Story telling
+
+10. Organized Games and Sports
+a. Organized games: Dodge Ball, Snatch the Cloth, Hide and Seek etc.
+b. Single Sports: Table tennis, Lawn tennis.
+c. Team Sports: Soccer, Netball, Volleyball, Track and Field-meet
+
+11. Some Suggestion for Games and Sports
+
+Some of the games and sport suggested above may be played before and after chapter meeting. A special time may be set for a soccer, netball or volleyball match between different chapters of different churches. A "Sports Day" consisting of track and field events could be planned for the boys and girls of the church (including Girls Auxiliary, Lydia and Royal Ambassadors).
+
+12. Instructions for Organized Games
+
+a. Dodge Ball is played with a soft rubber ball. There are two throwers who stand about 30 feet facing each other. All of the other boys stand middle-way of the throwers. The boys throwing try to hit the ones in the middle with the ball; and when a boy is hit he will quit playing until everyone has been hit. Meanwhile, the boys in the middle continue to dodge the balls. The last two boys to be hit will then become throwers for the next time. The object of the game is to dodge the ball in order not to be hit.
+
+b. Snatch the Cloth is played by dividing the boys into two even groups. The boys line up beside one another in two lines about 40 feet from one another and facing each other. The counsellor will count the boys and give them each a number. There will be a number 1 on each side, a number 2, and so on according to how many boys there are. The counsellor calls out one of the numbers. The boy from each side with that number runs to a point half-way between the two groups of boys where a cloth is lying on the ground. The boy who succeeds in getting the cloth and running back to his side without being touched by the other boy makes a point for his side. If a boy touches the other boy while he has the cloth, he makes a point for his side. The side having the most points within a period of time is declared the winner. The losing side should applaud in congratulating them.
+
+c. Hide-and-Seek can be played with as few as three boys and as many boys who want to play. The boys will go to hide in different places around the building and one of them will hide his face and close his eyes. When the boys are all hiding, they will tell the boy to come seek for them. The boy will search until he finds all the boys. The last one found will then become the "seeker" in the next game.`,
   },
   {
     id: "sponsoring",
