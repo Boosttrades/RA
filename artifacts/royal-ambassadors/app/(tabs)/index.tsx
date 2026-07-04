@@ -91,7 +91,7 @@ export default function HomeScreen() {
             {getGreeting()},
           </Text>
           <Text style={[styles.greetingName, { color: colors.navy }]}>
-            {userName}!
+            Amb. {userName}!
           </Text>
           <View style={styles.taglineRow}>
             <MaterialCommunityIcons

@@ -196,7 +196,7 @@ export default function ProfileScreen() {
               }}
             >
               <Text style={[styles.userName, { color: colors.navy }]}>
-                {userName}
+                Amb. {userName}
               </Text>
               <Feather name="edit-2" size={14} color={colors.mutedForeground} />
             </Pressable>
