@@ -2,7 +2,7 @@ import { Feather, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import {
   Platform,
   Pressable,
@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { SettingsDrawer } from "@/components/SettingsDrawer";
 import { useApp } from "@/context/AppContext";
 import { RANKS } from "@/data/ranks";
 import { getDailyVerse } from "@/data/verses";
@@ -30,6 +31,7 @@ export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const { userName, currentRankId, bookmarkedVerseIds, toggleBookmark } = useApp();
   const router = useRouter();
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const currentRank = useMemo(
     () => RANKS.find((r) => r.id === currentRankId) ?? RANKS[0],
@@ -58,7 +60,7 @@ export default function HomeScreen() {
           },
         ]}
       >
-        <Pressable style={styles.headerBtn} hitSlop={10}>
+        <Pressable style={styles.headerBtn} hitSlop={10} onPress={() => setDrawerOpen(true)}>
           <Feather name="menu" size={22} color={colors.primary} />
         </Pressable>
         <Text style={[styles.headerTitle, { color: colors.primary }]}>
@@ -196,6 +198,7 @@ export default function HomeScreen() {
           </Pressable>
         </View>
       </ScrollView>
+      <SettingsDrawer visible={drawerOpen} onClose={() => setDrawerOpen(false)} />
     </View>
   );
 }

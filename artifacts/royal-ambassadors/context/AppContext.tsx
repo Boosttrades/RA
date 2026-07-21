@@ -1,6 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
+export type ThemePreference = "light" | "dark" | "system";
+
 interface AppContextType {
   userName: string;
   setUserName: (name: string) => void;
@@ -14,9 +16,11 @@ interface AppContextType {
   saveQuizScore: (attempt: string, score: number) => void;
   totalQuizzesTaken: number;
   bestQuizScore: number;
+  themePreference: ThemePreference;
+  setThemePreference: (pref: ThemePreference) => void;
 }
 
-const AppContext = createContext<AppContextType | undefined>(undefined);
+export const AppContext = createContext<AppContextType | undefined>(undefined);
 
 const STORAGE_KEY = "@ra_app_state_v1";
 
@@ -26,6 +30,7 @@ interface StoredState {
   bookmarkedVerseIds: string[];
   completedSectionIds: string[];
   quizScores: Record<string, number>;
+  themePreference?: ThemePreference;
 }
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
@@ -34,6 +39,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [bookmarkedVerseIds, setBookmarkedVerseIds] = useState<string[]>([]);
   const [completedSectionIds, setCompletedSectionIds] = useState<string[]>([]);
   const [quizScores, setQuizScores] = useState<Record<string, number>>({});
+  const [themePreference, setThemePreferenceState] = useState<ThemePreference>("system");
 
   useEffect(() => {
     loadState();
@@ -49,8 +55,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         if (data.bookmarkedVerseIds) setBookmarkedVerseIds(data.bookmarkedVerseIds);
         if (data.completedSectionIds) setCompletedSectionIds(data.completedSectionIds);
         if (data.quizScores) setQuizScores(data.quizScores);
+        if (data.themePreference) setThemePreferenceState(data.themePreference);
       }
     } catch (_) {}
+  };
+
+  const setThemePreference = (pref: ThemePreference) => {
+    setThemePreferenceState(pref);
+    persist({ themePreference: pref });
   };
 
   const persist = async (updates: Partial<StoredState>) => {
@@ -61,6 +73,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         bookmarkedVerseIds,
         completedSectionIds,
         quizScores,
+        themePreference,
       };
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify({ ...current, ...updates }));
     } catch (_) {}
@@ -116,6 +129,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         saveQuizScore,
         totalQuizzesTaken,
         bestQuizScore,
+        themePreference,
+        setThemePreference,
       }}
     >
       {children}
