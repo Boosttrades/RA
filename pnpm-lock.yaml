@@ -149,7 +149,6 @@ overrides:
   '@expo/ngrok-bin>@expo/ngrok-bin-win32-x64': '-'
   '@esbuild-kit/esm-loader': npm:tsx@^4.21.0
   esbuild: 0.27.3
-  tar: file:./scripts/patches/tar
 
 importers:
 
@@ -5320,8 +5319,8 @@ packages:
     resolution: {integrity: sha512-uxc/zpqFg6x7C8vOE7lh6Lbda8eEL9zmVm/PLeTPBRhh1xCgdWaQ+J1CUieGpIfm2HdtsUpRv+HshiasBMcc6A==}
     engines: {node: '>=6'}
 
-  tar@file:scripts/patches/tar:
-    resolution: {directory: scripts/patches/tar, type: directory}
+  tar@7.5.20:
+    resolution: {integrity: sha512-9FcyK4PA6+WbzlTM9WhQm6vB5W7cP7dUiPsv1g7YDwEQnQ1CGpK3MGlKk/ITVWMk05kHZuBhmVhiv8LZoy/PFQ==}
     engines: {node: '>=18'}
 
   terminal-link@2.1.1:
@@ -6422,7 +6421,7 @@ snapshots:
       source-map-support: 0.5.21
       stacktrace-parser: 0.1.11
       structured-headers: 0.4.1
-      tar: file:scripts/patches/tar
+      tar: 7.5.20
       terminal-link: 2.1.1
       undici: 6.27.0
       wrap-ansi: 7.0.0
@@ -6498,7 +6497,7 @@ snapshots:
       source-map-support: 0.5.21
       stacktrace-parser: 0.1.11
       structured-headers: 0.4.1
-      tar: file:scripts/patches/tar
+      tar: 7.5.20
       terminal-link: 2.1.1
       undici: 6.27.0
       wrap-ansi: 7.0.0
@@ -11592,7 +11591,7 @@ snapshots:
 
   tapable@2.3.3: {}
 
-  tar@file:scripts/patches/tar:
+  tar@7.5.20:
     dependencies:
       '@isaacs/fs-minipass': 4.0.1
       chownr: 3.0.0

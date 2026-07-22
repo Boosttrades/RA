@@ -33,10 +33,7 @@ minimumReleaseAgeExclude:
   # this setting guards against does not apply to our own packages.
   - '@replit/*'
   - stripe-replit-sync
-  # tar@7.5.17 was published on 2026-07-21 and is pinned in the lockfile from the
-  # GitHub import. tar is published by the npm CLI team and is among the most
-  # trusted packages in the ecosystem. Remove this exclusion after 2026-07-22.
-  - tar
+
 
 packages:
   - artifacts/*
@@ -162,7 +159,3 @@ overrides:
   # drizzle-kit uses esbuild internally on an older version that's vulnerable, this overrides it
   "@esbuild-kit/esm-loader": "npm:tsx@^4.21.0"
   esbuild: "0.27.3"
-  # tar@7.5.17 blocked by Replit's minimumReleaseAge proxy on 2026-07-21.
-  # Committed the package at scripts/patches/tar so it works in both dev and deployment.
-  # Remove this override and the scripts/patches/tar directory after 2026-07-22.
-  tar: "file:./scripts/patches/tar"
