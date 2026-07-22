@@ -36,6 +36,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "a49e68e7-465a-4849-9f76-7378fddf43aa"
+      }
+    },
+    "owner": "marv_dev"
   }
 }
