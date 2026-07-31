@@ -2,10 +2,12 @@
  * update/apkInstaller.ts
  * Hands the verified APK off to Android's official package installer.
  * Only runs on Android; no-ops on other platforms.
+ *
+ * getContentUriAsync lives in the expo-file-system/legacy subpath in v19+.
  */
 
 import { Platform } from "react-native";
-import * as FileSystem from "expo-file-system";
+import { getContentUriAsync } from "expo-file-system/legacy";
 import * as IntentLauncher from "expo-intent-launcher";
 import { updateLogger } from "./logger";
 import { cleanupApk } from "./apkDownloader";
@@ -27,7 +29,7 @@ export async function installApk(localUri: string): Promise<void> {
 
   let contentUri: string;
   try {
-    contentUri = await FileSystem.getContentUriAsync(localUri);
+    contentUri = await getContentUriAsync(localUri);
   } catch (err) {
     updateLogger.error("Failed to get content URI", err);
     throw new Error(

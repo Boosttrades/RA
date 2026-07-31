@@ -2,9 +2,21 @@
  * update/apkDownloader.ts
  * Downloads an APK from a validated HTTPS URL into the app's cache directory.
  * Reports progress via a callback and cleans up stale downloads.
+ *
+ * expo-file-system v19+ moved the classic function-based API to the /legacy
+ * subpath. All imports here come from expo-file-system/legacy so that the
+ * TypeScript types and runtime behaviour match.
  */
 
-import * as FileSystem from "expo-file-system";
+import {
+  cacheDirectory,
+  createDownloadResumable,
+  deleteAsync,
+  getInfoAsync,
+  DownloadResumable,
+  DownloadProgressData,
+  FileSystemDownloadResult,
+} from "expo-file-system/legacy";
 import { DownloadProgress } from "./types";
 import { updateLogger } from "./logger";
 
@@ -15,13 +27,13 @@ const APK_FILENAME = "ra-update.apk";
 const DOWNLOAD_TIMEOUT_MS = 5 * 60 * 1000;
 
 // Singleton to prevent concurrent downloads.
-let activeDownload: FileSystem.DownloadResumable | null = null;
+let activeDownload: DownloadResumable | null = null;
 
 /**
  * Returns the local path where the APK will be stored.
  */
 export function getApkLocalPath(): string {
-  return `${FileSystem.cacheDirectory}${APK_FILENAME}`;
+  return `${cacheDirectory}${APK_FILENAME}`;
 }
 
 /**
@@ -49,11 +61,11 @@ export async function downloadApk(
 
   updateLogger.info("Starting APK download", { localUri });
 
-  const downloadResumable = FileSystem.createDownloadResumable(
+  const downloadResumable = createDownloadResumable(
     url,
     localUri,
     {},
-    (rawProgress) => {
+    (rawProgress: DownloadProgressData) => {
       const { totalBytesWritten, totalBytesExpectedToWrite } = rawProgress;
       const percentage =
         totalBytesExpectedToWrite > 0
@@ -77,7 +89,7 @@ export async function downloadApk(
     setTimeout(() => reject(new Error("APK download timed out.")), DOWNLOAD_TIMEOUT_MS)
   );
 
-  let result: FileSystem.FileSystemDownloadResult | null = null;
+  let result: FileSystemDownloadResult | undefined = undefined;
   try {
     result = await Promise.race([downloadResumable.downloadAsync(), timeoutPromise]);
   } catch (err) {
@@ -120,12 +132,12 @@ export async function cancelDownload(): Promise<void> {
 export async function cleanupApk(localUri?: string): Promise<void> {
   const path = localUri ?? getApkLocalPath();
   try {
-    const info = await FileSystem.getInfoAsync(path);
+    const info = await getInfoAsync(path);
     if (info.exists) {
-      await FileSystem.deleteAsync(path, { idempotent: true });
+      await deleteAsync(path, { idempotent: true });
       updateLogger.info("Cleaned up APK file", { path });
     }
-  } catch (err) {
+  } catch {
     updateLogger.warn("Failed to clean up APK file", { path });
   }
 }

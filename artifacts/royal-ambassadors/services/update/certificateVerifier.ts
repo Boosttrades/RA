@@ -4,26 +4,30 @@
  *
  * What this module does:
  *  1. Confirms the downloaded file actually exists and is non-empty.
- *  2. Verifies the file ends with the PK (ZIP) magic bytes — a minimal sanity
+ *  2. Verifies the file starts with the PK (ZIP) magic bytes — a minimal sanity
  *     check that the download is an archive and not an HTML error page.
  *
  * What cryptographic signature verification looks like here:
- *  Full pre-install certificate fingerprint comparison (comparing the APK's
- *  META-INF certificate against the installed app's signing certificate) requires
- *  a native Android API (PackageManager.getPackageArchiveInfo with GET_SIGNATURES).
- *  That is not available in Expo's managed JS runtime.
- *
- *  We rely on Android's own package installer as the authoritative signature
- *  enforcer: it will refuse to install an APK signed with a different key than
- *  the installed app, and will display a clear error to the user before anything
+ *  Full pre-install certificate fingerprint comparison requires a native Android
+ *  API (PackageManager.getPackageArchiveInfo with GET_SIGNATURES) that is not
+ *  available in Expo's managed JS runtime. We rely on Android's own package
+ *  installer as the authoritative signature enforcer — it will refuse to install
+ *  an APK signed with a different key and display a clear error before anything
  *  is modified. This is the same protection the Play Store uses.
  *
  *  If you move to a bare/dev-client workflow, drop in a native module that calls
  *  PackageManager.getPackageArchiveInfo and compare fingerprints here — the
  *  interface below is designed to make that swap a one-file change.
+ *
+ * getInfoAsync, readAsStringAsync and EncodingType live in the
+ * expo-file-system/legacy subpath in v19+.
  */
 
-import * as FileSystem from "expo-file-system";
+import {
+  getInfoAsync,
+  readAsStringAsync,
+  EncodingType,
+} from "expo-file-system/legacy";
 import { updateLogger } from "./logger";
 
 /** ZIP local-file-header magic bytes: PK\x03\x04 */
@@ -39,7 +43,7 @@ export async function verifyApkFile(localUri: string): Promise<void> {
   updateLogger.info("Verifying downloaded APK file", { localUri });
 
   // 1. Check the file exists and has a non-zero size.
-  const info = await FileSystem.getInfoAsync(localUri, { size: true });
+  const info = await getInfoAsync(localUri);
 
   if (!info.exists) {
     throw new Error("Downloaded APK file not found. The download may have failed.");
@@ -52,9 +56,8 @@ export async function verifyApkFile(localUri: string): Promise<void> {
   // 2. Read the first 4 bytes and confirm ZIP magic bytes (APKs are ZIP archives).
   let header: string;
   try {
-    // Read 4 bytes as base64 to inspect the magic.
-    header = await FileSystem.readAsStringAsync(localUri, {
-      encoding: FileSystem.EncodingType.Base64,
+    header = await readAsStringAsync(localUri, {
+      encoding: EncodingType.Base64,
       length: 4,
       position: 0,
     });

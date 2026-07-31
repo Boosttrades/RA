@@ -30,7 +30,7 @@ interface Props {
 
 /** Reads the installed version string. */
 function getInstalledVersion(): string {
-  return Constants.expoConfig?.version ?? Constants.manifest?.version ?? "—";
+  return Constants.expoConfig?.version ?? "—";
 }
 
 export function UpdateDialog({

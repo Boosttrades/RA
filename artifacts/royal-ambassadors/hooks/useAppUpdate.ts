@@ -31,11 +31,8 @@ const IDLE: UpdateState = { status: "idle" };
 
 /** Reads the installed app version from Expo Constants. */
 function getInstalledVersion(): string {
-  return (
-    Constants.expoConfig?.version ??
-    Constants.manifest?.version ??
-    "0.0.0"
-  );
+  // expoConfig is the canonical source; fall back to "0.0.0" if unavailable.
+  return Constants.expoConfig?.version ?? "0.0.0";
 }
 
 export function useAppUpdate() {
