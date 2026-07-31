@@ -14,17 +14,30 @@ import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { UpdateDialog } from "@/components/UpdateDialog";
 import { AppProvider } from "@/context/AppContext";
+import { useAppUpdate } from "@/hooks/useAppUpdate";
 
 SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient();
 
 function RootLayoutNav() {
+  const { state, startUpdate, cancelUpdate, dismiss, checkNow } = useAppUpdate();
+
   return (
-    <Stack screenOptions={{ headerBackTitle: "Back" }}>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-    </Stack>
+    <>
+      <Stack screenOptions={{ headerBackTitle: "Back" }}>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      </Stack>
+      <UpdateDialog
+        state={state}
+        onUpdate={startUpdate}
+        onCancel={cancelUpdate}
+        onDismiss={dismiss}
+        onRetry={checkNow}
+      />
+    </>
   );
 }
 

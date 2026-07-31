@@ -1,0 +1,56 @@
+Implement an in app update system for the Android version of the RA app using a remote JSON file hosted on GitHub Raw.
+
+Update source
+
+The app must fetch update information from:
+
+https://raw.githubusercontent.com/Boosttrades/RA-updates/main/update.json
+
+The JSON format will remain intentionally simple for now:
+
+{
+  "version": "1.0.1",
+  "downloadUrl": "https://..."
+}
+
+Update logic
+
+1. When the app starts, fetch update.json.
+2. Compare the installed app version with the remote version.
+3. If both versions match, continue launching the app normally.
+4. If the remote version is newer, display an update dialog explaining that a new version is available.
+5. If the user chooses to update, download the APK from downloadUrl.
+6. Show download progress.
+7. After the download completes successfully, launch Android’s package installer so the user can install the APK.
+8. Handle failures gracefully by displaying a clear error message and allowing the user to retry later.
+
+Security requirements
+
+Even though the JSON is intentionally simple, implement the following protections:
+
+* Only accept update information from the GitHub Raw URL above.
+* Require HTTPS for all update downloads.
+* Reject any downloadUrl that is not HTTPS.
+* Before prompting installation, verify that the downloaded APK is signed with the same signing certificate as the currently installed app. If the signatures do not match, cancel the installation and notify the user.
+* Do not install APKs silently. Always use Android’s official package installer.
+* Validate that both version and downloadUrl exist before attempting an update.
+* Add reasonable network timeouts and handle offline situations gracefully.
+* Prevent multiple simultaneous update downloads.
+* Store downloaded APKs in the application’s cache or temporary directory and clean up old APK files after installation or cancellation.
+* Log update events and errors for debugging without exposing sensitive information.
+
+User experience
+
+* The update check should run in the background without blocking app startup.
+* Show a loading indicator only while checking for updates if necessary.
+* If no update exists, do not interrupt the user.
+* If an update is available, display the current version and the new version.
+* Show download progress as a percentage.
+* Inform the user when the download has finished and automatically open the Android installation prompt.
+
+Code quality
+
+* Keep the implementation modular so the update service can be reused later.
+* Separate networking, version comparison, downloading, and installation into different modules or classes.
+* Use Expo-compatible APIs where possible. If native functionality is required for APK installation, integrate the appropriate Android solution cleanly without affecting the rest of the app.
+* Write clean, maintainable, production-ready code with proper error handling.
