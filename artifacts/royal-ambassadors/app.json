@@ -19,6 +19,7 @@
     },
     "android": {
       "package": "com.royalambassadors.nigeria",
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#0B1B5E"
