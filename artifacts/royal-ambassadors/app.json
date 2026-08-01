@@ -31,7 +31,15 @@
       "expo-router",
       "expo-font",
       "expo-web-browser",
-      "expo-updates"
+      "expo-updates",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/icon.png",
+          "color": "#0B1B5E",
+          "defaultChannel": "ra-update-download"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

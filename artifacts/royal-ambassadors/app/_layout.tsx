@@ -10,6 +10,8 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { Platform } from "react-native";
+import { setupUpdateNotificationChannel } from "@/services/update";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
@@ -23,7 +25,22 @@ SplashScreen.preventAutoHideAsync();
 const queryClient = new QueryClient();
 
 function RootLayoutNav() {
-  const { state, startUpdate, cancelUpdate, dismiss, checkNow } = useAppUpdate();
+  const {
+    state,
+    startUpdate,
+    cancelUpdate,
+    resumeInstall,
+    cancelPendingInstall,
+    dismiss,
+    checkNow,
+  } = useAppUpdate();
+
+  // Set up the Android notification channel for download progress notifications.
+  useEffect(() => {
+    if (Platform.OS === "android") {
+      void setupUpdateNotificationChannel();
+    }
+  }, []);
 
   return (
     <>
@@ -36,6 +53,8 @@ function RootLayoutNav() {
         onCancel={cancelUpdate}
         onDismiss={dismiss}
         onRetry={checkNow}
+        onResumeInstall={resumeInstall}
+        onCancelPendingInstall={cancelPendingInstall}
       />
     </>
   );

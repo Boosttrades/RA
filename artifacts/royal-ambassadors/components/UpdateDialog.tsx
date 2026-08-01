@@ -26,9 +26,10 @@ interface Props {
   onCancel: () => void;
   onDismiss: () => void;
   onRetry: () => void;
+  onResumeInstall: (localUri: string) => void;
+  onCancelPendingInstall: (localUri: string) => void;
 }
 
-/** Reads the installed version string. */
 function getInstalledVersion(): string {
   return Constants.expoConfig?.version ?? "—";
 }
@@ -39,8 +40,9 @@ export function UpdateDialog({
   onCancel,
   onDismiss,
   onRetry,
+  onResumeInstall,
+  onCancelPendingInstall,
 }: Props) {
-  // This component is Android-only.
   if (Platform.OS !== "android") return null;
 
   const visible =
@@ -48,6 +50,7 @@ export function UpdateDialog({
     state.status === "downloading" ||
     state.status === "verifying" ||
     state.status === "installing" ||
+    state.status === "pending-install" ||
     state.status === "error";
 
   return (
@@ -57,7 +60,9 @@ export function UpdateDialog({
       visible={visible}
       statusBarTranslucent
       onRequestClose={
-        state.status === "update-available" || state.status === "error"
+        state.status === "update-available" ||
+        state.status === "pending-install" ||
+        state.status === "error"
           ? onDismiss
           : undefined
       }
@@ -69,16 +74,25 @@ export function UpdateDialog({
           onCancel={onCancel}
           onDismiss={onDismiss}
           onRetry={onRetry}
+          onResumeInstall={onResumeInstall}
+          onCancelPendingInstall={onCancelPendingInstall}
         />
       </View>
     </Modal>
   );
 }
 
-function DialogContent({ state, onUpdate, onCancel, onDismiss, onRetry }: Props) {
+function DialogContent({
+  state,
+  onUpdate,
+  onCancel,
+  onDismiss,
+  onRetry,
+  onResumeInstall,
+  onCancelPendingInstall,
+}: Props) {
   const c = useColors();
   const insets = useSafeAreaInsets();
-
   const progressAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -100,6 +114,54 @@ function DialogContent({ state, onUpdate, onCancel, onDismiss, onRetry }: Props)
     },
   ];
 
+  // ── Pending Install ───────────────────────────────────────────────────────
+  // A verified APK is already on disk from a previous session.
+  if (state.status === "pending-install") {
+    return (
+      <View style={cardStyle}>
+        <View style={[styles.iconBadge, { backgroundColor: c.goldLight }]}>
+          <Text style={[styles.iconText, { color: c.gold }]}>↓</Text>
+        </View>
+        <Text style={[styles.title, { color: c.text }]}>Update Ready to Install</Text>
+        <Text style={[styles.body, { color: c.mutedForeground }]}>
+          Version {state.version} has already been downloaded and verified.
+          You can install it now — no re-download needed.
+        </Text>
+        <View style={styles.versionRow}>
+          <VersionChip
+            label="Installed"
+            version={getInstalledVersion()}
+            color={c.mutedForeground}
+            bg={c.muted}
+          />
+          <Text style={[styles.arrow, { color: c.mutedForeground }]}>→</Text>
+          <VersionChip
+            label="Ready"
+            version={state.version}
+            color={c.primaryForeground}
+            bg={c.primary}
+          />
+        </View>
+        <View style={styles.buttonRow}>
+          <Pressable
+            style={[styles.btn, styles.btnOutline, { borderColor: c.border }]}
+            onPress={() => onCancelPendingInstall(state.localUri)}
+          >
+            <Text style={[styles.btnText, { color: c.mutedForeground }]}>Cancel</Text>
+          </Pressable>
+          <Pressable
+            style={[styles.btn, styles.btnPrimary, { backgroundColor: c.primary }]}
+            onPress={() => onResumeInstall(state.localUri)}
+          >
+            <Text style={[styles.btnText, { color: c.primaryForeground }]}>
+              Install Now
+            </Text>
+          </Pressable>
+        </View>
+      </View>
+    );
+  }
+
   // ── Update Available ──────────────────────────────────────────────────────
   if (state.status === "update-available") {
     return (
@@ -110,11 +172,22 @@ function DialogContent({ state, onUpdate, onCancel, onDismiss, onRetry }: Props)
         <Text style={[styles.title, { color: c.text }]}>Update Available</Text>
         <Text style={[styles.body, { color: c.mutedForeground }]}>
           A new version of the Royal Ambassadors Guide is ready.
+          You can use the app normally while it downloads.
         </Text>
         <View style={styles.versionRow}>
-          <VersionChip label="Installed" version={getInstalledVersion()} color={c.mutedForeground} bg={c.muted} />
+          <VersionChip
+            label="Installed"
+            version={getInstalledVersion()}
+            color={c.mutedForeground}
+            bg={c.muted}
+          />
           <Text style={[styles.arrow, { color: c.mutedForeground }]}>→</Text>
-          <VersionChip label="New" version={state.manifest.version} color={c.primaryForeground} bg={c.primary} />
+          <VersionChip
+            label="New"
+            version={state.manifest.version}
+            color={c.primaryForeground}
+            bg={c.primary}
+          />
         </View>
         <View style={styles.buttonRow}>
           <Pressable
@@ -147,6 +220,10 @@ function DialogContent({ state, onUpdate, onCancel, onDismiss, onRetry }: Props)
         <Text style={[styles.title, { color: c.text }]}>Downloading Update</Text>
         <Text style={[styles.body, { color: c.mutedForeground }]}>
           {mb} MB downloaded — {pctLabel}
+          {"\n"}
+          <Text style={styles.hint}>
+            You can close this screen — the download continues in the background.
+          </Text>
         </Text>
         <View style={[styles.progressTrack, { backgroundColor: c.muted }]}>
           <Animated.View
@@ -163,7 +240,11 @@ function DialogContent({ state, onUpdate, onCancel, onDismiss, onRetry }: Props)
           />
         </View>
         <Pressable
-          style={[styles.btn, styles.btnOutline, { borderColor: c.border, alignSelf: "center" }]}
+          style={[
+            styles.btn,
+            styles.btnOutline,
+            { borderColor: c.border, alignSelf: "center" },
+          ]}
           onPress={onCancel}
         >
           <Text style={[styles.btnText, { color: c.mutedForeground }]}>Cancel</Text>
@@ -190,7 +271,11 @@ function DialogContent({ state, onUpdate, onCancel, onDismiss, onRetry }: Props)
       <View style={cardStyle}>
         <Text style={[styles.title, { color: c.text }]}>Opening Installer</Text>
         <Text style={[styles.body, { color: c.mutedForeground }]}>
-          The Android installer is opening. Follow the on-screen prompts to complete the update.
+          The Android installer is opening. Follow the on-screen prompts to
+          complete the update.{"\n"}
+          <Text style={styles.hint}>
+            If you cancel the installer, open the app again to install without re-downloading.
+          </Text>
         </Text>
       </View>
     );
@@ -283,6 +368,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 22,
     fontFamily: "Inter_400Regular",
+  },
+  hint: {
+    fontSize: 12,
+    opacity: 0.7,
+    fontStyle: "italic",
   },
   versionRow: {
     flexDirection: "row",

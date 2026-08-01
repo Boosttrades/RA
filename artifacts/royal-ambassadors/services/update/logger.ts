@@ -8,17 +8,17 @@ const PREFIX = "[UpdateService]";
 const IS_DEV = __DEV__;
 
 export const updateLogger = {
-  info(message: string, data?: Record<string, unknown>) {
+  info(message: string, data?: unknown) {
     if (!IS_DEV) return;
-    if (data) {
+    if (data !== undefined) {
       console.log(`${PREFIX} ${message}`, data);
     } else {
       console.log(`${PREFIX} ${message}`);
     }
   },
 
-  warn(message: string, data?: Record<string, unknown>) {
-    if (data) {
+  warn(message: string, data?: unknown) {
+    if (data !== undefined) {
       console.warn(`${PREFIX} ${message}`, data);
     } else {
       console.warn(`${PREFIX} ${message}`);

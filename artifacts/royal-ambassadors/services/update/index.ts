@@ -1,11 +1,24 @@
 /**
- * update/index.ts
- * Public API for the in-app update service.
+ * services/update/index.ts
+ * Public barrel export for the in-app update system.
  */
 
-export type { UpdateManifest, DownloadProgress, UpdateState } from "./types";
+export { downloadApk, cancelDownload, cleanupApk, getApkLocalPath } from "./apkDownloader";
+export { installApk } from "./apkInstaller";
+export { verifyApkFile } from "./certificateVerifier";
 export { fetchUpdateManifest } from "./updateChecker";
 export { isNewerVersion, isValidVersion } from "./versionUtils";
-export { downloadApk, cancelDownload, cleanupApk, getApkLocalPath } from "./apkDownloader";
-export { verifyApkFile } from "./certificateVerifier";
-export { installApk } from "./apkInstaller";
+export {
+  setupUpdateNotificationChannel,
+  requestNotificationPermission,
+  postDownloadStartNotification,
+  updateDownloadProgressNotification,
+  postDownloadCompleteNotification,
+  dismissDownloadNotification,
+} from "./downloadNotification";
+export {
+  savePendingInstall,
+  loadPendingInstall,
+  clearPendingInstall,
+} from "./pendingInstall";
+export type { UpdateManifest, DownloadProgress, UpdateState } from "./types";

@@ -25,5 +25,11 @@ export type UpdateState =
   | { status: "update-available"; manifest: UpdateManifest }
   | { status: "downloading"; progress: DownloadProgress }
   | { status: "verifying" }
+  /**
+   * A verified APK is already on disk (from a previous session where the user
+   * downloaded but cancelled the installer). The user can install without
+   * re-downloading.
+   */
+  | { status: "pending-install"; version: string; localUri: string }
   | { status: "installing" }
   | { status: "error"; message: string; retryable: boolean };
