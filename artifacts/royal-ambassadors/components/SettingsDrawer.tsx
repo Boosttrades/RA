@@ -148,10 +148,8 @@ export function SettingsDrawer({ visible, onClose }: Props) {
       case "applied":
         return { text: "Update ready — restarting app…", color: "#22C55E" };
       case "dev":
-        return {
-          text: "Updates are checked in production builds (APK/EAS).",
-          color: colors.mutedForeground,
-        };
+        // No message for dev mode — this is handled in production APK builds
+        return { text: "", color: colors.mutedForeground };
       case "error":
         return {
           text: `Could not check: ${updateState.message}`,
