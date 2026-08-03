@@ -95,7 +95,8 @@ export function useAppUpdate() {
         setState({ status: "update-available", manifest });
       } else {
         setState({ status: "up-to-date" });
-        setTimeout(() => setState(IDLE), 1500);
+        // Extended timeout to 3s so users can see the "You're all set!" message
+        setTimeout(() => setState(IDLE), 3000);
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : "Update check failed.";
@@ -197,7 +198,7 @@ export function useAppUpdate() {
     setState(IDLE);
   }, []);
 
-  /** Dismisses the update-available or error dialog without taking action. */
+  /** Dismisses the update-available, up-to-date or error dialog without taking action. */
   const dismiss = useCallback(() => {
     setState(IDLE);
   }, []);
