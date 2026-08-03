@@ -11,6 +11,8 @@
  *    saved as a "pending install" record. It is only deleted when the user
  *    explicitly cancels from the UI, or when a newer remote version
  *    supersedes it.
+ *  - Does NOT automatically check for updates on app startup. Users must
+ *    manually tap "Check for Updates" to trigger a check.
  */
 
 import Constants from "expo-constants";
@@ -47,7 +49,7 @@ export function useAppUpdate() {
   const [state, setState] = useState<UpdateState>(IDLE);
   const isChecking = useRef(false);
 
-  // ── On mount: check for a leftover verified APK first, then check remote ──
+  // ── On mount: only check for leftover pending install, don't check remote ──
   useEffect(() => {
     if (Platform.OS !== "android") return;
 
@@ -61,12 +63,13 @@ export function useAppUpdate() {
           version: pending.version,
           localUri: pending.localUri,
         });
-        return; // Don't run the network check when an APK is already ready.
+        return;
       }
 
-      // 2. Otherwise do a normal remote version check.
-      void runCheck();
-    }, 2000);
+      // 2. Do NOT automatically check remote — wait for user to manually trigger
+      // via "Check for Updates" button or checkNow() call.
+      updateLogger.info("App started. Awaiting manual update check.");
+    }, 1000);
 
     return () => clearTimeout(timer);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -203,7 +206,7 @@ export function useAppUpdate() {
     setState(IDLE);
   }, []);
 
-  /** Manually re-triggers an update check (e.g. from a settings screen). */
+  /** Manually triggers an update check (user must explicitly tap "Check for Updates" button). */
   const checkNow = useCallback(() => {
     void runCheck();
   }, [runCheck]);
