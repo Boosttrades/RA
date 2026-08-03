@@ -46,6 +46,7 @@ export function UpdateDialog({
   if (Platform.OS !== "android") return null;
 
   const visible =
+    state.status === "up-to-date" ||
     state.status === "update-available" ||
     state.status === "downloading" ||
     state.status === "verifying" ||
@@ -60,6 +61,7 @@ export function UpdateDialog({
       visible={visible}
       statusBarTranslucent
       onRequestClose={
+        state.status === "up-to-date" ||
         state.status === "update-available" ||
         state.status === "pending-install" ||
         state.status === "error"
@@ -113,6 +115,38 @@ function DialogContent({
       marginBottom: insets.bottom + 24,
     },
   ];
+
+  // ── Up to Date ─────────────────────────────────────────────────────────────
+  // You're using the latest version
+  if (state.status === "up-to-date") {
+    return (
+      <View style={cardStyle}>
+        <View style={[styles.iconBadge, { backgroundColor: c.greenLight }]}>
+          <Text style={[styles.iconText, { color: c.green }]}>✓</Text>
+        </View>
+        <Text style={[styles.title, { color: c.text }]}>You're All Set!</Text>
+        <Text style={[styles.body, { color: c.mutedForeground }]}>
+          You're using the latest version of the Royal Ambassadors Guide.
+        </Text>
+        <View style={styles.versionRow}>
+          <VersionChip
+            label="Current"
+            version={getInstalledVersion()}
+            color={c.successForeground}
+            bg={c.success}
+          />
+        </View>
+        <Pressable
+          style={[styles.btn, styles.btnPrimary, { backgroundColor: c.primary }]}
+          onPress={onDismiss}
+        >
+          <Text style={[styles.btnText, { color: c.primaryForeground }]}>
+            Close
+          </Text>
+        </Pressable>
+      </View>
+    );
+  }
 
   // ── Pending Install ───────────────────────────────────────────────────────
   // A verified APK is already on disk from a previous session.
@@ -209,7 +243,7 @@ function DialogContent({
     );
   }
 
-  // ── Downloading ───────────────────────────────────────────────────────────
+  // ── Downloading ─────────────────────────────────────────────────────────
   if (state.status === "downloading") {
     const { percentage, totalBytesWritten } = state.progress;
     const mb = (totalBytesWritten / 1_048_576).toFixed(1);
@@ -253,7 +287,7 @@ function DialogContent({
     );
   }
 
-  // ── Verifying ─────────────────────────────────────────────────────────────
+  // ── Verifying ─────────────────────────────────────────────────────────
   if (state.status === "verifying") {
     return (
       <View style={cardStyle}>
@@ -265,7 +299,7 @@ function DialogContent({
     );
   }
 
-  // ── Installing ────────────────────────────────────────────────────────────
+  // ── Installing ────────────────────────────────���────────────────────────
   if (state.status === "installing") {
     return (
       <View style={cardStyle}>
@@ -281,7 +315,7 @@ function DialogContent({
     );
   }
 
-  // ── Error ─────────────────────────────────────────────────────────────────
+  // ── Error ───────────────────────────────────────────────────────────
   if (state.status === "error") {
     return (
       <View style={cardStyle}>
