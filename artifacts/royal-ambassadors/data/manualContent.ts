@@ -9,6 +9,10 @@ export interface SearchResult {
   section: ManualSection;
   snippet: string;
   matchIndex: number;
+  /** The query phrase that matched, for in-section highlighting */
+  matchedPhrase: string;
+  /** True when the full phrase matched consecutively */
+  phraseMatch: boolean;
 }
 
 export const MANUAL_SECTIONS: ManualSection[] = [
@@ -1152,32 +1156,49 @@ Some of these books may be purchased from the Baptist Bookstore or other booksto
 ];
 
 export function searchManual(query: string): SearchResult[] {
-  if (!query.trim()) return [];
-  const lower = query.toLowerCase();
-  const results: SearchResult[] = [];
+  const q = query.trim();
+  if (!q) return [];
+
+  const lower = q.toLowerCase();
+  const words = lower.split(/\s+/).filter(Boolean);
+  const phraseResults: SearchResult[] = [];
+  const wordResults: SearchResult[] = [];
 
   for (const section of MANUAL_SECTIONS) {
-    const titleMatch = section.title.toLowerCase().includes(lower);
-    const contentIdx = section.content.toLowerCase().indexOf(lower);
-    if (!titleMatch && contentIdx === -1) continue;
+    const contentLower = section.content.toLowerCase();
+    const titleLower = section.title.toLowerCase();
 
-    let snippet = "";
-    let matchIndex = contentIdx;
+    // Try exact phrase match first (consecutive)
+    const phraseIdx = contentLower.indexOf(lower);
+    const titlePhrase = titleLower.includes(lower);
 
-    if (contentIdx !== -1) {
-      const start = Math.max(0, contentIdx - 60);
-      const end = Math.min(section.content.length, contentIdx + query.length + 80);
-      const raw = section.content.slice(start, end).replace(/\n/g, " ");
-      snippet = (start > 0 ? "..." : "") + raw + (end < section.content.length ? "..." : "");
-    } else {
-      snippet = section.content.slice(0, 120).replace(/\n/g, " ") + "...";
-      matchIndex = 0;
+    if (phraseIdx !== -1 || titlePhrase) {
+      const idx = phraseIdx !== -1 ? phraseIdx : 0;
+      const start = Math.max(0, idx - 55);
+      const end = Math.min(section.content.length, idx + lower.length + 90);
+      const raw = section.content.slice(start, end).replace(/\n+/g, " ").trim();
+      const snippet = (start > 0 ? "…" : "") + raw + (end < section.content.length ? "…" : "");
+      phraseResults.push({ section, snippet, matchIndex: idx, matchedPhrase: q, phraseMatch: true });
+      continue;
     }
 
-    results.push({ section, snippet, matchIndex });
+    // Fall back to all-words match (every word present somewhere)
+    if (words.length > 1) {
+      const allPresent = words.every((w) => contentLower.includes(w));
+      if (allPresent) {
+        // Find the first word's position for context
+        const firstIdx = contentLower.indexOf(words[0]);
+        const start = Math.max(0, firstIdx - 40);
+        const end = Math.min(section.content.length, firstIdx + 140);
+        const raw = section.content.slice(start, end).replace(/\n+/g, " ").trim();
+        const snippet = (start > 0 ? "…" : "") + raw + (end < section.content.length ? "…" : "");
+        wordResults.push({ section, snippet, matchIndex: firstIdx, matchedPhrase: words[0], phraseMatch: false });
+      }
+    }
   }
 
-  return results;
+  // Phrase matches first, then word matches, cap at 20
+  return [...phraseResults, ...wordResults].slice(0, 20);
 }
 
 export const TOC_SECTIONS = MANUAL_SECTIONS.filter((s) => s.group === "main");
