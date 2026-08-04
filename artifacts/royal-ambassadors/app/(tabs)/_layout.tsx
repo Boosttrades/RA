@@ -8,6 +8,7 @@ import React from "react";
 import { Platform, StyleSheet, View, useColorScheme } from "react-native";
 
 import { useColors } from "@/hooks/useColors";
+import { ShieldTabIcon } from "@/components/ShieldTabIcon";
 
 function NativeTabLayout() {
   return (
@@ -79,60 +80,85 @@ function ClassicTabLayout() {
         name="index"
         options={{
           title: "Home",
-          tabBarIcon: ({ color }) =>
-            isIOS ? (
-              <SymbolView name="house" tintColor={color} size={22} />
-            ) : (
-              <Feather name="home" size={22} color={color} />
-            ),
+          tabBarIcon: ({ focused }) => (
+            <ShieldTabIcon focused={focused}>
+              {(color) =>
+                isIOS ? (
+                  <SymbolView name="house.fill" tintColor={color} size={22} />
+                ) : (
+                  <Feather name="home" size={22} color={color} />
+                )
+              }
+            </ShieldTabIcon>
+          ),
         }}
       />
       <Tabs.Screen
         name="manual"
         options={{
           title: "Manual",
-          tabBarIcon: ({ color }) =>
-            isIOS ? (
-              <SymbolView name="book" tintColor={color} size={22} />
-            ) : (
-              <Feather name="book-open" size={22} color={color} />
-            ),
+          tabBarIcon: ({ focused }) => (
+            <ShieldTabIcon focused={focused}>
+              {(color) =>
+                isIOS ? (
+                  <SymbolView name="book.fill" tintColor={color} size={22} />
+                ) : (
+                  <Feather name="book-open" size={22} color={color} />
+                )
+              }
+            </ShieldTabIcon>
+          ),
         }}
       />
       <Tabs.Screen
         name="ranks"
         options={{
           title: "Ranks",
-          tabBarIcon: ({ color }) =>
-            isIOS ? (
-              <SymbolView name="shield" tintColor={color} size={22} />
-            ) : (
-              <MaterialCommunityIcons name="shield-crown-outline" size={24} color={color} />
-            ),
+          tabBarIcon: ({ focused }) => (
+            <ShieldTabIcon focused={focused}>
+              {(color) =>
+                isIOS ? (
+                  <SymbolView name="shield.fill" tintColor={color} size={22} />
+                ) : (
+                  <MaterialCommunityIcons name="shield-crown-outline" size={24} color={color} />
+                )
+              }
+            </ShieldTabIcon>
+          ),
         }}
       />
       <Tabs.Screen
         name="quiz"
         options={{
           title: "Quiz",
-          tabBarIcon: ({ color }) =>
-            isIOS ? (
-              <SymbolView name="trophy" tintColor={color} size={22} />
-            ) : (
-              <Ionicons name="trophy-outline" size={22} color={color} />
-            ),
+          tabBarIcon: ({ focused }) => (
+            <ShieldTabIcon focused={focused}>
+              {(color) =>
+                isIOS ? (
+                  <SymbolView name="trophy.fill" tintColor={color} size={22} />
+                ) : (
+                  <Ionicons name="trophy-outline" size={22} color={color} />
+                )
+              }
+            </ShieldTabIcon>
+          ),
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: "Profile",
-          tabBarIcon: ({ color }) =>
-            isIOS ? (
-              <SymbolView name="person" tintColor={color} size={22} />
-            ) : (
-              <Feather name="user" size={22} color={color} />
-            ),
+          tabBarIcon: ({ focused }) => (
+            <ShieldTabIcon focused={focused}>
+              {(color) =>
+                isIOS ? (
+                  <SymbolView name="person.fill" tintColor={color} size={22} />
+                ) : (
+                  <Feather name="user" size={22} color={color} />
+                )
+              }
+            </ShieldTabIcon>
+          ),
         }}
       />
     </Tabs>
