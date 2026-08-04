@@ -108,10 +108,11 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.cardsWrapper}>
+          {/* Rank card — gold border + gold accents */}
           <View
             style={[
               styles.card,
-              { backgroundColor: colors.card, borderColor: colors.border },
+              { backgroundColor: colors.card, borderColor: colors.gold },
             ]}
           >
             <Image
@@ -120,7 +121,7 @@ export default function HomeScreen() {
               contentFit="contain"
             />
             <View style={styles.rankInfo}>
-              <Text style={[styles.rankLabel, { color: colors.primary }]}>
+              <Text style={[styles.rankLabel, { color: colors.gold }]}>
                 CURRENT RANK
               </Text>
               <Text style={[styles.rankName, { color: colors.navy }]}>
@@ -130,7 +131,7 @@ export default function HomeScreen() {
             <Pressable
               style={[
                 styles.rankButton,
-                { backgroundColor: colors.secondary },
+                { backgroundColor: colors.gold },
               ]}
               onPress={() => router.push("/ranks")}
               hitSlop={6}
@@ -138,30 +139,31 @@ export default function HomeScreen() {
               <Ionicons
                 name="shield-checkmark-outline"
                 size={22}
-                color={colors.primary}
+                color="#FFFFFF"
               />
             </Pressable>
           </View>
 
+          {/* Verse card — gold border + gold accents */}
           <View
             style={[
               styles.card,
-              { backgroundColor: colors.card, borderColor: colors.border },
+              { backgroundColor: colors.card, borderColor: colors.gold },
             ]}
           >
             <View
-              style={[styles.bookIconWrapper, { backgroundColor: colors.primary }]}
+              style={[styles.bookIconWrapper, { backgroundColor: colors.gold }]}
             >
               <Ionicons name="book" size={28} color="#FFFFFF" />
             </View>
             <View style={styles.verseContent}>
-              <Text style={[styles.verseLabel, { color: colors.primary }]}>
+              <Text style={[styles.verseLabel, { color: colors.gold }]}>
                 Memory Verse of the Day
               </Text>
               <Text style={[styles.verseText, { color: colors.navy }]}>
                 {`"${dailyVerse.text}"`}
               </Text>
-              <Text style={[styles.verseRef, { color: colors.primary }]}>
+              <Text style={[styles.verseRef, { color: colors.gold }]}>
                 {dailyVerse.reference}
               </Text>
             </View>
@@ -176,7 +178,7 @@ export default function HomeScreen() {
               <Ionicons
                 name={isBookmarked ? "bookmark" : "bookmark-outline"}
                 size={20}
-                color={isBookmarked ? colors.primary : colors.mutedForeground}
+                color={isBookmarked ? colors.gold : colors.mutedForeground}
               />
             </Pressable>
           </View>
