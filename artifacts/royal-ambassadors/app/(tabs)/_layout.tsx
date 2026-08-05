@@ -1,167 +1,14 @@
+import { BlurView } from "expo-blur";
 import { isLiquidGlassAvailable } from "expo-glass-effect";
 import { Tabs } from "expo-router";
 import { Icon, Label, NativeTabs } from "expo-router/unstable-native-tabs";
+import { SymbolView } from "expo-symbols";
 import { Feather, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import React from "react";
-import {
-  Platform,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-  useColorScheme,
-} from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Platform, StyleSheet, View, useColorScheme } from "react-native";
 
 import { useColors } from "@/hooks/useColors";
-
-// ─── Tab definitions ──────────────────────────────────────────────────────────
-
-const TAB_DEFS = [
-  {
-    name: "index",
-    label: "Home",
-    icon: (focused: boolean, color: string) =>
-      <Feather name="home" size={20} color={color} />,
-  },
-  {
-    name: "manual",
-    label: "Manual",
-    icon: (focused: boolean, color: string) =>
-      <Feather name="book-open" size={20} color={color} />,
-  },
-  {
-    name: "ranks",
-    label: "Ranks",
-    icon: (focused: boolean, color: string) =>
-      <MaterialCommunityIcons name="shield-crown-outline" size={22} color={color} />,
-  },
-  {
-    name: "quiz",
-    label: "Quiz",
-    icon: (focused: boolean, color: string) =>
-      <Ionicons name={focused ? "trophy" : "trophy-outline"} size={20} color={color} />,
-  },
-  {
-    name: "profile",
-    label: "Profile",
-    icon: (focused: boolean, color: string) =>
-      <Feather name="user" size={20} color={color} />,
-  },
-];
-
-// ─── Floating Tab Bar ─────────────────────────────────────────────────────────
-
-function FloatingTabBar({ state, navigation }: any) {
-  const colors = useColors();
-  const insets = useSafeAreaInsets();
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
-
-  const bottomInset = Platform.OS === "web" ? 0 : insets.bottom;
-
-  // Bar background: white in light, deep navy in dark
-  const barBg = isDark ? "#080F2B" : "#FFFFFF";
-  const barBorder = isDark ? colors.border : "#E8EBF5";
-
-  return (
-    <View
-      style={[
-        tabStyles.bar,
-        {
-          paddingBottom: bottomInset + 6,
-          backgroundColor: barBg,
-          borderTopColor: barBorder,
-        },
-      ]}
-    >
-      {state.routes.map((route: any, index: number) => {
-        const tab = TAB_DEFS[index];
-        const focused = state.index === index;
-
-        const handlePress = () => {
-          const event = navigation.emit({
-            type: "tabPress",
-            target: route.key,
-            canPreventDefault: true,
-          });
-          if (!focused && !event.defaultPrevented) {
-            navigation.navigate(route.name);
-          }
-        };
-
-        const activeIconColor = isDark ? "#FFFFFF" : "#FFFFFF";
-        const inactiveIconColor = isDark ? "#6B7FAB" : "#9BA8C8";
-
-        return (
-          <Pressable
-            key={route.key}
-            onPress={handlePress}
-            style={[
-              tabStyles.tabBtn,
-              focused
-                ? [
-                    tabStyles.tabBtnActive,
-                    {
-                      backgroundColor: colors.navy,
-                      // Drop shadow — feels elevated above the bar
-                      shadowColor: colors.navy,
-                      shadowOffset: { width: 0, height: -3 },
-                      shadowOpacity: isDark ? 0.4 : 0.18,
-                      shadowRadius: 10,
-                      elevation: 8,
-                    },
-                  ]
-                : {
-                    backgroundColor: "transparent",
-                  },
-            ]}
-          >
-            {tab.icon(focused, focused ? activeIconColor : inactiveIconColor)}
-            <Text
-              style={[
-                tabStyles.tabLabel,
-                {
-                  color: focused ? activeIconColor : inactiveIconColor,
-                  fontFamily: focused ? "Inter_600SemiBold" : "Inter_400Regular",
-                },
-              ]}
-            >
-              {tab.label}
-            </Text>
-          </Pressable>
-        );
-      })}
-    </View>
-  );
-}
-
-const tabStyles = StyleSheet.create({
-  bar: {
-    flexDirection: "row",
-    paddingTop: 8,
-    paddingHorizontal: 8,
-    borderTopWidth: 1,
-    gap: 4,
-  },
-  tabBtn: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 3,
-    paddingVertical: 9,
-    borderRadius: 14,
-  },
-  tabBtnActive: {
-    // filled active state — elevated above bar
-  },
-  tabLabel: {
-    fontSize: 10,
-    letterSpacing: 0.2,
-  },
-});
-
-// ─── Native layout (iOS Liquid Glass) ────────────────────────────────────────
+import { ShieldTabIcon } from "@/components/ShieldTabIcon";
 
 function NativeTabLayout() {
   return (
@@ -190,19 +37,123 @@ function NativeTabLayout() {
   );
 }
 
-// ─── Classic layout (web / Android) ──────────────────────────────────────────
-
 function ClassicTabLayout() {
+  const colors = useColors();
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === "dark";
+  const isIOS = Platform.OS === "ios";
+
   return (
     <Tabs
-      screenOptions={{ headerShown: false }}
-      tabBar={(props) => <FloatingTabBar {...props} />}
+      screenOptions={{
+        headerShown: false,
+        tabBarActiveTintColor: colors.gold,
+        tabBarInactiveTintColor: "rgba(255,255,255,0.6)",
+        tabBarLabelStyle: {
+          fontFamily: "Inter_500Medium",
+          fontSize: 10,
+          marginTop: 2,
+        },
+        tabBarStyle: {
+          // Fully transparent — each shield floats independently, no bar behind them
+          position: "absolute",
+          backgroundColor: "transparent",
+          borderTopWidth: 0,
+          elevation: 0,
+          shadowOpacity: 0,
+          // Give shields enough vertical room
+          height: Platform.OS === "web" ? 84 : 84,
+        },
+        // No background panel at all — pure transparency
+        tabBarBackground: () => null,
+        tabBarLabelPosition: "below-icon",
+      }}
     >
-      <Tabs.Screen name="index" options={{ title: "Home" }} />
-      <Tabs.Screen name="manual" options={{ title: "Manual" }} />
-      <Tabs.Screen name="ranks" options={{ title: "Ranks" }} />
-      <Tabs.Screen name="quiz" options={{ title: "Quiz" }} />
-      <Tabs.Screen name="profile" options={{ title: "Profile" }} />
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: "Home",
+          tabBarIcon: ({ focused }) => (
+            <ShieldTabIcon focused={focused}>
+              {(color) =>
+                isIOS ? (
+                  <SymbolView name="house.fill" tintColor={color} size={22} />
+                ) : (
+                  <Feather name="home" size={22} color={color} />
+                )
+              }
+            </ShieldTabIcon>
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="manual"
+        options={{
+          title: "Manual",
+          tabBarIcon: ({ focused }) => (
+            <ShieldTabIcon focused={focused}>
+              {(color) =>
+                isIOS ? (
+                  <SymbolView name="book.fill" tintColor={color} size={22} />
+                ) : (
+                  <Feather name="book-open" size={22} color={color} />
+                )
+              }
+            </ShieldTabIcon>
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="ranks"
+        options={{
+          title: "Ranks",
+          tabBarIcon: ({ focused }) => (
+            <ShieldTabIcon focused={focused}>
+              {(color) =>
+                isIOS ? (
+                  <SymbolView name="shield.fill" tintColor={color} size={22} />
+                ) : (
+                  <MaterialCommunityIcons name="shield-crown-outline" size={24} color={color} />
+                )
+              }
+            </ShieldTabIcon>
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="quiz"
+        options={{
+          title: "Quiz",
+          tabBarIcon: ({ focused }) => (
+            <ShieldTabIcon focused={focused}>
+              {(color) =>
+                isIOS ? (
+                  <SymbolView name="trophy.fill" tintColor={color} size={22} />
+                ) : (
+                  <Ionicons name="trophy-outline" size={22} color={color} />
+                )
+              }
+            </ShieldTabIcon>
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: "Profile",
+          tabBarIcon: ({ focused }) => (
+            <ShieldTabIcon focused={focused}>
+              {(color) =>
+                isIOS ? (
+                  <SymbolView name="person.fill" tintColor={color} size={22} />
+                ) : (
+                  <Feather name="user" size={22} color={color} />
+                )
+              }
+            </ShieldTabIcon>
+          ),
+        }}
+      />
     </Tabs>
   );
 }

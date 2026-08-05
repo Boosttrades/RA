@@ -41,7 +41,7 @@ export default function HomeScreen() {
   const isBookmarked = bookmarkedVerseIds.includes(dailyVerse.id);
 
   const topPadding = Platform.OS === "web" ? 67 : insets.top;
-  const bottomPadding = Platform.OS === "web" ? 118 : insets.bottom + 80;
+  const bottomPadding = Platform.OS === "web" ? 118 : insets.bottom + 90;
 
   const handleBookmark = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -50,7 +50,7 @@ export default function HomeScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      {/* Header */}
+      {/* Header — gold in light, navy in dark */}
       <View
         style={[
           styles.header,
@@ -62,15 +62,15 @@ export default function HomeScreen() {
         ]}
       >
         <Pressable style={styles.headerBtn} hitSlop={10} onPress={() => setDrawerOpen(true)}>
-          <Feather name="menu" size={22} color={colors.navy} />
+          <Feather name="menu" size={22} color={colors.primary} />
         </Pressable>
-        <Text style={[styles.headerTitle, { color: colors.navy }]}>
+        <Text style={[styles.headerTitle, { color: colors.primary }]}>
           Royal Ambassadors
         </Text>
         <Pressable style={styles.headerBtn} hitSlop={10}>
           <View>
-            <Feather name="bell" size={22} color={colors.navy} />
-            <View style={[styles.notifDot, { backgroundColor: colors.gold }]} />
+            <Feather name="bell" size={22} color={colors.primary} />
+            <View style={[styles.notifDot, { backgroundColor: colors.primary }]} />
           </View>
         </Pressable>
       </View>
@@ -79,14 +79,14 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: bottomPadding }}
       >
-        {/* Greeting */}
+        {/* Greeting section */}
         <View style={styles.greetingSection}>
           <View style={styles.globeWatermark} pointerEvents="none">
             <Ionicons
               name="globe-outline"
               size={200}
-              color={colors.navy}
-              style={{ opacity: 0.04 }}
+              color={colors.primary}
+              style={{ opacity: 0.05 }}
             />
           </View>
           <Text style={[styles.greetingSmall, { color: colors.mutedForeground }]}>
@@ -104,38 +104,41 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.cardsWrapper}>
-          {/* Rank card — white background, gold left accent bar */}
+          {/* ── Rank card — gold bg (light) / navy bg (dark), primary text ── */}
           <View
             style={[
               styles.card,
               { backgroundColor: colors.card, borderColor: colors.border },
             ]}
           >
-            {/* Gold accent bar on left edge */}
-            <View style={[styles.accentBar, { backgroundColor: colors.gold }]} />
             <Image
               source={require("@/assets/images/rank-badge.png")}
               style={styles.rankBadge}
               contentFit="contain"
             />
             <View style={styles.rankInfo}>
-              <Text style={[styles.rankLabel, { color: colors.gold }]}>
+              <Text style={[styles.rankLabel, { color: colors.primary }]}>
                 CURRENT RANK
               </Text>
-              <Text style={[styles.rankName, { color: colors.navy }]}>
+              <Text style={[styles.rankName, { color: colors.cardForeground }]}>
                 {currentRank.name}
               </Text>
             </View>
+            {/* Action button — always inverted from card (navy on gold / gold on navy) */}
             <Pressable
-              style={[styles.cardAction, { backgroundColor: colors.secondary }]}
+              style={[styles.cardAction, { backgroundColor: colors.primary }]}
               onPress={() => router.push("/ranks")}
               hitSlop={6}
             >
-              <Ionicons name="shield-checkmark-outline" size={20} color={colors.navy} />
+              <Ionicons
+                name="shield-checkmark-outline"
+                size={20}
+                color={colors.primaryForeground}
+              />
             </Pressable>
           </View>
 
-          {/* Verse card — white background, gold left accent bar */}
+          {/* ── Verse card — same alternating card colour ── */}
           <View
             style={[
               styles.card,
@@ -143,45 +146,56 @@ export default function HomeScreen() {
               { backgroundColor: colors.card, borderColor: colors.border },
             ]}
           >
-            <View style={[styles.accentBar, { backgroundColor: colors.gold }]} />
-            <View style={[styles.bookIconWrapper, { backgroundColor: colors.secondary }]}>
-              <Ionicons name="book" size={24} color={colors.navy} />
+            <View style={[styles.bookIconWrapper, { backgroundColor: colors.primary }]}>
+              <Ionicons name="book" size={24} color={colors.primaryForeground} />
             </View>
             <View style={styles.verseContent}>
-              <Text style={[styles.verseLabel, { color: colors.gold }]}>
+              <Text style={[styles.verseLabel, { color: colors.primary }]}>
                 Memory Verse of the Day
               </Text>
-              <Text style={[styles.verseText, { color: colors.navy }]}>
+              <Text style={[styles.verseText, { color: colors.cardForeground }]}>
                 {`"${dailyVerse.text}"`}
               </Text>
-              <Text style={[styles.verseRef, { color: colors.navy }]}>
+              <Text style={[styles.verseRef, { color: colors.cardForeground }]}>
                 {dailyVerse.reference}
               </Text>
             </View>
             <Pressable
-              style={[styles.cardAction, { backgroundColor: colors.secondary }]}
+              style={[styles.cardAction, { backgroundColor: colors.primary }]}
               onPress={handleBookmark}
               hitSlop={8}
             >
               <Ionicons
                 name={isBookmarked ? "bookmark" : "bookmark-outline"}
                 size={18}
-                color={isBookmarked ? colors.gold : colors.navy}
+                color={isBookmarked ? colors.gold : colors.primaryForeground}
               />
             </Pressable>
           </View>
 
-          {/* Study card — navy fill, white text (unchanged) */}
+          {/* ── Study card — always the OPPOSITE colour to the cards above ──
+              Light: cards=gold → study=navy  |  Dark: cards=navy → study=gold  */}
           <Pressable
-            style={[styles.card, styles.studyCard, { backgroundColor: colors.navy }]}
+            style={[
+              styles.card,
+              styles.studyCard,
+              { backgroundColor: colors.primary },
+            ]}
             onPress={() => router.push("/manual")}
           >
-            <View style={[styles.studyIconWrapper, { backgroundColor: "rgba(255,255,255,0.12)" }]}>
-              <Ionicons name="document-text-outline" size={24} color="#FFFFFF" />
+            <View
+              style={[
+                styles.studyIconWrapper,
+                { backgroundColor: "rgba(255,255,255,0.15)" },
+              ]}
+            >
+              <Ionicons name="document-text-outline" size={24} color={colors.primaryForeground} />
             </View>
             <View style={styles.studyContent}>
-              <Text style={styles.studyTitle}>Continue Studying</Text>
-              <Text style={styles.studySubtitle}>
+              <Text style={[styles.studyTitle, { color: colors.primaryForeground }]}>
+                Continue Studying
+              </Text>
+              <Text style={[styles.studySubtitle, { color: "rgba(255,255,255,0.7)" }]}>
                 Pick up where you left off in your rank requirements.
               </Text>
             </View>
@@ -211,10 +225,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  headerTitle: {
-    fontSize: 18,
-    fontFamily: "Inter_700Bold",
-  },
+  headerTitle: { fontSize: 18, fontFamily: "Inter_700Bold" },
   notifDot: {
     position: "absolute",
     top: -1,
@@ -229,87 +240,46 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
     overflow: "hidden",
   },
-  globeWatermark: {
-    position: "absolute",
-    right: -40,
-    top: -20,
-  },
-  greetingSmall: {
-    fontSize: 16,
-    fontFamily: "Inter_400Regular",
-    marginBottom: 2,
-  },
-  greetingName: {
-    fontSize: 34,
-    fontFamily: "Inter_700Bold",
-    marginBottom: 10,
-  },
-  taglineRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 4,
-  },
-  tagline: {
-    fontSize: 14,
-    fontFamily: "Inter_400Regular",
-  },
-  cardsWrapper: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    gap: 12,
-  },
+  globeWatermark: { position: "absolute", right: -40, top: -20 },
+  greetingSmall: { fontSize: 16, fontFamily: "Inter_400Regular", marginBottom: 2 },
+  greetingName: { fontSize: 34, fontFamily: "Inter_700Bold", marginBottom: 10 },
+  taglineRow: { flexDirection: "row", alignItems: "center", marginBottom: 4 },
+  tagline: { fontSize: 14, fontFamily: "Inter_400Regular" },
+  cardsWrapper: { paddingHorizontal: 16, paddingTop: 16, gap: 12 },
+
   card: {
     borderRadius: 16,
     padding: 16,
-    paddingLeft: 20,
     flexDirection: "row",
     alignItems: "center",
     borderWidth: 1,
-    overflow: "hidden",
-    shadowColor: "#0B1B5E",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
+    shadowOpacity: 0.08,
     shadowRadius: 8,
-    elevation: 2,
+    elevation: 3,
   },
-  verseCard: {
-    alignItems: "flex-start",
-  },
-  accentBar: {
-    position: "absolute",
-    left: 0,
-    top: 0,
-    bottom: 0,
-    width: 4,
-    borderTopLeftRadius: 16,
-    borderBottomLeftRadius: 16,
-  },
-  rankBadge: {
-    width: 54,
-    height: 54,
-    borderRadius: 27,
-  },
-  rankInfo: {
-    flex: 1,
-    paddingLeft: 14,
-  },
+  verseCard: { alignItems: "flex-start" },
+  studyCard: { borderWidth: 0 },
+
+  rankBadge: { width: 54, height: 54, borderRadius: 27 },
+  rankInfo: { flex: 1, paddingLeft: 14 },
   rankLabel: {
     fontSize: 10,
     fontFamily: "Inter_700Bold",
     letterSpacing: 1.2,
     marginBottom: 4,
   },
-  rankName: {
-    fontSize: 22,
-    fontFamily: "Inter_700Bold",
-  },
+  rankName: { fontSize: 22, fontFamily: "Inter_700Bold" },
+
   cardAction: {
-    width: 40,
-    height: 40,
+    width: 42,
+    height: 42,
     borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
   },
+
   bookIconWrapper: {
     width: 48,
     height: 48,
@@ -318,11 +288,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignSelf: "flex-start",
   },
-  verseContent: {
-    flex: 1,
-    paddingLeft: 14,
-    paddingRight: 8,
-  },
+  verseContent: { flex: 1, paddingLeft: 14, paddingRight: 8 },
   verseLabel: {
     fontSize: 11,
     fontFamily: "Inter_700Bold",
@@ -336,13 +302,8 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
     marginBottom: 6,
   },
-  verseRef: {
-    fontSize: 13,
-    fontFamily: "Inter_600SemiBold",
-  },
-  studyCard: {
-    borderWidth: 0,
-  },
+  verseRef: { fontSize: 13, fontFamily: "Inter_600SemiBold" },
+
   studyIconWrapper: {
     width: 46,
     height: 46,
@@ -350,21 +311,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  studyContent: {
-    flex: 1,
-    paddingLeft: 14,
-    paddingRight: 8,
-  },
-  studyTitle: {
-    fontSize: 15,
-    fontFamily: "Inter_700Bold",
-    color: "#FFFFFF",
-    marginBottom: 4,
-  },
+  studyContent: { flex: 1, paddingLeft: 14, paddingRight: 8 },
+  studyTitle: { fontSize: 15, fontFamily: "Inter_700Bold", marginBottom: 4 },
   studySubtitle: {
     fontSize: 13,
     fontFamily: "Inter_400Regular",
-    color: "rgba(255,255,255,0.7)",
     lineHeight: 18,
   },
 });
