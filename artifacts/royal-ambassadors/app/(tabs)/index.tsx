@@ -50,6 +50,7 @@ export default function HomeScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
+      {/* Header */}
       <View
         style={[
           styles.header,
@@ -61,17 +62,15 @@ export default function HomeScreen() {
         ]}
       >
         <Pressable style={styles.headerBtn} hitSlop={10} onPress={() => setDrawerOpen(true)}>
-          <Feather name="menu" size={22} color={colors.primary} />
+          <Feather name="menu" size={22} color={colors.navy} />
         </Pressable>
-        <Text style={[styles.headerTitle, { color: colors.primary }]}>
+        <Text style={[styles.headerTitle, { color: colors.navy }]}>
           Royal Ambassadors
         </Text>
         <Pressable style={styles.headerBtn} hitSlop={10}>
           <View>
-            <Feather name="bell" size={22} color={colors.primary} />
-            <View
-              style={[styles.notifDot, { backgroundColor: colors.gold }]}
-            />
+            <Feather name="bell" size={22} color={colors.navy} />
+            <View style={[styles.notifDot, { backgroundColor: colors.gold }]} />
           </View>
         </Pressable>
       </View>
@@ -80,13 +79,14 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: bottomPadding }}
       >
+        {/* Greeting */}
         <View style={styles.greetingSection}>
           <View style={styles.globeWatermark} pointerEvents="none">
             <Ionicons
               name="globe-outline"
               size={200}
-              color={colors.primary}
-              style={{ opacity: 0.05 }}
+              color={colors.navy}
+              style={{ opacity: 0.04 }}
             />
           </View>
           <Text style={[styles.greetingSmall, { color: colors.mutedForeground }]}>
@@ -96,11 +96,7 @@ export default function HomeScreen() {
             Amb. {userName}!
           </Text>
           <View style={styles.taglineRow}>
-            <MaterialCommunityIcons
-              name="crown"
-              size={16}
-              color={colors.gold}
-            />
+            <MaterialCommunityIcons name="crown" size={15} color={colors.gold} />
             <Text style={[styles.tagline, { color: colors.mutedForeground }]}>
               {"  "}Keep growing. Keep serving.
             </Text>
@@ -108,20 +104,22 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.cardsWrapper}>
-          {/* Rank card — gold background, navy elements */}
+          {/* Rank card — white background, gold left accent bar */}
           <View
             style={[
               styles.card,
               { backgroundColor: colors.card, borderColor: colors.border },
             ]}
           >
+            {/* Gold accent bar on left edge */}
+            <View style={[styles.accentBar, { backgroundColor: colors.gold }]} />
             <Image
               source={require("@/assets/images/rank-badge.png")}
               style={styles.rankBadge}
               contentFit="contain"
             />
             <View style={styles.rankInfo}>
-              <Text style={[styles.rankLabel, { color: colors.navy }]}>
+              <Text style={[styles.rankLabel, { color: colors.gold }]}>
                 CURRENT RANK
               </Text>
               <Text style={[styles.rankName, { color: colors.navy }]}>
@@ -129,35 +127,28 @@ export default function HomeScreen() {
               </Text>
             </View>
             <Pressable
-              style={[
-                styles.rankButton,
-                { backgroundColor: colors.primary },
-              ]}
+              style={[styles.cardAction, { backgroundColor: colors.secondary }]}
               onPress={() => router.push("/ranks")}
               hitSlop={6}
             >
-              <Ionicons
-                name="shield-checkmark-outline"
-                size={22}
-                color="#FFFFFF"
-              />
+              <Ionicons name="shield-checkmark-outline" size={20} color={colors.navy} />
             </Pressable>
           </View>
 
-          {/* Verse card — gold background, navy elements */}
+          {/* Verse card — white background, gold left accent bar */}
           <View
             style={[
               styles.card,
+              styles.verseCard,
               { backgroundColor: colors.card, borderColor: colors.border },
             ]}
           >
-            <View
-              style={[styles.bookIconWrapper, { backgroundColor: colors.primary }]}
-            >
-              <Ionicons name="book" size={28} color="#FFFFFF" />
+            <View style={[styles.accentBar, { backgroundColor: colors.gold }]} />
+            <View style={[styles.bookIconWrapper, { backgroundColor: colors.secondary }]}>
+              <Ionicons name="book" size={24} color={colors.navy} />
             </View>
             <View style={styles.verseContent}>
-              <Text style={[styles.verseLabel, { color: colors.navy }]}>
+              <Text style={[styles.verseLabel, { color: colors.gold }]}>
                 Memory Verse of the Day
               </Text>
               <Text style={[styles.verseText, { color: colors.navy }]}>
@@ -168,27 +159,25 @@ export default function HomeScreen() {
               </Text>
             </View>
             <Pressable
-              style={[
-                styles.bookmarkBtn,
-                { backgroundColor: colors.primary },
-              ]}
+              style={[styles.cardAction, { backgroundColor: colors.secondary }]}
               onPress={handleBookmark}
               hitSlop={8}
             >
               <Ionicons
                 name={isBookmarked ? "bookmark" : "bookmark-outline"}
-                size={20}
-                color={isBookmarked ? colors.gold : "#FFFFFF"}
+                size={18}
+                color={isBookmarked ? colors.gold : colors.navy}
               />
             </Pressable>
           </View>
 
+          {/* Study card — navy fill, white text (unchanged) */}
           <Pressable
-            style={[styles.card, styles.studyCard, { backgroundColor: colors.primary }]}
+            style={[styles.card, styles.studyCard, { backgroundColor: colors.navy }]}
             onPress={() => router.push("/manual")}
           >
-            <View style={styles.studyIconWrapper}>
-              <Ionicons name="document-text-outline" size={26} color={colors.primary} />
+            <View style={[styles.studyIconWrapper, { backgroundColor: "rgba(255,255,255,0.12)" }]}>
+              <Ionicons name="document-text-outline" size={24} color="#FFFFFF" />
             </View>
             <View style={styles.studyContent}>
               <Text style={styles.studyTitle}>Continue Studying</Text>
@@ -196,19 +185,18 @@ export default function HomeScreen() {
                 Pick up where you left off in your rank requirements.
               </Text>
             </View>
-            <Feather name="chevron-right" size={22} color="#FFFFFF" />
+            <Feather name="chevron-right" size={22} color="rgba(255,255,255,0.7)" />
           </Pressable>
         </View>
       </ScrollView>
+
       <SettingsDrawer visible={drawerOpen} onClose={() => setDrawerOpen(false)} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: { flex: 1 },
   header: {
     flexDirection: "row",
     alignItems: "center",
@@ -252,7 +240,7 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   greetingName: {
-    fontSize: 36,
+    fontSize: 34,
     fontFamily: "Inter_700Bold",
     marginBottom: 10,
   },
@@ -268,50 +256,64 @@ const styles = StyleSheet.create({
   cardsWrapper: {
     paddingHorizontal: 16,
     paddingTop: 16,
-    gap: 14,
+    gap: 12,
   },
   card: {
     borderRadius: 16,
     padding: 16,
+    paddingLeft: 20,
     flexDirection: "row",
     alignItems: "center",
     borderWidth: 1,
-    shadowColor: "#1A3BAE",
+    overflow: "hidden",
+    shadowColor: "#0B1B5E",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
+    shadowOpacity: 0.05,
     shadowRadius: 8,
-    elevation: 3,
+    elevation: 2,
+  },
+  verseCard: {
+    alignItems: "flex-start",
+  },
+  accentBar: {
+    position: "absolute",
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 4,
+    borderTopLeftRadius: 16,
+    borderBottomLeftRadius: 16,
   },
   rankBadge: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    width: 54,
+    height: 54,
+    borderRadius: 27,
   },
   rankInfo: {
     flex: 1,
     paddingLeft: 14,
   },
   rankLabel: {
-    fontSize: 11,
-    fontFamily: "Inter_600SemiBold",
-    letterSpacing: 1,
+    fontSize: 10,
+    fontFamily: "Inter_700Bold",
+    letterSpacing: 1.2,
     marginBottom: 4,
   },
   rankName: {
     fontSize: 22,
     fontFamily: "Inter_700Bold",
   },
-  rankButton: {
-    width: 44,
-    height: 44,
+  cardAction: {
+    width: 40,
+    height: 40,
     borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
   },
   bookIconWrapper: {
-    width: 56,
-    height: 56,
-    borderRadius: 14,
+    width: 48,
+    height: 48,
+    borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
     alignSelf: "flex-start",
@@ -322,8 +324,9 @@ const styles = StyleSheet.create({
     paddingRight: 8,
   },
   verseLabel: {
-    fontSize: 13,
+    fontSize: 11,
     fontFamily: "Inter_700Bold",
+    letterSpacing: 0.8,
     marginBottom: 6,
   },
   verseText: {
@@ -337,22 +340,13 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontFamily: "Inter_600SemiBold",
   },
-  bookmarkBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    alignSelf: "flex-end",
-  },
   studyCard: {
     borderWidth: 0,
   },
   studyIconWrapper: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: "rgba(255,255,255,0.2)",
+    width: 46,
+    height: 46,
+    borderRadius: 23,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -362,7 +356,7 @@ const styles = StyleSheet.create({
     paddingRight: 8,
   },
   studyTitle: {
-    fontSize: 16,
+    fontSize: 15,
     fontFamily: "Inter_700Bold",
     color: "#FFFFFF",
     marginBottom: 4,
@@ -370,7 +364,7 @@ const styles = StyleSheet.create({
   studySubtitle: {
     fontSize: 13,
     fontFamily: "Inter_400Regular",
-    color: "rgba(255,255,255,0.75)",
+    color: "rgba(255,255,255,0.7)",
     lineHeight: 18,
   },
 });

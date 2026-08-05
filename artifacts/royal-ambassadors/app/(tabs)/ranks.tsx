@@ -13,7 +13,10 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useApp } from "@/context/AppContext";
 import { RANKS, Rank, getCurrentRankIndex } from "@/data/ranks";
+import { MEMORY_VERSES, MemoryVerse } from "@/data/verses";
 import { useColors } from "@/hooks/useColors";
+
+// ─── Rank Card ────────────────────────────────────────────────────────────────
 
 function RankCard({
   rank,
@@ -50,13 +53,14 @@ function RankCard({
     <View
       style={[
         styles.rankCard,
-        {
-          backgroundColor: bgColor,
-          borderColor,
-          borderWidth: isCurrent ? 2 : 1,
-        },
+        { backgroundColor: bgColor, borderColor, borderWidth: isCurrent ? 2 : 1 },
       ]}
     >
+      {/* Gold accent bar for current rank */}
+      {isCurrent && (
+        <View style={[styles.rankAccentBar, { backgroundColor: colors.gold }]} />
+      )}
+
       <Pressable style={styles.rankHeader} onPress={toggle}>
         <View style={styles.rankLeft}>
           <View
@@ -81,43 +85,29 @@ function RankCard({
               <Text
                 style={[
                   styles.levelNum,
-                  {
-                    color: isCurrent
-                      ? "#FFFFFF"
-                      : isAchieved
-                      ? "#FFFFFF"
-                      : colors.primary,
-                  },
+                  { color: isCurrent ? "#FFFFFF" : isAchieved ? "#FFFFFF" : colors.primary },
                 ]}
               >
                 {rank.level}
               </Text>
             )}
           </View>
+
           <View style={styles.rankNameCol}>
             <View style={styles.rankTitleRow}>
               <Text
                 style={[
                   styles.rankName,
-                  {
-                    color: isLocked ? colors.mutedForeground : colors.navy,
-                  },
+                  { color: isLocked ? colors.mutedForeground : colors.navy },
                 ]}
               >
                 {rank.name}
               </Text>
               {isCurrent && (
                 <View
-                  style={[
-                    styles.currentBadge,
-                    { backgroundColor: colors.goldLight },
-                  ]}
+                  style={[styles.currentBadge, { backgroundColor: colors.goldLight }]}
                 >
-                  <MaterialCommunityIcons
-                    name="crown"
-                    size={11}
-                    color={colors.gold}
-                  />
+                  <MaterialCommunityIcons name="crown" size={11} color={colors.gold} />
                   <Text style={[styles.currentBadgeText, { color: colors.gold }]}>
                     {" "}Current
                   </Text>
@@ -150,15 +140,11 @@ function RankCard({
       </Pressable>
 
       {expanded && !isLocked && (
-        <View
-          style={[styles.requirementsWrapper, { borderTopColor: colors.border }]}
-        >
-          <Text
-            style={[styles.requirementsTitle, { color: colors.navy }]}
-          >
+        <View style={[styles.requirementsWrapper, { borderTopColor: colors.border }]}>
+          <Text style={[styles.requirementsTitle, { color: colors.navy }]}>
             Requirements
           </Text>
-          {rank.requirements.map((req, i) => (
+          {rank.requirements.map((req) => (
             <View key={req.id} style={styles.reqRow}>
               <View
                 style={[
@@ -173,9 +159,7 @@ function RankCard({
                   <Ionicons name="checkmark" size={10} color="#FFFFFF" />
                 )}
               </View>
-              <Text
-                style={[styles.reqText, { color: colors.foreground }]}
-              >
+              <Text style={[styles.reqText, { color: colors.foreground }]}>
                 {req.text}
               </Text>
             </View>
@@ -198,10 +182,75 @@ function RankCard({
   );
 }
 
+// ─── Memory Verse Card ────────────────────────────────────────────────────────
+
+function VerseCard({ verse, index }: { verse: MemoryVerse; index: number }) {
+  const colors = useColors();
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <Pressable
+      style={[
+        styles.verseCard,
+        { backgroundColor: colors.card, borderColor: colors.border },
+      ]}
+      onPress={() => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        setExpanded((v) => !v);
+      }}
+    >
+      {/* Number badge */}
+      <View style={[styles.verseNumBadge, { backgroundColor: colors.secondary }]}>
+        <Text style={[styles.verseNum, { color: colors.navy }]}>{index + 1}</Text>
+      </View>
+
+      <View style={styles.verseBody}>
+        <Text style={[styles.verseReference, { color: colors.navy }]}>
+          {verse.reference}
+        </Text>
+
+        <View style={[styles.topicPill, { backgroundColor: colors.goldLight }]}>
+          <Text style={[styles.topicText, { color: colors.gold }]}>
+            {verse.topic}
+          </Text>
+        </View>
+
+        {expanded && (
+          <Text style={[styles.verseFullText, { color: colors.foreground }]}>
+            {`"${verse.text}"`}
+          </Text>
+        )}
+
+        {!expanded && (
+          <Text
+            style={[styles.versePreview, { color: colors.mutedForeground }]}
+            numberOfLines={1}
+          >
+            {verse.text}
+          </Text>
+        )}
+      </View>
+
+      <Ionicons
+        name={expanded ? "chevron-up" : "chevron-down"}
+        size={16}
+        color={colors.mutedForeground}
+      />
+    </Pressable>
+  );
+}
+
+// ─── Section Switcher ─────────────────────────────────────────────────────────
+
+type Section = "ranks" | "verses";
+
+// ─── Screen ───────────────────────────────────────────────────────────────────
+
 export default function RanksScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { currentRankId, setCurrentRankId } = useApp();
+  const [section, setSection] = useState<Section>("ranks");
 
   const currentIndex = getCurrentRankIndex(currentRankId);
 
@@ -210,13 +259,12 @@ export default function RanksScreen() {
 
   const handleAdvance = (rankId: string, level: number) => {
     const nextRank = RANKS.find((r) => r.level === level + 1);
-    if (nextRank) {
-      setCurrentRankId(nextRank.id);
-    }
+    if (nextRank) setCurrentRankId(nextRank.id);
   };
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
+      {/* Header */}
       <View
         style={[
           styles.header,
@@ -228,98 +276,212 @@ export default function RanksScreen() {
         ]}
       >
         <Text style={[styles.headerTitle, { color: colors.navy }]}>
-          Rank Progression
+          {section === "ranks" ? "Rank Progression" : "Memory Verses"}
         </Text>
         <Text style={[styles.headerSub, { color: colors.mutedForeground }]}>
-          Level {currentIndex + 1} of {RANKS.length}
+          {section === "ranks"
+            ? `Level ${currentIndex + 1} of ${RANKS.length}`
+            : `${MEMORY_VERSES.length} verses to memorise`}
         </Text>
       </View>
 
-      <View style={[styles.progressBar, { backgroundColor: colors.muted }]}>
-        <View
-          style={[
-            styles.progressFill,
-            {
-              backgroundColor: colors.primary,
-              width: `${((currentIndex + 1) / RANKS.length) * 100}%`,
-            },
-          ]}
-        />
+      {/* Segmented switcher */}
+      <View
+        style={[
+          styles.switcher,
+          { backgroundColor: colors.card, borderBottomColor: colors.border },
+        ]}
+      >
+        <View style={[styles.switcherTrack, { backgroundColor: colors.muted }]}>
+          <Pressable
+            style={[
+              styles.switcherTab,
+              section === "ranks" && {
+                backgroundColor: colors.navy,
+                shadowColor: colors.navy,
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.18,
+                shadowRadius: 6,
+                elevation: 4,
+              },
+            ]}
+            onPress={() => setSection("ranks")}
+          >
+            <MaterialCommunityIcons
+              name="shield-crown-outline"
+              size={16}
+              color={section === "ranks" ? "#FFFFFF" : colors.mutedForeground}
+            />
+            <Text
+              style={[
+                styles.switcherLabel,
+                { color: section === "ranks" ? "#FFFFFF" : colors.mutedForeground },
+                section === "ranks" && { fontFamily: "Inter_700Bold" },
+              ]}
+            >
+              Ranks
+            </Text>
+          </Pressable>
+
+          <Pressable
+            style={[
+              styles.switcherTab,
+              section === "verses" && {
+                backgroundColor: colors.navy,
+                shadowColor: colors.navy,
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.18,
+                shadowRadius: 6,
+                elevation: 4,
+              },
+            ]}
+            onPress={() => setSection("verses")}
+          >
+            <Ionicons
+              name="book-outline"
+              size={16}
+              color={section === "verses" ? "#FFFFFF" : colors.mutedForeground}
+            />
+            <Text
+              style={[
+                styles.switcherLabel,
+                { color: section === "verses" ? "#FFFFFF" : colors.mutedForeground },
+                section === "verses" && { fontFamily: "Inter_700Bold" },
+              ]}
+            >
+              Memory Verses
+            </Text>
+          </Pressable>
+        </View>
       </View>
 
-      <ScrollView
-        contentContainerStyle={[
-          styles.scrollContent,
-          { paddingBottom: bottomPadding },
-        ]}
-        showsVerticalScrollIndicator={false}
-      >
-        {RANKS.map((rank, index) => (
-          <RankCard
-            key={rank.id}
-            rank={rank}
-            isCurrent={rank.id === currentRankId}
-            isAchieved={index <= currentIndex}
-            isLocked={index > currentIndex}
-            onSelect={() => handleAdvance(rank.id, rank.level)}
-          />
-        ))}
-      </ScrollView>
+      {/* Ranks section */}
+      {section === "ranks" && (
+        <>
+          <View style={[styles.progressBar, { backgroundColor: colors.muted }]}>
+            <View
+              style={[
+                styles.progressFill,
+                {
+                  backgroundColor: colors.gold,
+                  width: `${((currentIndex + 1) / RANKS.length) * 100}%`,
+                },
+              ]}
+            />
+          </View>
+
+          <ScrollView
+            contentContainerStyle={[styles.scrollContent, { paddingBottom: bottomPadding }]}
+            showsVerticalScrollIndicator={false}
+          >
+            {RANKS.map((rank, index) => (
+              <RankCard
+                key={rank.id}
+                rank={rank}
+                isCurrent={rank.id === currentRankId}
+                isAchieved={index <= currentIndex}
+                isLocked={index > currentIndex}
+                onSelect={() => handleAdvance(rank.id, rank.level)}
+              />
+            ))}
+          </ScrollView>
+        </>
+      )}
+
+      {/* Memory Verses section */}
+      {section === "verses" && (
+        <ScrollView
+          contentContainerStyle={[styles.scrollContent, { paddingBottom: bottomPadding }]}
+          showsVerticalScrollIndicator={false}
+        >
+          <View
+            style={[
+              styles.verseIntro,
+              { backgroundColor: colors.goldLight, borderColor: colors.gold },
+            ]}
+          >
+            <MaterialCommunityIcons name="crown" size={18} color={colors.gold} />
+            <Text style={[styles.verseIntroText, { color: colors.navy }]}>
+              Tap a verse to reveal the full text
+            </Text>
+          </View>
+
+          {MEMORY_VERSES.map((verse, i) => (
+            <VerseCard key={verse.id} verse={verse} index={i} />
+          ))}
+        </ScrollView>
+      )}
     </View>
   );
 }
 
+// ─── Styles ───────────────────────────────────────────────────────────────────
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: { flex: 1 },
   header: {
     paddingHorizontal: 20,
     paddingBottom: 14,
     borderBottomWidth: 1,
   },
-  headerTitle: {
-    fontSize: 24,
-    fontFamily: "Inter_700Bold",
-    marginBottom: 2,
+  headerTitle: { fontSize: 24, fontFamily: "Inter_700Bold", marginBottom: 2 },
+  headerSub: { fontSize: 13, fontFamily: "Inter_400Regular" },
+
+  switcher: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
   },
-  headerSub: {
+  switcherTrack: {
+    flexDirection: "row",
+    borderRadius: 14,
+    padding: 4,
+    gap: 4,
+  },
+  switcherTab: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 7,
+    paddingVertical: 10,
+    borderRadius: 10,
+  },
+  switcherLabel: {
     fontSize: 13,
-    fontFamily: "Inter_400Regular",
+    fontFamily: "Inter_500Medium",
   },
-  progressBar: {
-    height: 4,
-    width: "100%",
-  },
-  progressFill: {
-    height: 4,
-    borderRadius: 2,
-  },
-  scrollContent: {
-    padding: 16,
-    gap: 12,
-  },
+
+  progressBar: { height: 3, width: "100%" },
+  progressFill: { height: 3 },
+
+  scrollContent: { padding: 16, gap: 12 },
+
+  // Rank cards
   rankCard: {
     borderRadius: 16,
     overflow: "hidden",
     shadowColor: "#1A3BAE",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
+    shadowOpacity: 0.05,
     shadowRadius: 8,
-    elevation: 3,
+    elevation: 2,
+  },
+  rankAccentBar: {
+    position: "absolute",
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 4,
   },
   rankHeader: {
     flexDirection: "row",
     alignItems: "center",
     padding: 16,
+    paddingLeft: 20,
     justifyContent: "space-between",
   },
-  rankLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    flex: 1,
-    gap: 12,
-  },
+  rankLeft: { flexDirection: "row", alignItems: "center", flex: 1, gap: 12 },
   levelBadge: {
     width: 42,
     height: 42,
@@ -328,13 +490,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     flexShrink: 0,
   },
-  levelNum: {
-    fontSize: 18,
-    fontFamily: "Inter_700Bold",
-  },
-  rankNameCol: {
-    flex: 1,
-  },
+  levelNum: { fontSize: 18, fontFamily: "Inter_700Bold" },
+  rankNameCol: { flex: 1 },
   rankTitleRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -342,10 +499,7 @@ const styles = StyleSheet.create({
     marginBottom: 3,
     flexWrap: "wrap",
   },
-  rankName: {
-    fontSize: 17,
-    fontFamily: "Inter_700Bold",
-  },
+  rankName: { fontSize: 17, fontFamily: "Inter_700Bold" },
   currentBadge: {
     flexDirection: "row",
     alignItems: "center",
@@ -353,10 +507,7 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
     borderRadius: 8,
   },
-  currentBadgeText: {
-    fontSize: 11,
-    fontFamily: "Inter_600SemiBold",
-  },
+  currentBadgeText: { fontSize: 11, fontFamily: "Inter_600SemiBold" },
   ageGroup: {
     fontSize: 11,
     fontFamily: "Inter_600SemiBold",
@@ -364,29 +515,16 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     letterSpacing: 0.3,
   },
-  rankDesc: {
-    fontSize: 12,
-    fontFamily: "Inter_400Regular",
-    lineHeight: 17,
-  },
-  requirementsWrapper: {
-    padding: 16,
-    paddingTop: 12,
-    borderTopWidth: 1,
-  },
+  rankDesc: { fontSize: 12, fontFamily: "Inter_400Regular", lineHeight: 17 },
+  requirementsWrapper: { padding: 16, paddingTop: 12, borderTopWidth: 1, paddingLeft: 20 },
   requirementsTitle: {
-    fontSize: 13,
+    fontSize: 12,
     fontFamily: "Inter_700Bold",
     marginBottom: 10,
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },
-  reqRow: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 10,
-    marginBottom: 8,
-  },
+  reqRow: { flexDirection: "row", alignItems: "flex-start", gap: 10, marginBottom: 8 },
   reqDot: {
     width: 20,
     height: 20,
@@ -397,12 +535,7 @@ const styles = StyleSheet.create({
     marginTop: 1,
     flexShrink: 0,
   },
-  reqText: {
-    fontSize: 13,
-    fontFamily: "Inter_400Regular",
-    lineHeight: 20,
-    flex: 1,
-  },
+  reqText: { fontSize: 13, fontFamily: "Inter_400Regular", lineHeight: 20, flex: 1 },
   advanceBtn: {
     flexDirection: "row",
     alignItems: "center",
@@ -412,9 +545,60 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     marginTop: 12,
   },
-  advanceBtnText: {
+  advanceBtnText: { fontSize: 14, fontFamily: "Inter_600SemiBold", color: "#FFFFFF" },
+
+  // Verse cards
+  verseIntro: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    marginBottom: 4,
+  },
+  verseIntroText: { fontSize: 13, fontFamily: "Inter_500Medium", flex: 1 },
+  verseCard: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 12,
+    borderRadius: 14,
+    borderWidth: 1,
+    padding: 14,
+    shadowColor: "#1A3BAE",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 4,
+    elevation: 1,
+  },
+  verseNumBadge: {
+    width: 30,
+    height: 30,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+    marginTop: 2,
+  },
+  verseNum: { fontSize: 13, fontFamily: "Inter_700Bold" },
+  verseBody: { flex: 1, gap: 6 },
+  verseReference: { fontSize: 15, fontFamily: "Inter_700Bold", lineHeight: 21 },
+  topicPill: {
+    alignSelf: "flex-start",
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  topicText: { fontSize: 10, fontFamily: "Inter_700Bold", letterSpacing: 0.5 },
+  versePreview: {
+    fontSize: 13,
+    fontFamily: "Inter_400Regular",
+    lineHeight: 19,
+  },
+  verseFullText: {
     fontSize: 14,
-    fontFamily: "Inter_600SemiBold",
-    color: "#FFFFFF",
+    fontFamily: "Inter_400Regular",
+    lineHeight: 22,
+    fontStyle: "italic",
   },
 });
