@@ -32,6 +32,7 @@ type UpdateState =
 interface Props {
   visible: boolean;
   onClose: () => void;
+  lockedMode?: boolean;
 }
 
 const THEME_OPTIONS: { value: ThemePreference; label: string; icon: string }[] =
@@ -41,7 +42,7 @@ const THEME_OPTIONS: { value: ThemePreference; label: string; icon: string }[] =
     { value: "system", label: "System", icon: "phone-portrait-outline" },
   ];
 
-export function SettingsDrawer({ visible, onClose }: Props) {
+export function SettingsDrawer({ visible, onClose, lockedMode = false }: Props) {
   const colors = useColors();
   const { themePreference, setThemePreference } = useApp();
   const slideAnim = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
@@ -195,70 +196,73 @@ export function SettingsDrawer({ visible, onClose }: Props) {
       >
         {/* Header */}
         <View style={[styles.drawerHeader, { borderBottomColor: colors.border }]}>
-          <Text style={[styles.drawerTitle, { color: colors.navy }]}>Settings</Text>
+          <Text style={[styles.drawerTitle, { color: colors.navy }]}>
+            {lockedMode ? "App Updates" : "Settings"}
+          </Text>
           <Pressable onPress={onClose} hitSlop={10} style={styles.closeBtn}>
             <Feather name="x" size={22} color={colors.mutedForeground} />
           </Pressable>
         </View>
 
-        {/* Appearance */}
-        <View style={styles.section}>
-          <Text style={[styles.sectionLabel, { color: colors.mutedForeground }]}>
-            APPEARANCE
-          </Text>
-          <View
-            style={[
-              styles.optionGroup,
-              { backgroundColor: colors.background, borderColor: colors.border },
-            ]}
-          >
-            {THEME_OPTIONS.map((opt, i) => {
-              const active = themePreference === opt.value;
-              return (
-                <Pressable
-                  key={opt.value}
-                  onPress={() => setThemePreference(opt.value)}
-                  style={[
-                    styles.optionRow,
-                    i < THEME_OPTIONS.length - 1 && {
-                      borderBottomWidth: 1,
-                      borderBottomColor: colors.border,
-                    },
-                    active && { backgroundColor: colors.secondary },
-                  ]}
-                >
-                  <Ionicons
-                    name={opt.icon as never}
-                    size={20}
-                    color={active ? colors.primary : colors.mutedForeground}
-                  />
-                  <Text
+        {!lockedMode && (
+          <View style={styles.section}>
+            <Text style={[styles.sectionLabel, { color: colors.mutedForeground }]}>
+              APPEARANCE
+            </Text>
+            <View
+              style={[
+                styles.optionGroup,
+                { backgroundColor: colors.background, borderColor: colors.border },
+              ]}
+            >
+              {THEME_OPTIONS.map((opt, i) => {
+                const active = themePreference === opt.value;
+                return (
+                  <Pressable
+                    key={opt.value}
+                    onPress={() => setThemePreference(opt.value)}
                     style={[
-                      styles.optionLabel,
-                      { color: active ? colors.primary : colors.foreground },
-                      active && { fontFamily: "Inter_600SemiBold" },
+                      styles.optionRow,
+                      i < THEME_OPTIONS.length - 1 && {
+                        borderBottomWidth: 1,
+                        borderBottomColor: colors.border,
+                      },
+                      active && { backgroundColor: colors.secondary },
                     ]}
                   >
-                    {opt.label}
-                  </Text>
-                  {active && (
                     <Ionicons
-                      name="checkmark-circle"
+                      name={opt.icon as never}
                       size={20}
-                      color={colors.primary}
-                      style={{ marginLeft: "auto" }}
+                      color={active ? colors.primary : colors.mutedForeground}
                     />
-                  )}
-                </Pressable>
-              );
-            })}
+                    <Text
+                      style={[
+                        styles.optionLabel,
+                        { color: active ? colors.primary : colors.foreground },
+                        active && { fontFamily: "Inter_600SemiBold" },
+                      ]}
+                    >
+                      {opt.label}
+                    </Text>
+                    {active && (
+                      <Ionicons
+                        name="checkmark-circle"
+                        size={20}
+                        color={colors.primary}
+                        style={{ marginLeft: "auto" }}
+                      />
+                    )}
+                  </Pressable>
+                );
+              })}
+            </View>
           </View>
-        </View>
+        )}
 
         {/* Updates */}
         <View style={styles.section}>
           <Text style={[styles.sectionLabel, { color: colors.mutedForeground }]}>
-            APP
+            {lockedMode ? "APP UPDATES" : "APP"}
           </Text>
           <View
             style={[

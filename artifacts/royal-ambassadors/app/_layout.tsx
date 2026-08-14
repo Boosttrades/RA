@@ -16,6 +16,7 @@ import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { AccessGate } from "@/components/AccessGate";
 import { UpdateDialog } from "@/components/UpdateDialog";
 import { AppProvider } from "@/context/AppContext";
 import { useAppUpdate } from "@/hooks/useAppUpdate";
@@ -25,6 +26,7 @@ SplashScreen.preventAutoHideAsync();
 const queryClient = new QueryClient();
 
 function RootLayoutNav() {
+  const [isUnlocked, setIsUnlocked] = React.useState(false);
   const {
     state,
     startUpdate,
@@ -44,9 +46,13 @@ function RootLayoutNav() {
 
   return (
     <>
-      <Stack screenOptions={{ headerBackTitle: "Back" }}>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      </Stack>
+      {isUnlocked ? (
+        <Stack screenOptions={{ headerBackTitle: "Back" }}>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        </Stack>
+      ) : (
+        <AccessGate onUnlock={() => setIsUnlocked(true)} />
+      )}
       <UpdateDialog
         state={state}
         onUpdate={startUpdate}
