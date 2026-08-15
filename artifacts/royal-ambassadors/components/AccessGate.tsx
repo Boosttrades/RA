@@ -12,9 +12,8 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { SettingsDrawer } from "@/components/SettingsDrawer";
+import { APP_UNLOCK_PASSWORD } from "@/constants/access";
 import { useColors } from "@/hooks/useColors";
-
-const APP_UNLOCK_PASSWORD = "Repogit001";
 
 interface Props {
   onUnlock: () => void;

@@ -1,5 +1,12 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 export type ThemePreference = "light" | "dark" | "system";
 
@@ -34,6 +41,11 @@ interface AppContextType {
   highlights: Record<string, string[]>;
   toggleHighlight: (sectionId: string, text: string) => void;
   isHighlighted: (sectionId: string, text: string) => boolean;
+  // Rank tab access is session-only and separate from the main app unlock.
+  ranksUnlocked: boolean;
+  rankUnlockPromptVisible: boolean;
+  recordRankTabTap: () => void;
+  unlockRanks: () => void;
 }
 
 export const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -60,9 +72,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [themePreference, setThemePreferenceState] = useState<ThemePreference>("system");
   const [savedPassages, setSavedPassages] = useState<SavedPassage[]>([]);
   const [highlights, setHighlights] = useState<Record<string, string[]>>({});
+  const [ranksUnlocked, setRanksUnlocked] = useState(false);
+  const [rankUnlockPromptVisible, setRankUnlockPromptVisible] = useState(false);
+  const rankTapCountRef = useRef(0);
+  const rankTapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     loadState();
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (rankTapTimerRef.current) clearTimeout(rankTapTimerRef.current);
+    };
   }, []);
 
   const loadState = async () => {
@@ -165,6 +187,27 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const isHighlighted = (sectionId: string, text: string) =>
     (highlights[sectionId] ?? []).includes(text);
 
+  const recordRankTabTap = useCallback(() => {
+    if (ranksUnlocked) return;
+
+    rankTapCountRef.current += 1;
+
+    if (rankTapTimerRef.current) clearTimeout(rankTapTimerRef.current);
+    rankTapTimerRef.current = setTimeout(() => {
+      rankTapCountRef.current = 0;
+    }, 1800);
+
+    if (rankTapCountRef.current >= 3) {
+      rankTapCountRef.current = 0;
+      setRankUnlockPromptVisible(true);
+    }
+  }, [ranksUnlocked]);
+
+  const unlockRanks = useCallback(() => {
+    setRanksUnlocked(true);
+    setRankUnlockPromptVisible(false);
+  }, []);
+
   const totalQuizzesTaken = Object.keys(quizScores).length;
   const bestQuizScore = Object.values(quizScores).reduce((max, s) => Math.max(max, s), 0);
 
@@ -191,6 +234,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         highlights,
         toggleHighlight,
         isHighlighted,
+        ranksUnlocked,
+        rankUnlockPromptVisible,
+        recordRankTabTap,
+        unlockRanks,
       }}
     >
       {children}

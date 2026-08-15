@@ -2,15 +2,19 @@ import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import React, { useState } from "react";
 import {
+  Keyboard,
   Platform,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from "react-native";
+import { useNavigation } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { APP_UNLOCK_PASSWORD } from "@/constants/access";
 import { useApp } from "@/context/AppContext";
 import { RANKS, Rank, getCurrentRankIndex } from "@/data/ranks";
 import { MEMORY_VERSES, MemoryVerse } from "@/data/verses";
@@ -249,8 +253,138 @@ type Section = "ranks" | "verses";
 export default function RanksScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
-  const { currentRankId, setCurrentRankId } = useApp();
+  const navigation = useNavigation();
+  const {
+    currentRankId,
+    setCurrentRankId,
+    ranksUnlocked,
+    rankUnlockPromptVisible,
+    recordRankTabTap,
+    unlockRanks,
+  } = useApp();
   const [section, setSection] = useState<Section>("ranks");
+  const [password, setPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+
+  React.useEffect(() => {
+    // The first visit counts as the first tap; subsequent tab presses are
+    // captured even when this tab is already selected.
+    recordRankTabTap();
+    const tabNavigation = navigation as unknown as {
+      addListener: (event: "tabPress", listener: () => void) => () => void;
+    };
+    return tabNavigation.addListener("tabPress", recordRankTabTap);
+  }, [navigation, recordRankTabTap]);
+
+  if (!ranksUnlocked && section === "ranks") {
+    const topPadding = Platform.OS === "web" ? 67 : insets.top;
+    const bottomPadding = Platform.OS === "web" ? 34 : insets.bottom;
+
+    const handleUnlock = () => {
+      if (password === APP_UNLOCK_PASSWORD) {
+        Keyboard.dismiss();
+        setPasswordError("");
+        unlockRanks();
+        return;
+      }
+
+      setPassword("");
+      setPasswordError("Incorrect password. Please try again.");
+    };
+
+    return (
+      <View
+        style={[
+          styles.container,
+          styles.rankLockContainer,
+          {
+            backgroundColor: colors.background,
+            paddingTop: topPadding,
+            paddingBottom: bottomPadding,
+          },
+        ]}
+      >
+        <View style={styles.rankLockContent}>
+          <View style={[styles.rankLockIcon, { backgroundColor: colors.card }]}>
+            <Ionicons name="shield-outline" size={36} color={colors.primary} />
+          </View>
+          <Text style={[styles.rankLockTitle, { color: colors.navy }]}>
+            Ranks temporarily locked
+          </Text>
+          <Text style={[styles.rankLockMessage, { color: colors.mutedForeground }]}>
+            This section needs a separate unlock. Tap the Ranks tab three times
+            quickly to show the password field.
+          </Text>
+
+          {rankUnlockPromptVisible && (
+            <View style={styles.rankUnlockForm}>
+              <Text style={[styles.rankUnlockLabel, { color: colors.foreground }]}>
+                Enter rank tab password
+              </Text>
+              <View
+                style={[
+                  styles.rankInputWrapper,
+                  {
+                    backgroundColor: colors.card,
+                    borderColor: passwordError ? colors.destructive : colors.border,
+                  },
+                ]}
+              >
+                <Ionicons name="key-outline" size={20} color={colors.primary} />
+                <TextInput
+                  value={password}
+                  onChangeText={(value) => {
+                    setPassword(value);
+                    if (passwordError) setPasswordError("");
+                  }}
+                  onSubmitEditing={handleUnlock}
+                  placeholder="Password"
+                  placeholderTextColor={colors.mutedForeground}
+                  secureTextEntry
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  returnKeyType="done"
+                  style={[styles.rankInput, { color: colors.cardForeground }]}
+                  accessibilityLabel="Rank tab unlock password"
+                  testID="rank-unlock-password-input"
+                />
+              </View>
+              {passwordError ? (
+                <Text style={[styles.rankPasswordError, { color: colors.destructive }]}>
+                  {passwordError}
+                </Text>
+              ) : null}
+              <Pressable
+                onPress={handleUnlock}
+                style={[styles.rankUnlockButton, { backgroundColor: colors.primary }]}
+                accessibilityRole="button"
+                accessibilityLabel="Unlock rank tab"
+                testID="rank-unlock-button"
+              >
+                <Text style={[styles.rankUnlockButtonText, { color: colors.primaryForeground }]}>
+                  Unlock Ranks
+                </Text>
+                <Ionicons name="arrow-forward" size={18} color={colors.primaryForeground} />
+              </Pressable>
+            </View>
+          )}
+
+          <Pressable
+            onPress={() => setSection("verses")}
+            style={[styles.memoryVersesButton, { borderColor: colors.border }]}
+            accessibilityRole="button"
+            accessibilityLabel="Open memory verses"
+            testID="open-memory-verses-button"
+          >
+            <Ionicons name="book-outline" size={19} color={colors.primary} />
+            <Text style={[styles.memoryVersesButtonText, { color: colors.primary }]}>
+              Open Memory Verses
+            </Text>
+          </Pressable>
+        </View>
+      </View>
+    );
+  }
 
   const currentIndex = getCurrentRankIndex(currentRankId);
 
@@ -466,6 +600,95 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 8,
     elevation: 2,
+  },
+  rankLockContainer: {
+    paddingHorizontal: 24,
+    justifyContent: "center",
+  },
+  rankLockContent: {
+    width: "100%",
+    maxWidth: 420,
+    alignSelf: "center",
+    alignItems: "center",
+  },
+  rankLockIcon: {
+    width: 82,
+    height: 82,
+    borderRadius: 41,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 24,
+  },
+  rankLockTitle: {
+    fontSize: 25,
+    lineHeight: 32,
+    textAlign: "center",
+    fontFamily: "Inter_700Bold",
+  },
+  rankLockMessage: {
+    maxWidth: 350,
+    fontSize: 15,
+    lineHeight: 23,
+    textAlign: "center",
+    fontFamily: "Inter_400Regular",
+    marginTop: 14,
+  },
+  rankUnlockForm: {
+    width: "100%",
+    marginTop: 30,
+  },
+  rankUnlockLabel: {
+    fontSize: 13,
+    fontFamily: "Inter_600SemiBold",
+    marginBottom: 8,
+  },
+  rankInputWrapper: {
+    minHeight: 54,
+    borderRadius: 14,
+    borderWidth: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    gap: 10,
+  },
+  rankInput: {
+    flex: 1,
+    minHeight: 52,
+    fontSize: 16,
+    fontFamily: "Inter_400Regular",
+  },
+  rankPasswordError: {
+    fontSize: 12,
+    fontFamily: "Inter_400Regular",
+    marginTop: 7,
+  },
+  rankUnlockButton: {
+    minHeight: 54,
+    borderRadius: 14,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 9,
+    marginTop: 18,
+  },
+  rankUnlockButtonText: {
+    fontSize: 15,
+    fontFamily: "Inter_700Bold",
+  },
+  memoryVersesButton: {
+    width: "100%",
+    minHeight: 50,
+    borderRadius: 14,
+    borderWidth: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 9,
+    marginTop: 22,
+  },
+  memoryVersesButtonText: {
+    fontSize: 14,
+    fontFamily: "Inter_600SemiBold",
   },
   rankAccentBar: {
     position: "absolute",
