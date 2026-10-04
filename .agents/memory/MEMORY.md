@@ -1,0 +1,1 @@
+- [Expo build vs. preview health](expo-build-preview-health.md) — a successful cloud APK build does not prove the local Expo preview has a complete, SDK-aligned dependency install.
