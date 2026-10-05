@@ -312,8 +312,7 @@ export default function RanksScreen() {
             Ranks temporarily locked
           </Text>
           <Text style={[styles.rankLockMessage, { color: colors.mutedForeground }]}>
-            This section needs a separate unlock. Tap the Ranks tab three times
-            quickly to show the password field.
+            This section needs a separate unlock.
           </Text>
 
           {rankUnlockPromptVisible && (
