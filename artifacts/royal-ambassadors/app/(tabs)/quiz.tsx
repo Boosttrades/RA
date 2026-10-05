@@ -75,9 +75,10 @@ export default function QuizScreen() {
 
   const getOptionStyle = (optIndex: number) => {
     if (!answered) return { backgroundColor: colors.card, borderColor: colors.border };
-    if (optIndex === question.correctIndex) return { backgroundColor: "#ECFDF5", borderColor: "#10B981" };
+    if (optIndex === question.correctIndex)
+      return { backgroundColor: colors.successFeedbackBackground, borderColor: "#10B981" };
     if (optIndex === selectedOption && optIndex !== question.correctIndex)
-      return { backgroundColor: "#FEF2F2", borderColor: "#EF4444" };
+      return { backgroundColor: colors.destructiveFeedbackBackground, borderColor: "#EF4444" };
     return { backgroundColor: colors.card, borderColor: colors.border };
   };
 
@@ -255,7 +256,9 @@ export default function QuizScreen() {
                 style={[
                   styles.explanationCard,
                   {
-                   backgroundColor: isCorrect ? "#ECFDF5" : "#FEF2F2",
+                    backgroundColor: isCorrect
+                      ? colors.successFeedbackBackground
+                      : colors.destructiveFeedbackBackground,
                    borderColor: isCorrect ? colors.successFeedback : colors.destructiveFeedback,
                   },
                 ]}
