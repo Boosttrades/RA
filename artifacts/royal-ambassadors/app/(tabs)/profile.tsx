@@ -142,7 +142,9 @@ export default function ProfileScreen() {
               { backgroundColor: colors.primary },
             ]}
           >
-            <Text style={styles.avatarInitials}>{initials}</Text>
+            <Text style={[styles.avatarInitials, { color: colors.primaryForeground }]}>
+              {initials}
+            </Text>
           </View>
 
           {editing ? (
@@ -170,7 +172,7 @@ export default function ProfileScreen() {
                   style={[styles.editBtn, { backgroundColor: colors.primary }]}
                   onPress={handleSaveName}
                 >
-                  <Ionicons name="checkmark" size={18} color="#FFFFFF" />
+                  <Ionicons name="checkmark" size={18} color={colors.primaryForeground} />
                 </Pressable>
                 <Pressable
                   style={[
@@ -217,7 +219,7 @@ export default function ProfileScreen() {
               <MaterialCommunityIcons
                 name="crown"
                 size={13}
-                color={colors.gold}
+                color={colors.primary}
               />
               <Text style={[styles.rankPillText, { color: colors.primary }]}>
                 {"  "}{currentRank.name} — Level {currentRank.level}
@@ -232,7 +234,7 @@ export default function ProfileScreen() {
               style={[
                 styles.rankProgressFill,
                 {
-                  backgroundColor: colors.gold,
+                  backgroundColor: colors.goldText,
                   width: `${((currentIndex + 1) / RANKS.length) * 100}%`,
                 },
               ]}
@@ -258,7 +260,7 @@ export default function ProfileScreen() {
             icon="bookmark-outline"
             value={`${bookmarkedVerseIds.length}/${MEMORY_VERSES.length}`}
             label="Verses Saved"
-            color={colors.gold}
+            color={colors.primary}
           />
           <StatCard
             icon="trophy-outline"
@@ -323,14 +325,14 @@ export default function ProfileScreen() {
               styles.nextRankCard,
               {
                 backgroundColor: colors.goldLight,
-                borderColor: colors.gold,
+                borderColor: colors.goldText,
               },
             ]}
           >
             <MaterialCommunityIcons
               name="crown"
               size={28}
-              color={colors.gold}
+              color={colors.goldText}
             />
             <Text style={[styles.nextRankName, { color: colors.navy }]}>
               You have reached the highest rank!
@@ -382,7 +384,6 @@ const styles = StyleSheet.create({
   avatarInitials: {
     fontSize: 28,
     fontFamily: "Inter_700Bold",
-    color: "#FFFFFF",
   },
   nameRow: {
     flexDirection: "row",

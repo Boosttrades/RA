@@ -83,8 +83,9 @@ export default function QuizScreen() {
 
   const getOptionTextColor = (optIndex: number) => {
     if (!answered) return colors.navy;
-    if (optIndex === question.correctIndex) return "#065F46";
-    if (optIndex === selectedOption && optIndex !== question.correctIndex) return "#991B1B";
+    if (optIndex === question.correctIndex) return colors.successFeedback;
+    if (optIndex === selectedOption && optIndex !== question.correctIndex)
+      return colors.destructiveFeedback;
     return colors.mutedForeground;
   };
 
@@ -96,10 +97,10 @@ export default function QuizScreen() {
     return "Keep studying — you will improve!";
   };
   const getScoreColor = () => {
-    if (scorePercent >= 90) return "#10B981";
+    if (scorePercent >= 90) return colors.successForeground;
     if (scorePercent >= 70) return colors.primary;
-    if (scorePercent >= 50) return colors.gold;
-    return "#EF4444";
+    if (scorePercent >= 50) return colors.goldText;
+    return colors.destructiveText;
   };
 
   return (
@@ -147,18 +148,20 @@ export default function QuizScreen() {
             </Text>
             {bestQuizScore > 0 && (
               <View style={[styles.bestScoreCard, { backgroundColor: colors.secondary, borderColor: colors.border }]}>
-                <Ionicons name="star" size={18} color={colors.gold} />
+                <Ionicons name="star" size={18} color={colors.primary} />
                 <Text style={[styles.bestScoreText, { color: colors.navy }]}>
                   Personal best: {bestQuizScore}/{totalQuestions} ({Math.round((bestQuizScore / totalQuestions) * 100)}%)
                 </Text>
               </View>
             )}
             <Pressable
-              style={[styles.startBtn, { backgroundColor: colors.navy }]}
+              style={[styles.startBtn, { backgroundColor: colors.primary }]}
               onPress={handleStart}
             >
-              <Text style={styles.startBtnText}>Start Quiz</Text>
-              <Ionicons name="arrow-forward" size={18} color="#FFFFFF" />
+              <Text style={[styles.startBtnText, { color: colors.primaryForeground }]}>
+                Start Quiz
+              </Text>
+              <Ionicons name="arrow-forward" size={18} color={colors.primaryForeground} />
             </Pressable>
           </View>
         )}
@@ -171,7 +174,7 @@ export default function QuizScreen() {
                 style={[
                   styles.progressFill,
                   {
-                    backgroundColor: colors.gold,
+                    backgroundColor: colors.goldText,
                     width: `${((currentIndex + 1) / totalQuestions) * 100}%`,
                   },
                 ]}
@@ -180,7 +183,7 @@ export default function QuizScreen() {
 
             <View style={[styles.questionCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
               {/* Gold accent bar */}
-              <View style={[styles.questionAccentBar, { backgroundColor: colors.gold }]} />
+              <View style={[styles.questionAccentBar, { backgroundColor: colors.primary }]} />
               <Text style={[styles.questionNum, { color: colors.mutedForeground }]}>
                 Q{currentIndex + 1}
               </Text>
@@ -203,9 +206,9 @@ export default function QuizScreen() {
                       {
                         backgroundColor:
                           answered && i === question.correctIndex
-                            ? "#10B981"
+                            ? colors.successBadge
                             : answered && i === selectedOption && i !== question.correctIndex
-                            ? "#EF4444"
+                            ? colors.destructiveBadge
                             : colors.secondary,
                       },
                     ]}
@@ -230,10 +233,18 @@ export default function QuizScreen() {
                     {opt}
                   </Text>
                   {answered && i === question.correctIndex && (
-                    <Ionicons name="checkmark-circle" size={20} color="#10B981" />
+                    <Ionicons
+                      name="checkmark-circle"
+                      size={20}
+                      color={colors.successFeedback}
+                    />
                   )}
                   {answered && i === selectedOption && i !== question.correctIndex && (
-                    <Ionicons name="close-circle" size={20} color="#EF4444" />
+                    <Ionicons
+                      name="close-circle"
+                      size={20}
+                      color={colors.destructiveFeedback}
+                    />
                   )}
                 </Pressable>
               ))}
@@ -244,20 +255,24 @@ export default function QuizScreen() {
                 style={[
                   styles.explanationCard,
                   {
-                    backgroundColor: isCorrect ? "#ECFDF5" : "#FEF2F2",
-                    borderColor: isCorrect ? "#10B981" : "#EF4444",
+                   backgroundColor: isCorrect ? "#ECFDF5" : "#FEF2F2",
+                   borderColor: isCorrect ? colors.successFeedback : colors.destructiveFeedback,
                   },
                 ]}
               >
                 <Ionicons
                   name={isCorrect ? "checkmark-circle" : "information-circle"}
                   size={20}
-                  color={isCorrect ? "#10B981" : "#EF4444"}
+                  color={isCorrect ? colors.successFeedback : colors.destructiveFeedback}
                 />
                 <Text
                   style={[
                     styles.explanationText,
-                    { color: isCorrect ? "#065F46" : "#991B1B" },
+                    {
+                      color: isCorrect
+                        ? colors.successFeedback
+                        : colors.destructiveFeedback,
+                    },
                   ]}
                 >
                   {question.explanation}
@@ -267,13 +282,13 @@ export default function QuizScreen() {
 
             {answered && (
               <Pressable
-                style={[styles.nextBtn, { backgroundColor: colors.navy }]}
+                style={[styles.nextBtn, { backgroundColor: colors.primary }]}
                 onPress={handleNext}
               >
-                <Text style={styles.nextBtnText}>
+                <Text style={[styles.nextBtnText, { color: colors.primaryForeground }]}>
                   {currentIndex + 1 < totalQuestions ? "Next Question" : "See Results"}
                 </Text>
-                <Ionicons name="arrow-forward" size={18} color="#FFFFFF" />
+                <Ionicons name="arrow-forward" size={18} color={colors.primaryForeground} />
               </Pressable>
             )}
           </View>
@@ -368,7 +383,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     marginTop: 4,
   },
-  startBtnText: { fontSize: 16, fontFamily: "Inter_700Bold", color: "#FFFFFF" },
+  startBtnText: { fontSize: 16, fontFamily: "Inter_700Bold" },
 
   // Question
   questionWrapper: { gap: 14 },
@@ -439,7 +454,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     paddingVertical: 14,
   },
-  nextBtnText: { fontSize: 15, fontFamily: "Inter_700Bold", color: "#FFFFFF" },
+  nextBtnText: { fontSize: 15, fontFamily: "Inter_700Bold" },
 
   // Results
   resultsWrapper: { alignItems: "center", paddingTop: 24, gap: 12 },

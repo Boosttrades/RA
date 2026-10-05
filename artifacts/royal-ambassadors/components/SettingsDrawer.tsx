@@ -141,20 +141,20 @@ export function SettingsDrawer({ visible, onClose, lockedMode = false }: Props) 
       case "checking":
         return { text: "Checking for updates…", color: colors.mutedForeground };
       case "up-to-date":
-        return { text: "You're on the latest version.", color: "#22C55E" };
+        return { text: "You're on the latest version.", color: colors.successStatusText };
       case "available":
-        return { text: "Update found! Downloading…", color: colors.gold };
+        return { text: "Update found! Downloading…", color: colors.primary };
       case "downloading":
-        return { text: "Downloading update…", color: colors.gold };
+        return { text: "Downloading update…", color: colors.primary };
       case "applied":
-        return { text: "Update ready — restarting app…", color: "#22C55E" };
+        return { text: "Update ready — restarting app…", color: colors.successStatusText };
       case "dev":
         // No message for dev mode — this is handled in production APK builds
         return { text: "", color: colors.mutedForeground };
       case "error":
         return {
           text: `Could not check: ${updateState.message}`,
-          color: colors.destructive,
+          color: colors.destructiveText,
         };
       default:
         return { text: "", color: colors.mutedForeground };

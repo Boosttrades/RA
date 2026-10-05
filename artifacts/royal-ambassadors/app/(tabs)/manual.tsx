@@ -540,7 +540,7 @@ function TocSectionItem({
         <Ionicons
           name={isFront ? "document-text-outline" : "bookmark-outline"}
           size={15}
-          color={isFront ? colors.gold : colors.primary}
+          color={isFront ? colors.goldText : colors.primary}
         />
       </View>
       <View style={styles.tocItemBody}>
@@ -581,7 +581,7 @@ function SearchResultItem({
         <Ionicons
           name="search"
           size={14}
-          color={result.phraseMatch ? colors.gold : colors.primary}
+          color={result.phraseMatch ? colors.goldText : colors.primary}
         />
       </View>
       <View style={styles.tocItemBody}>
@@ -872,16 +872,20 @@ function ReaderView({
       <View
         style={[
           styles.readerHeader,
-          { paddingTop: topPadding + 10, backgroundColor: colors.navy },
+          { paddingTop: topPadding + 10, backgroundColor: colors.primary },
         ]}
       >
         <Pressable style={styles.readerBackBtn} onPress={onBack} hitSlop={10}>
-          <Ionicons name="arrow-back" size={20} color="#FFFFFF" />
-          <Text style={styles.readerBackText}>Contents</Text>
+          <Ionicons name="arrow-back" size={20} color={colors.primaryForeground} />
+          <Text style={[styles.readerBackText, { color: colors.primaryForeground }]}>
+            Contents
+          </Text>
         </Pressable>
         <Pressable style={styles.readerTocBtn} onPress={() => setShowToc(true)} hitSlop={10}>
-          <Ionicons name="list-outline" size={20} color="#FFFFFF" />
-          <Text style={styles.readerTocBtnText}>Sections</Text>
+          <Ionicons name="list-outline" size={20} color={colors.primaryForeground} />
+          <Text style={[styles.readerTocBtnText, { color: colors.primaryForeground }]}>
+            Sections
+          </Text>
         </Pressable>
       </View>
 
@@ -1179,9 +1183,9 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
   },
   readerBackBtn: { flexDirection: "row", alignItems: "center", gap: 6 },
-  readerBackText: { fontSize: 14, fontFamily: "Inter_500Medium", color: "#FFFFFF" },
+  readerBackText: { fontSize: 14, fontFamily: "Inter_500Medium" },
   readerTocBtn: { flexDirection: "row", alignItems: "center", gap: 5 },
-  readerTocBtnText: { fontSize: 14, fontFamily: "Inter_500Medium", color: "#FFFFFF" },
+  readerTocBtnText: { fontSize: 14, fontFamily: "Inter_500Medium" },
   searchBanner: {
     flexDirection: "row",
     alignItems: "center",

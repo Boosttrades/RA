@@ -96,7 +96,7 @@ export default function HomeScreen() {
             Amb. {userName}!
           </Text>
           <View style={styles.taglineRow}>
-            <MaterialCommunityIcons name="crown" size={15} color={colors.gold} />
+            <MaterialCommunityIcons name="crown" size={15} color={colors.goldText} />
             <Text style={[styles.tagline, { color: colors.mutedForeground }]}>
               {"  "}Keep growing. Keep serving.
             </Text>
@@ -168,7 +168,11 @@ export default function HomeScreen() {
               <Ionicons
                 name={isBookmarked ? "bookmark" : "bookmark-outline"}
                 size={18}
-                color={isBookmarked ? colors.gold : colors.primaryForeground}
+                color={
+                  isBookmarked
+                    ? colors.primaryAccentForeground
+                    : colors.primaryForeground
+                }
               />
             </Pressable>
           </View>
@@ -195,11 +199,11 @@ export default function HomeScreen() {
               <Text style={[styles.studyTitle, { color: colors.primaryForeground }]}>
                 Continue Studying
               </Text>
-              <Text style={[styles.studySubtitle, { color: "rgba(255,255,255,0.7)" }]}>
+              <Text style={[styles.studySubtitle, { color: colors.primaryMutedForeground }]}>
                 Pick up where you left off in your rank requirements.
               </Text>
             </View>
-            <Feather name="chevron-right" size={22} color="rgba(255,255,255,0.7)" />
+            <Feather name="chevron-right" size={22} color={colors.primaryMutedForeground} />
           </Pressable>
         </View>
       </ScrollView>

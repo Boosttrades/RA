@@ -154,7 +154,7 @@ function DialogContent({
     return (
       <View style={cardStyle}>
         <View style={[styles.iconBadge, { backgroundColor: c.goldLight }]}>
-          <Text style={[styles.iconText, { color: c.gold }]}>↓</Text>
+          <Text style={[styles.iconText, { color: c.goldText }]}>↓</Text>
         </View>
         <Text style={[styles.title, { color: c.text }]}>Update Ready to Install</Text>
         <Text style={[styles.body, { color: c.mutedForeground }]}>
@@ -201,7 +201,7 @@ function DialogContent({
     return (
       <View style={cardStyle}>
         <View style={[styles.iconBadge, { backgroundColor: c.goldLight }]}>
-          <Text style={[styles.iconText, { color: c.gold }]}>↑</Text>
+          <Text style={[styles.iconText, { color: c.goldText }]}>↑</Text>
         </View>
         <Text style={[styles.title, { color: c.text }]}>Update Available</Text>
         <Text style={[styles.body, { color: c.mutedForeground }]}>

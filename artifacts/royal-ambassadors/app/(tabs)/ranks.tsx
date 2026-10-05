@@ -46,7 +46,7 @@ function RankCard({
   };
 
   const borderColor = isCurrent
-    ? colors.gold
+    ? colors.primary
     : isAchieved
     ? colors.primary
     : colors.border;
@@ -62,7 +62,7 @@ function RankCard({
     >
       {/* Gold accent bar for current rank */}
       {isCurrent && (
-        <View style={[styles.rankAccentBar, { backgroundColor: colors.gold }]} />
+        <View style={[styles.rankAccentBar, { backgroundColor: colors.primary }]} />
       )}
 
       <Pressable style={styles.rankHeader} onPress={toggle}>
@@ -84,12 +84,18 @@ function RankCard({
             {isLocked ? (
               <Ionicons name="lock-closed" size={16} color={colors.mutedForeground} />
             ) : isAchieved && !isCurrent ? (
-              <Ionicons name="checkmark" size={16} color="#FFFFFF" />
+              <Ionicons name="checkmark" size={16} color={colors.primaryForeground} />
             ) : (
               <Text
                 style={[
                   styles.levelNum,
-                  { color: isCurrent ? "#FFFFFF" : isAchieved ? "#FFFFFF" : colors.primary },
+                  {
+                    color: isCurrent
+                      ? colors.onGold
+                      : isAchieved
+                      ? colors.primaryForeground
+                      : colors.primary,
+                  },
                 ]}
               >
                 {rank.level}
@@ -111,8 +117,8 @@ function RankCard({
                 <View
                   style={[styles.currentBadge, { backgroundColor: colors.goldLight }]}
                 >
-                  <MaterialCommunityIcons name="crown" size={11} color={colors.gold} />
-                  <Text style={[styles.currentBadgeText, { color: colors.gold }]}>
+                  <MaterialCommunityIcons name="crown" size={11} color={colors.goldText} />
+                  <Text style={[styles.currentBadgeText, { color: colors.goldText }]}>
                     {" "}Current
                   </Text>
                 </View>
@@ -160,7 +166,7 @@ function RankCard({
                 ]}
               >
                 {isAchieved && (
-                  <Ionicons name="checkmark" size={10} color="#FFFFFF" />
+                  <Ionicons name="checkmark" size={10} color={colors.primaryForeground} />
                 )}
               </View>
               <Text style={[styles.reqText, { color: colors.foreground }]}>
@@ -176,8 +182,10 @@ function RankCard({
                 onSelect();
               }}
             >
-              <Text style={styles.advanceBtnText}>Mark Rank Complete</Text>
-              <Ionicons name="arrow-forward" size={16} color="#FFFFFF" />
+              <Text style={[styles.advanceBtnText, { color: colors.primaryForeground }]}>
+                Mark Rank Complete
+              </Text>
+              <Ionicons name="arrow-forward" size={16} color={colors.primaryForeground} />
             </Pressable>
           )}
         </View>
@@ -214,7 +222,7 @@ function VerseCard({ verse, index }: { verse: MemoryVerse; index: number }) {
         </Text>
 
         <View style={[styles.topicPill, { backgroundColor: colors.goldLight }]}>
-          <Text style={[styles.topicText, { color: colors.gold }]}>
+          <Text style={[styles.topicText, { color: colors.goldText }]}>
             {verse.topic}
           </Text>
         </View>
@@ -430,8 +438,8 @@ export default function RanksScreen() {
             style={[
               styles.switcherTab,
               section === "ranks" && {
-                backgroundColor: colors.navy,
-                shadowColor: colors.navy,
+                backgroundColor: colors.primary,
+                shadowColor: colors.primary,
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.18,
                 shadowRadius: 6,
@@ -443,12 +451,15 @@ export default function RanksScreen() {
             <MaterialCommunityIcons
               name="shield-crown-outline"
               size={16}
-              color={section === "ranks" ? "#FFFFFF" : colors.mutedForeground}
+              color={section === "ranks" ? colors.primaryForeground : colors.mutedForeground}
             />
             <Text
               style={[
                 styles.switcherLabel,
-                { color: section === "ranks" ? "#FFFFFF" : colors.mutedForeground },
+                {
+                  color:
+                    section === "ranks" ? colors.primaryForeground : colors.mutedForeground,
+                },
                 section === "ranks" && { fontFamily: "Inter_700Bold" },
               ]}
             >
@@ -460,8 +471,8 @@ export default function RanksScreen() {
             style={[
               styles.switcherTab,
               section === "verses" && {
-                backgroundColor: colors.navy,
-                shadowColor: colors.navy,
+                backgroundColor: colors.primary,
+                shadowColor: colors.primary,
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.18,
                 shadowRadius: 6,
@@ -473,12 +484,15 @@ export default function RanksScreen() {
             <Ionicons
               name="book-outline"
               size={16}
-              color={section === "verses" ? "#FFFFFF" : colors.mutedForeground}
+              color={section === "verses" ? colors.primaryForeground : colors.mutedForeground}
             />
             <Text
               style={[
                 styles.switcherLabel,
-                { color: section === "verses" ? "#FFFFFF" : colors.mutedForeground },
+                {
+                  color:
+                    section === "verses" ? colors.primaryForeground : colors.mutedForeground,
+                },
                 section === "verses" && { fontFamily: "Inter_700Bold" },
               ]}
             >
@@ -496,7 +510,7 @@ export default function RanksScreen() {
               style={[
                 styles.progressFill,
                 {
-                  backgroundColor: colors.gold,
+                  backgroundColor: colors.goldText,
                   width: `${((currentIndex + 1) / RANKS.length) * 100}%`,
                 },
               ]}
@@ -530,10 +544,10 @@ export default function RanksScreen() {
           <View
             style={[
               styles.verseIntro,
-              { backgroundColor: colors.goldLight, borderColor: colors.gold },
+              { backgroundColor: colors.goldLight, borderColor: colors.goldText },
             ]}
           >
-            <MaterialCommunityIcons name="crown" size={18} color={colors.gold} />
+            <MaterialCommunityIcons name="crown" size={18} color={colors.goldText} />
             <Text style={[styles.verseIntroText, { color: colors.navy }]}>
               Tap a verse to reveal the full text
             </Text>
@@ -767,7 +781,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     marginTop: 12,
   },
-  advanceBtnText: { fontSize: 14, fontFamily: "Inter_600SemiBold", color: "#FFFFFF" },
+  advanceBtnText: { fontSize: 14, fontFamily: "Inter_600SemiBold" },
 
   // Verse cards
   verseIntro: {

@@ -47,8 +47,8 @@ function ClassicTabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.gold,
-        tabBarInactiveTintColor: "rgba(255,255,255,0.6)",
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.mutedForeground,
         tabBarLabelStyle: {
           fontFamily: "Inter_500Medium",
           fontSize: 10,
