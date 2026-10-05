@@ -56,7 +56,7 @@ export function AccessGate({ onUnlock }: Props) {
           </View>
 
           <Text style={[styles.eyebrow, { color: colors.primary }]}>
-            ROYAL AMBASSADORS
+            RA GUIDE
           </Text>
           <Text style={[styles.title, { color: colors.navy }]}>
             App access temporarily locked

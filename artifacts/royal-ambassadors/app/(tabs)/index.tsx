@@ -65,7 +65,7 @@ export default function HomeScreen() {
           <Feather name="menu" size={22} color={colors.primary} />
         </Pressable>
         <Text style={[styles.headerTitle, { color: colors.primary }]}>
-          Royal Ambassadors
+          RA Guide
         </Text>
         <Pressable style={styles.headerBtn} hitSlop={10}>
           <View>

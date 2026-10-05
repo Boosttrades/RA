@@ -126,7 +126,7 @@ function DialogContent({
         </View>
         <Text style={[styles.title, { color: c.text }]}>You're All Set!</Text>
         <Text style={[styles.body, { color: c.mutedForeground }]}>
-          You're using the latest version of the Royal Ambassadors Guide.
+          You're using the latest version of RA Guide.
         </Text>
         <View style={styles.versionRow}>
           <VersionChip
@@ -205,7 +205,7 @@ function DialogContent({
         </View>
         <Text style={[styles.title, { color: c.text }]}>Update Available</Text>
         <Text style={[styles.body, { color: c.mutedForeground }]}>
-          A new version of the Royal Ambassadors Guide is ready.
+          A new version of RA Guide is ready.
           You can use the app normally while it downloads.
         </Text>
         <View style={styles.versionRow}>
