@@ -1,2 +1,3 @@
 - [Expo build vs. preview health](expo-build-preview-health.md) — a successful cloud APK build does not prove the local Expo preview has a complete, SDK-aligned dependency install.
 - [Theme contrast fixes](theme-contrast-fixes.md) — preserve visible styles and adjust only unreadable light/dark pairs.
+- [Access gates](access-gates.md) — app-wide access persists after first unlock; rank access remains session-only.

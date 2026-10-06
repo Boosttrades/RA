@@ -16,7 +16,7 @@ import { APP_UNLOCK_PASSWORD } from "@/constants/access";
 import { useColors } from "@/hooks/useColors";
 
 interface Props {
-  onUnlock: () => void;
+  onUnlock: () => void | Promise<void>;
 }
 
 export function AccessGate({ onUnlock }: Props) {
@@ -26,16 +26,22 @@ export function AccessGate({ onUnlock }: Props) {
   const [error, setError] = useState("");
   const [updatesOpen, setUpdatesOpen] = useState(false);
 
-  const handleUnlock = () => {
-    if (password === APP_UNLOCK_PASSWORD) {
-      Keyboard.dismiss();
-      setError("");
-      onUnlock();
+  const handleUnlock = async () => {
+    if (password !== APP_UNLOCK_PASSWORD) {
+      setError("Incorrect password. Please try again.");
+      setPassword("");
       return;
     }
 
-    setError("Incorrect password. Please try again.");
-    setPassword("");
+    Keyboard.dismiss();
+    setError("");
+
+    try {
+      await onUnlock();
+    } catch (unlockError) {
+      console.error("Unable to save app unlock state.", unlockError);
+      setError("Could not save access on this device. Please try again.");
+    }
   };
 
   return (
