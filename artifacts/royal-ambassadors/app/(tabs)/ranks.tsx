@@ -320,7 +320,7 @@ export default function RanksScreen() {
             Ranks temporarily locked
           </Text>
           <Text style={[styles.rankLockMessage, { color: colors.mutedForeground }]}>
-            This section is fully developed and therefore temporarily locked.
+            This section is not fully developed and is therefore temporarily locked.
           </Text>
 
           {rankUnlockPromptVisible && (

@@ -1,6 +1,6 @@
 kind = "mobile"
 previewPath = "/"
-title = "Royal Ambassadors"
+title = "RA Guide"
 version = "1.0.0"
 id = "artifacts/royal-ambassadors"
 router = "expo-domain"
