@@ -40,6 +40,8 @@ function NativeTabLayout() {
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="profile" hidden>
       </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="notes" hidden>
+      </NativeTabs.Trigger>
     </NativeTabs>
   );
 }
@@ -166,6 +168,7 @@ function ClassicTabLayout() {
         }}
       />
       <Tabs.Screen name="profile" options={{ href: null }} />
+      <Tabs.Screen name="notes" options={{ href: null }} />
     </Tabs>
   );
 }

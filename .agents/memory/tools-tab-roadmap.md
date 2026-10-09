@@ -3,8 +3,8 @@ name: Tools tab roadmap
 description: User-stated future scope for the Royal Ambassadors Tools tab.
 ---
 
-The Tools tab should remain an empty/coming-soon shell for now. The user said it will later contain Bible, Notes, and other tools.
+The Tools tab should list Bible, Reading Plan, and Notes. Bible and Reading Plan remain disabled with “Coming soon” labels until the user supplies their content. Notes should be a designed, usable tool with local persistence.
 
-**Why:** The user explicitly deferred implementing these features while asking for the Tools tab to be added.
+**Why:** The user later clarified the Tools tab contents and explicitly asked for Bible and Reading Plan to remain coming soon while Notes is designed now.
 
-**How to apply:** Do not add Bible or note-taking functionality as part of navigation or placeholder work; implement them only when the user asks.
+**How to apply:** Do not add Bible or Reading Plan content without the user’s direction. Notes may support creating, editing, and deleting user-authored notes stored on-device.

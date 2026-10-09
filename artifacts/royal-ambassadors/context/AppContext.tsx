@@ -18,6 +18,14 @@ export interface SavedPassage {
   savedAt: number;
 }
 
+export interface StudyNote {
+  id: string;
+  title: string;
+  content: string;
+  createdAt: number;
+  updatedAt: number;
+}
+
 interface AppContextType {
   userName: string;
   setUserName: (name: string) => void;
@@ -37,6 +45,9 @@ interface AppContextType {
   savedPassages: SavedPassage[];
   savePassage: (passage: Omit<SavedPassage, "id" | "savedAt">) => void;
   removePassage: (id: string) => void;
+  studyNotes: StudyNote[];
+  saveStudyNote: (note: { id?: string; title: string; content: string }) => void;
+  removeStudyNote: (id: string) => void;
   // Highlights (manual) — sectionId → set of highlighted text strings
   highlights: Record<string, string[]>;
   toggleHighlight: (sectionId: string, text: string) => void;
@@ -60,6 +71,7 @@ interface StoredState {
   quizScores: Record<string, number>;
   themePreference?: ThemePreference;
   savedPassages?: SavedPassage[];
+  studyNotes?: StudyNote[];
   highlights?: Record<string, string[]>;
 }
 
@@ -71,6 +83,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [quizScores, setQuizScores] = useState<Record<string, number>>({});
   const [themePreference, setThemePreferenceState] = useState<ThemePreference>("system");
   const [savedPassages, setSavedPassages] = useState<SavedPassage[]>([]);
+  const [studyNotes, setStudyNotes] = useState<StudyNote[]>([]);
   const [highlights, setHighlights] = useState<Record<string, string[]>>({});
   const [ranksUnlocked, setRanksUnlocked] = useState(false);
   const [rankUnlockPromptVisible, setRankUnlockPromptVisible] = useState(false);
@@ -99,6 +112,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         if (data.quizScores) setQuizScores(data.quizScores);
         if (data.themePreference) setThemePreferenceState(data.themePreference);
         if (data.savedPassages) setSavedPassages(data.savedPassages);
+        if (Array.isArray(data.studyNotes)) setStudyNotes(data.studyNotes);
         if (data.highlights) setHighlights(data.highlights);
       }
     } catch (_) {}
@@ -119,6 +133,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         quizScores,
         themePreference,
         savedPassages,
+        studyNotes,
         highlights,
       };
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify({ ...current, ...updates }));
@@ -172,6 +187,38 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const updated = savedPassages.filter((p) => p.id !== id);
     setSavedPassages(updated);
     persist({ savedPassages: updated });
+  };
+
+  const saveStudyNote = (draft: {
+    id?: string;
+    title: string;
+    content: string;
+  }) => {
+    const existing = draft.id
+      ? studyNotes.find((note) => note.id === draft.id)
+      : undefined;
+    const now = Date.now();
+    const saved: StudyNote = {
+      id:
+        existing?.id ??
+        `${now}-${Math.random().toString(36).slice(2, 8)}`,
+      title: draft.title,
+      content: draft.content,
+      createdAt: existing?.createdAt ?? now,
+      updatedAt: now,
+    };
+    const updated = [
+      saved,
+      ...studyNotes.filter((note) => note.id !== saved.id),
+    ];
+    setStudyNotes(updated);
+    persist({ studyNotes: updated });
+  };
+
+  const removeStudyNote = (id: string) => {
+    const updated = studyNotes.filter((note) => note.id !== id);
+    setStudyNotes(updated);
+    persist({ studyNotes: updated });
   };
 
   const toggleHighlight = (sectionId: string, text: string) => {
@@ -231,6 +278,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         savedPassages,
         savePassage,
         removePassage,
+        studyNotes,
+        saveStudyNote,
+        removeStudyNote,
         highlights,
         toggleHighlight,
         isHighlighted,
