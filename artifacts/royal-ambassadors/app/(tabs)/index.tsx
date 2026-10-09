@@ -67,11 +67,15 @@ export default function HomeScreen() {
         <Text style={[styles.headerTitle, { color: colors.primary }]}>
           RA Guide
         </Text>
-        <Pressable style={styles.headerBtn} hitSlop={10}>
-          <View>
-            <Feather name="bell" size={22} color={colors.primary} />
-            <View style={[styles.notifDot, { backgroundColor: colors.primary }]} />
-          </View>
+        <Pressable
+          style={styles.headerBtn}
+          hitSlop={10}
+          onPress={() => router.push("/profile")}
+          accessibilityRole="button"
+          accessibilityLabel="Open profile"
+          testID="home-profile-button"
+        >
+          <Feather name="user" size={22} color={colors.primary} />
         </Pressable>
       </View>
 
@@ -230,14 +234,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   headerTitle: { fontSize: 18, fontFamily: "Inter_700Bold" },
-  notifDot: {
-    position: "absolute",
-    top: -1,
-    right: -1,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-  },
   greetingSection: {
     paddingHorizontal: 24,
     paddingTop: 28,

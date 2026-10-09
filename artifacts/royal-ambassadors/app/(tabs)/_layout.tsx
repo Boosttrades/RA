@@ -29,9 +29,16 @@ function NativeTabLayout() {
         <Icon sf={{ default: "trophy", selected: "trophy.fill" }} />
         <Label>Quiz</Label>
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="profile">
-        <Icon sf={{ default: "person", selected: "person.fill" }} />
-        <Label>Profile</Label>
+      <NativeTabs.Trigger name="tools">
+        <Icon
+          sf={{
+            default: "wrench.and.screwdriver",
+            selected: "wrench.and.screwdriver.fill",
+          }}
+        />
+        <Label>Tools</Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="profile" hidden>
       </NativeTabs.Trigger>
     </NativeTabs>
   );
@@ -138,22 +145,27 @@ function ClassicTabLayout() {
         }}
       />
       <Tabs.Screen
-        name="profile"
+        name="tools"
         options={{
-          title: "Profile",
+          title: "Tools",
           tabBarIcon: ({ focused }) => (
             <ShieldTabIcon focused={focused}>
               {(color) =>
                 isIOS ? (
-                  <SymbolView name="person.fill" tintColor={color} size={22} />
+                  <SymbolView
+                    name="wrench.and.screwdriver.fill"
+                    tintColor={color}
+                    size={22}
+                  />
                 ) : (
-                  <Feather name="user" size={22} color={color} />
+                  <Feather name="tool" size={22} color={color} />
                 )
               }
             </ShieldTabIcon>
           ),
         }}
       />
+      <Tabs.Screen name="profile" options={{ href: null }} />
     </Tabs>
   );
 }
