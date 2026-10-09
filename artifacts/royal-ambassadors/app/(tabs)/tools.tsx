@@ -18,9 +18,9 @@ export default function ToolsScreen() {
   const tools = [
     {
       title: "Bible",
-      description: "Read and explore Scripture.",
+      description: "Read and search Scripture in three editions.",
       icon: "book-open" as const,
-      comingSoon: true,
+      comingSoon: false,
     },
     {
       title: "Reading Plan",
@@ -83,7 +83,9 @@ export default function ToolsScreen() {
                 },
               ]}
               disabled={tool.comingSoon}
-              onPress={() => router.push("/notes")}
+              onPress={() =>
+                router.push(tool.title === "Bible" ? "/bible" : "/notes")
+              }
               accessibilityRole="button"
               accessibilityState={{ disabled: tool.comingSoon }}
               accessibilityLabel={
