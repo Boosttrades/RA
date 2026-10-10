@@ -2,4 +2,5 @@
 - [pnpm firewall installs](pnpm-firewall-installs.md) — when Replit blocks a stale transitive package, isolate the needed workspace and use a narrow compatible-version override.
 - [Theme contrast fixes](theme-contrast-fixes.md) — preserve visible styles and adjust only unreadable light/dark pairs.
 - [Access gates](access-gates.md) — app unlock is device-specific; rank access remains session-only.
+- [Storage-conscious builds](storage-conscious-builds.md) — audit bundle size first, remove only unused assets, and avoid repeated EAS attempts.
 - [Tools tab roadmap](tools-tab-roadmap.md) — Bible includes KJV/ASV/WEB; exclude four copyrighted editions pending rights; Reading Plan awaits content.
