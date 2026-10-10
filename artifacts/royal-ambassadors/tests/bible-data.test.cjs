@@ -3,6 +3,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const test = require("node:test");
 const vm = require("node:vm");
+const { gunzipSync } = require("node:zlib");
 const ts = require("typescript");
 
 const dataDirectory = path.join(__dirname, "../data/bible");
@@ -46,6 +47,23 @@ vm.runInNewContext(compiledNavigation, {
 });
 const { getAdjacentBibleChapter } = navigationModule.exports;
 
+const compiledDecoder = ts.transpileModule(
+  fs.readFileSync(path.join(dataDirectory, "decode.ts"), "utf8"),
+  {
+    compilerOptions: {
+      module: ts.ModuleKind.CommonJS,
+      target: ts.ScriptTarget.ES2022,
+    },
+  },
+).outputText;
+const decoderModule = { exports: {} };
+vm.runInNewContext(compiledDecoder, {
+  exports: decoderModule.exports,
+  module: decoderModule,
+  require,
+});
+const { decodeBibleData } = decoderModule.exports;
+
 test("bundled English Bible editions contain 66 complete book structures", () => {
   const editions = Object.values(versions);
 
@@ -66,6 +84,19 @@ test("bundled English Bible editions contain 66 complete book structures", () =>
           ),
       ),
     );
+  }
+});
+
+test("compressed offline Bible editions match the source and decode at runtime", () => {
+  for (const filename of versionFiles) {
+    const source = fs.readFileSync(path.join(dataDirectory, filename));
+    const archive = fs.readFileSync(path.join(dataDirectory, `${filename}.gz`));
+    const edition = JSON.parse(source.toString("utf8"));
+    const decoded = decodeBibleData(new Uint8Array(archive));
+
+    assert.ok(archive.length < source.length);
+    assert.deepEqual(JSON.parse(JSON.stringify(decoded)), edition);
+    assert.deepEqual(JSON.parse(gunzipSync(archive).toString("utf8")), edition);
   }
 });
 

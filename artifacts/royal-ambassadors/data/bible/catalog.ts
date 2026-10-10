@@ -1,3 +1,8 @@
+import { Asset } from "expo-asset";
+import { File } from "expo-file-system";
+
+import { decodeBibleData } from "./decode";
+
 export type BibleVersionId = "KJV" | "ASV" | "WEB";
 
 export interface BibleBook {
@@ -85,23 +90,50 @@ export const BIBLE_BOOK_NAMES = [
   "Revelation",
 ] as const;
 
+const BIBLE_ARCHIVE_MODULES = {
+  KJV: require("./en_kjv.json.gz") as number,
+  ASV: require("./en_asv.json.gz") as number,
+  WEB: require("./en_web.json.gz") as number,
+} satisfies Record<BibleVersionId, number>;
+
+const loadedBibleBooks = new Map<BibleVersionId, Promise<BibleBook[]>>();
+
 export async function loadBibleBooks(
   versionId: BibleVersionId
 ): Promise<BibleBook[]> {
-  const module =
-    versionId === "KJV"
-      ? await import("./en_kjv.json")
-      : versionId === "ASV"
-        ? await import("./en_asv.json")
-        : await import("./en_web.json");
+  const cached = loadedBibleBooks.get(versionId);
+  if (cached) return cached;
 
-  const books = module.default as unknown as BibleBook[];
-  if (books.length !== BIBLE_BOOK_NAMES.length) {
-    throw new Error(`The ${versionId} data does not contain all 66 books.`);
+  const loadPromise = (async () => {
+    const asset = await Asset.fromModule(
+      BIBLE_ARCHIVE_MODULES[versionId]
+    ).downloadAsync();
+
+    if (!asset.localUri) {
+      throw new Error(`The bundled ${versionId} Bible data is unavailable.`);
+    }
+
+    const books = decodeBibleData(await new File(asset.localUri).bytes());
+    if (!Array.isArray(books)) {
+      throw new Error(`The ${versionId} Bible data is not a book list.`);
+    }
+
+    const bibleBooks = books as unknown as BibleBook[];
+    if (bibleBooks.length !== BIBLE_BOOK_NAMES.length) {
+      throw new Error(`The ${versionId} data does not contain all 66 books.`);
+    }
+
+    return bibleBooks.map((book, index) => ({
+      ...book,
+      name: BIBLE_BOOK_NAMES[index],
+    }));
+  })();
+
+  loadedBibleBooks.set(versionId, loadPromise);
+  try {
+    return await loadPromise;
+  } catch (error) {
+    loadedBibleBooks.delete(versionId);
+    throw error;
   }
-
-  return books.map((book, index) => ({
-    ...book,
-    name: BIBLE_BOOK_NAMES[index],
-  }));
 }

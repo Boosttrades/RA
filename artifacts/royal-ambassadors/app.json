@@ -40,6 +40,15 @@
           "color": "#0B1B5E",
           "defaultChannel": "ra-update-download"
         }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "enableMinifyInReleaseBuilds": true,
+            "enableShrinkResourcesInReleaseBuilds": true
+          }
+        }
       ]
     ],
     "experiments": {
