@@ -1,11 +1,12 @@
 import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
   Keyboard,
   Modal,
+  PanResponder,
   Platform,
   Pressable,
   ScrollView,
@@ -29,6 +30,10 @@ import {
   MAX_BIBLE_SEARCH_RESULTS,
   searchBible,
 } from "@/data/bible/search";
+import {
+  ChapterDirection,
+  getAdjacentBibleChapter,
+} from "@/data/bible/navigation";
 import { useColors } from "@/hooks/useColors";
 
 type BibleMode = "read" | "search";
@@ -136,6 +141,59 @@ export default function BibleScreen() {
     (version) => version.id === versionId
   );
   const searchIsReady = debouncedSearchText.length >= 2;
+  const previousChapter = useMemo(
+    () =>
+      getAdjacentBibleChapter(
+        books,
+        selectedBookIndex,
+        selectedChapterIndex,
+        "previous"
+      ),
+    [books, selectedBookIndex, selectedChapterIndex]
+  );
+  const nextChapter = useMemo(
+    () =>
+      getAdjacentBibleChapter(
+        books,
+        selectedBookIndex,
+        selectedChapterIndex,
+        "next"
+      ),
+    [books, selectedBookIndex, selectedChapterIndex]
+  );
+
+  const navigateChapter = useCallback(
+    (direction: ChapterDirection) => {
+      const location = getAdjacentBibleChapter(
+        books,
+        selectedBookIndex,
+        selectedChapterIndex,
+        direction
+      );
+      if (!location) return;
+      setSelectedBookIndex(location.bookIndex);
+      setSelectedChapterIndex(location.chapterIndex);
+    },
+    [books, selectedBookIndex, selectedChapterIndex]
+  );
+
+  const chapterSwipeResponder = useMemo(
+    () =>
+      PanResponder.create({
+        onMoveShouldSetPanResponderCapture: (_, gesture) =>
+          Math.abs(gesture.dx) > 30 &&
+          Math.abs(gesture.dx) > Math.abs(gesture.dy) * 1.25,
+        onPanResponderRelease: (_, gesture) => {
+          if (gesture.dx < -55 || gesture.vx < -0.55) {
+            navigateChapter("next");
+          } else if (gesture.dx > 55 || gesture.vx > 0.55) {
+            navigateChapter("previous");
+          }
+        },
+        onPanResponderTerminationRequest: () => false,
+      }),
+    [navigateChapter]
+  );
 
   const openPicker = (nextPicker: BiblePicker) => {
     Keyboard.dismiss();
@@ -343,6 +401,24 @@ export default function BibleScreen() {
         <View style={styles.flex}>
           <View style={styles.readControls}>
             <Pressable
+              onPress={() => navigateChapter("previous")}
+              disabled={previousChapter === null}
+              style={[
+                styles.chapterArrow,
+                {
+                  backgroundColor: colors.card,
+                  borderColor: colors.border,
+                  opacity: previousChapter === null ? 0.45 : 1,
+                },
+              ]}
+              accessibilityRole="button"
+              accessibilityLabel="Previous chapter"
+              accessibilityState={{ disabled: previousChapter === null }}
+              testID="bible-previous-chapter"
+            >
+              <Feather name="chevron-left" size={21} color={colors.primary} />
+            </Pressable>
+            <Pressable
               onPress={() => openPicker({ kind: "book", target: "read" })}
               style={[
                 styles.locationButton,
@@ -384,35 +460,68 @@ export default function BibleScreen() {
                 color={colors.mutedForeground}
               />
             </Pressable>
+            <Pressable
+              onPress={() => navigateChapter("next")}
+              disabled={nextChapter === null}
+              style={[
+                styles.chapterArrow,
+                {
+                  backgroundColor: colors.card,
+                  borderColor: colors.border,
+                  opacity: nextChapter === null ? 0.45 : 1,
+                },
+              ]}
+              accessibilityRole="button"
+              accessibilityLabel="Next chapter"
+              accessibilityState={{ disabled: nextChapter === null }}
+              testID="bible-next-chapter"
+            >
+              <Feather name="chevron-right" size={21} color={colors.primary} />
+            </Pressable>
           </View>
 
-          <FlatList
-            data={verseItems}
-            keyExtractor={(item) => String(item.number)}
-            renderItem={renderVerse}
-            contentContainerStyle={[
-              styles.verseList,
-              { paddingBottom: bottomPadding },
-            ]}
-            showsVerticalScrollIndicator={false}
-            initialNumToRender={24}
-            windowSize={9}
-            ListHeaderComponent={
-              <View style={styles.chapterHeading}>
-                <Text style={[styles.chapterEyebrow, { color: colors.primary }]}>
-                  {versionId} · {currentVersion?.name}
+          <View
+            style={styles.flex}
+            {...chapterSwipeResponder.panHandlers}
+            testID="bible-chapter-swipe-area"
+          >
+            <FlatList
+              key={`${selectedBookIndex}-${selectedChapterIndex}`}
+              data={verseItems}
+              keyExtractor={(item) => String(item.number)}
+              renderItem={renderVerse}
+              contentContainerStyle={[
+                styles.verseList,
+                { paddingBottom: bottomPadding },
+              ]}
+              showsVerticalScrollIndicator={false}
+              initialNumToRender={24}
+              windowSize={9}
+              ListHeaderComponent={
+                <View style={styles.chapterHeading}>
+                  <Text style={[styles.chapterEyebrow, { color: colors.primary }]}>
+                    {versionId} · {currentVersion?.name}
+                  </Text>
+                  <Text style={[styles.chapterTitle, { color: colors.navy }]}>
+                    {selectedBook?.name} {selectedChapterIndex + 1}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.chapterSwipeHint,
+                      { color: colors.mutedForeground },
+                    ]}
+                  >
+                    Swipe left or right to change chapter
+                  </Text>
+                </View>
+              }
+              ListEmptyComponent={
+                <Text style={[styles.statusText, { color: colors.mutedForeground }]}>
+                  No verses are available for this chapter.
                 </Text>
-                <Text style={[styles.chapterTitle, { color: colors.navy }]}>
-                  {selectedBook?.name} {selectedChapterIndex + 1}
-                </Text>
-              </View>
-            }
-            ListEmptyComponent={
-              <Text style={[styles.statusText, { color: colors.mutedForeground }]}>
-                No verses are available for this chapter.
-              </Text>
-            }
-          />
+              }
+            />
+          </View>
         </View>
       ) : (
         <KeyboardAvoidingView
@@ -987,6 +1096,14 @@ const styles = StyleSheet.create({
     paddingTop: 5,
     paddingBottom: 12,
   },
+  chapterArrow: {
+    width: 36,
+    minHeight: 45,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderRadius: 13,
+  },
   locationButton: {
     flex: 1,
     minWidth: 0,
@@ -1024,6 +1141,11 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   chapterTitle: { fontSize: 25, fontFamily: "Inter_700Bold" },
+  chapterSwipeHint: {
+    fontSize: 11,
+    fontFamily: "Inter_400Regular",
+    marginTop: 3,
+  },
   verseRow: {
     flexDirection: "row",
     alignItems: "flex-start",

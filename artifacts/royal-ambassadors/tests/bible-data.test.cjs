@@ -30,6 +30,22 @@ vm.runInNewContext(compiledSearch, {
 });
 const { searchBible } = searchModule.exports;
 
+const compiledNavigation = ts.transpileModule(
+  fs.readFileSync(path.join(dataDirectory, "navigation.ts"), "utf8"),
+  {
+    compilerOptions: {
+      module: ts.ModuleKind.CommonJS,
+      target: ts.ScriptTarget.ES2022,
+    },
+  },
+).outputText;
+const navigationModule = { exports: {} };
+vm.runInNewContext(compiledNavigation, {
+  exports: navigationModule.exports,
+  module: navigationModule,
+});
+const { getAdjacentBibleChapter } = navigationModule.exports;
+
 test("bundled English Bible editions contain 66 complete book structures", () => {
   const editions = Object.values(versions);
 
@@ -84,4 +100,23 @@ test("book and chapter filters constrain phrase search", () => {
       (result) => result.bookIndex === 0 && result.chapterIndex === 0,
     ),
   );
+});
+
+test("chapter navigation moves between chapters and across book boundaries", () => {
+  const kjv = versions["en_kjv.json"];
+
+  const genesisTwo = getAdjacentBibleChapter(kjv, 0, 0, "next");
+  assert.equal(genesisTwo.bookIndex, 0);
+  assert.equal(genesisTwo.chapterIndex, 1);
+
+  const exodusOne = getAdjacentBibleChapter(kjv, 0, 49, "next");
+  assert.equal(exodusOne.bookIndex, 1);
+  assert.equal(exodusOne.chapterIndex, 0);
+
+  const genesisFifty = getAdjacentBibleChapter(kjv, 1, 0, "previous");
+  assert.equal(genesisFifty.bookIndex, 0);
+  assert.equal(genesisFifty.chapterIndex, 49);
+
+  assert.equal(getAdjacentBibleChapter(kjv, 0, 0, "previous"), null);
+  assert.equal(getAdjacentBibleChapter(kjv, 65, 21, "next"), null);
 });
