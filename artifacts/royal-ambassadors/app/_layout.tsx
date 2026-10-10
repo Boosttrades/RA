@@ -21,15 +21,24 @@ import { AccessGate } from "@/components/AccessGate";
 import { UpdateDialog } from "@/components/UpdateDialog";
 import { AppProvider } from "@/context/AppContext";
 import { useAppUpdate } from "@/hooks/useAppUpdate";
+import { getDeviceIdentity } from "@/services/deviceIdentity";
+import {
+  APP_UNLOCK_STORAGE_KEY,
+  createDeviceUnlockState,
+  isUnlockedForDevice,
+  LEGACY_APP_UNLOCK_STORAGE_KEY,
+} from "@/services/deviceUnlock";
 
 SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient();
-const APP_UNLOCK_STORAGE_KEY = "@ra_app_unlocked_v1";
 
 function RootLayoutNav() {
   const [isUnlocked, setIsUnlocked] = React.useState(false);
   const [unlockStateLoaded, setUnlockStateLoaded] = React.useState(false);
+  const [deviceIdentity, setDeviceIdentity] = React.useState<string | null>(
+    null
+  );
   const {
     state,
     startUpdate,
@@ -45,8 +54,22 @@ function RootLayoutNav() {
 
     const restoreUnlockState = async () => {
       try {
+        const currentDeviceIdentity = await getDeviceIdentity();
         const storedValue = await AsyncStorage.getItem(APP_UNLOCK_STORAGE_KEY);
-        if (isMounted) setIsUnlocked(storedValue === "true");
+        const unlockedOnThisDevice = isUnlockedForDevice(
+          storedValue,
+          currentDeviceIdentity
+        );
+
+        if (storedValue && !unlockedOnThisDevice) {
+          await AsyncStorage.removeItem(APP_UNLOCK_STORAGE_KEY);
+        }
+        await AsyncStorage.removeItem(LEGACY_APP_UNLOCK_STORAGE_KEY);
+
+        if (isMounted) {
+          setDeviceIdentity(currentDeviceIdentity);
+          setIsUnlocked(unlockedOnThisDevice);
+        }
       } catch (error) {
         console.error("Unable to restore the saved app unlock state.", error);
       } finally {
@@ -61,7 +84,13 @@ function RootLayoutNav() {
   }, []);
 
   const unlockApp = async () => {
-    await AsyncStorage.setItem(APP_UNLOCK_STORAGE_KEY, "true");
+    if (!deviceIdentity) {
+      throw new Error("This device does not have an available device identifier.");
+    }
+    await AsyncStorage.setItem(
+      APP_UNLOCK_STORAGE_KEY,
+      createDeviceUnlockState(deviceIdentity)
+    );
     setIsUnlocked(true);
   };
 
