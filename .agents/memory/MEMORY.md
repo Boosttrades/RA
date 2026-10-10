@@ -2,4 +2,4 @@
 - [pnpm firewall installs](pnpm-firewall-installs.md) — when Replit blocks a stale transitive package, isolate the needed workspace and use a narrow compatible-version override.
 - [Theme contrast fixes](theme-contrast-fixes.md) — preserve visible styles and adjust only unreadable light/dark pairs.
 - [Access gates](access-gates.md) — app-wide access persists after first unlock; rank access remains session-only.
-- [Tools tab roadmap](tools-tab-roadmap.md) — Bible and Reading Plan stay coming soon until content is provided; Notes should be a usable local feature.
+- [Tools tab roadmap](tools-tab-roadmap.md) — Bible includes KJV/ASV/WEB; exclude four copyrighted editions pending rights; Reading Plan awaits content.

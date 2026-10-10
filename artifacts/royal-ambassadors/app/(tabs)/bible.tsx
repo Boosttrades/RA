@@ -692,6 +692,14 @@ export default function BibleScreen() {
                     </Pressable>
                   );
                 })}
+                <Text
+                  style={[
+                    styles.sourceAttribution,
+                    { color: colors.mutedForeground },
+                  ]}
+                >
+                  Text source: thiagobodruk/bible
+                </Text>
               </ScrollView>
             ) : picker?.kind === "book" ? (
               <KeyboardAvoidingView
@@ -1138,6 +1146,13 @@ const styles = StyleSheet.create({
   pickerTitle: { fontSize: 17, fontFamily: "Inter_700Bold" },
   pickerList: { flexShrink: 1 },
   versionOptions: { gap: 9, paddingBottom: 10 },
+  sourceAttribution: {
+    fontSize: 10,
+    lineHeight: 16,
+    fontFamily: "Inter_400Regular",
+    textAlign: "center",
+    marginTop: 4,
+  },
   versionOption: {
     minHeight: 64,
     flexDirection: "row",
