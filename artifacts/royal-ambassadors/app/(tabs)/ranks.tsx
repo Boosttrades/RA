@@ -1,8 +1,9 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import * as Haptics from "expo-haptics";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Keyboard,
   Platform,
   Pressable,
@@ -12,11 +13,18 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { useNavigation } from "expo-router";
+import { useNavigation, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { APP_UNLOCK_PASSWORD } from "@/constants/access";
 import { useApp } from "@/context/AppContext";
+import {
+  BIBLE_BOOK_NAMES,
+  BIBLE_VERSIONS,
+  BibleVersionId,
+  loadBibleBooks,
+} from "@/data/bible/catalog";
+import { getBibleReferenceText, parseBibleReference } from "@/data/bible/references";
 import { RANKS, Rank, getCurrentRankIndex } from "@/data/ranks";
 import { MEMORY_VERSES, MemoryVerse } from "@/data/verses";
 import { useColors } from "@/hooks/useColors";
@@ -197,65 +205,106 @@ function RankCard({
 
 // ─── Memory Verse Card ────────────────────────────────────────────────────────
 
-function VerseCard({ verse, index }: { verse: MemoryVerse; index: number }) {
+function VerseCard({
+  verse,
+  index,
+  translatedText,
+  onOpenInBible,
+}: {
+  verse: MemoryVerse;
+  index: number;
+  translatedText: string;
+  onOpenInBible: () => void;
+}) {
   const colors = useColors();
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <Pressable
+    <View
       style={[
         styles.verseCard,
         { backgroundColor: colors.card, borderColor: colors.border },
       ]}
-      onPress={() => {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-        setExpanded((v) => !v);
-      }}
     >
-      {/* Number badge */}
-      <View style={[styles.verseNumBadge, { backgroundColor: colors.secondary }]}>
-        <Text style={[styles.verseNum, { color: colors.navy }]}>{index + 1}</Text>
-      </View>
-
-      <View style={styles.verseBody}>
-        <Text style={[styles.verseReference, { color: colors.navy }]}>
-          {verse.reference}
-        </Text>
-
-        <View style={[styles.topicPill, { backgroundColor: colors.goldLight }]}>
-          <Text style={[styles.topicText, { color: colors.goldText }]}>
-            {verse.topic}
-          </Text>
+      <Pressable
+        style={styles.verseCardMain}
+        onPress={() => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          setExpanded((v) => !v);
+        }}
+        accessibilityRole="button"
+        accessibilityState={{ expanded }}
+        accessibilityLabel={`${verse.reference}, ${verse.topic}`}
+        testID={`memory-verse-card-${verse.id}`}
+      >
+        <View style={[styles.verseNumBadge, { backgroundColor: colors.secondary }]}>
+          <Text style={[styles.verseNum, { color: colors.navy }]}>{index + 1}</Text>
         </View>
 
-        {expanded && (
-          <Text style={[styles.verseFullText, { color: colors.foreground }]}>
-            {`"${verse.text}"`}
+        <View style={styles.verseBody}>
+          <Text style={[styles.verseReference, { color: colors.navy }]}>
+            {verse.reference}
           </Text>
-        )}
 
-        {!expanded && (
-          <Text
-            style={[styles.versePreview, { color: colors.mutedForeground }]}
-            numberOfLines={1}
-          >
-            {verse.text}
+          <View style={[styles.topicPill, { backgroundColor: colors.goldLight }]}>
+            <Text style={[styles.topicText, { color: colors.goldText }]}>
+              {verse.topic}
+            </Text>
+          </View>
+
+          {expanded && (
+            <Text style={[styles.verseFullText, { color: colors.foreground }]}>
+              {`"${translatedText}"`}
+            </Text>
+          )}
+
+          {!expanded && (
+            <Text
+              style={[styles.versePreview, { color: colors.mutedForeground }]}
+              numberOfLines={1}
+            >
+              {translatedText}
+            </Text>
+          )}
+        </View>
+
+        <Ionicons
+          name={expanded ? "chevron-up" : "chevron-down"}
+          size={16}
+          color={colors.mutedForeground}
+        />
+      </Pressable>
+
+      {expanded && (
+        <Pressable
+          style={[styles.verseReadButton, { borderTopColor: colors.border }]}
+          onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            onOpenInBible();
+          }}
+          accessibilityRole="button"
+          accessibilityLabel={`Open ${verse.reference} in the Bible`}
+          testID={`memory-verse-open-${verse.id}`}
+        >
+          <Ionicons name="book-outline" size={16} color={colors.primary} />
+          <Text style={[styles.verseReadButtonText, { color: colors.primary }]}>
+            Read in Bible
           </Text>
-        )}
-      </View>
-
-      <Ionicons
-        name={expanded ? "chevron-up" : "chevron-down"}
-        size={16}
-        color={colors.mutedForeground}
-      />
-    </Pressable>
+          <Ionicons name="arrow-forward" size={15} color={colors.primary} />
+        </Pressable>
+      )}
+    </View>
   );
 }
 
 // ─── Section Switcher ─────────────────────────────────────────────────────────
 
 type Section = "ranks" | "verses";
+type MemoryEditionState = {
+  versionId: BibleVersionId;
+  status: "loading" | "ready" | "error";
+  verseTexts: Record<string, string>;
+};
 
 // ─── Screen ───────────────────────────────────────────────────────────────────
 
@@ -263,6 +312,7 @@ export default function RanksScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
+  const router = useRouter();
   const {
     currentRankId,
     setCurrentRankId,
@@ -274,8 +324,15 @@ export default function RanksScreen() {
   const [section, setSection] = useState<Section>("ranks");
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [memoryVersionId, setMemoryVersionId] = useState<BibleVersionId>("KJV");
+  const [memoryEditionRetryCount, setMemoryEditionRetryCount] = useState(0);
+  const [memoryEdition, setMemoryEdition] = useState<MemoryEditionState>({
+    versionId: "KJV",
+    status: "loading",
+    verseTexts: {},
+  });
 
-  React.useEffect(() => {
+  useEffect(() => {
     // The first visit counts as the first tap; subsequent tab presses are
     // captured even when this tab is already selected.
     recordRankTabTap();
@@ -284,6 +341,53 @@ export default function RanksScreen() {
     };
     return tabNavigation.addListener("tabPress", recordRankTabTap);
   }, [navigation, recordRankTabTap]);
+
+  useEffect(() => {
+    if (section !== "verses") return;
+
+    let active = true;
+    setMemoryEdition({
+      versionId: memoryVersionId,
+      status: "loading",
+      verseTexts: {},
+    });
+
+    loadBibleBooks(memoryVersionId)
+      .then((books) => {
+        const verseTexts: Record<string, string> = {};
+        for (const verse of MEMORY_VERSES) {
+          const text = getBibleReferenceText(books, verse.reference, BIBLE_BOOK_NAMES);
+          if (!text) {
+            throw new Error(`The ${verse.reference} passage is missing from ${memoryVersionId}.`);
+          }
+          verseTexts[verse.id] = text;
+        }
+        if (active) {
+          setMemoryEdition({ versionId: memoryVersionId, status: "ready", verseTexts });
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setMemoryEdition({
+            versionId: memoryVersionId,
+            status: "error",
+            verseTexts: {},
+          });
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [section, memoryVersionId, memoryEditionRetryCount]);
+
+  const openInBible = (verse: MemoryVerse) => {
+    if (!parseBibleReference(verse.reference, BIBLE_BOOK_NAMES)) return;
+    router.push({
+      pathname: "/bible",
+      params: { ref: verse.reference, version: memoryVersionId },
+    });
+  };
 
   if (!ranksUnlocked && section === "ranks") {
     const topPadding = Platform.OS === "web" ? 67 : insets.top;
@@ -550,13 +654,85 @@ export default function RanksScreen() {
           >
             <MaterialCommunityIcons name="crown" size={18} color={colors.goldText} />
             <Text style={[styles.verseIntroText, { color: colors.navy }]}>
-              Tap a verse to reveal the full text
+              Choose a version, tap a verse to expand it, or read it in the Bible.
             </Text>
           </View>
 
-          {MEMORY_VERSES.map((verse, i) => (
-            <VerseCard key={verse.id} verse={verse} index={i} />
-          ))}
+          <View style={styles.memoryVersionSection}>
+            <Text style={[styles.memoryVersionLabel, { color: colors.mutedForeground }]}>
+              BIBLE VERSION
+            </Text>
+            <View style={styles.memoryVersionOptions}>
+              {BIBLE_VERSIONS.map((version) => {
+                const selected = version.id === memoryVersionId;
+                return (
+                  <Pressable
+                    key={version.id}
+                    onPress={() => setMemoryVersionId(version.id)}
+                    style={[
+                      styles.memoryVersionButton,
+                      {
+                        backgroundColor: selected ? colors.primary : colors.card,
+                        borderColor: selected ? colors.primary : colors.border,
+                      },
+                    ]}
+                    accessibilityRole="button"
+                    accessibilityState={{ selected }}
+                    accessibilityLabel={`${version.name}${selected ? ", selected" : ""}`}
+                    testID={`memory-version-${version.id}`}
+                  >
+                    <Text
+                      style={[
+                        styles.memoryVersionButtonText,
+                        { color: selected ? colors.primaryForeground : colors.navy },
+                      ]}
+                    >
+                      {version.id}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </View>
+
+          {memoryEdition.versionId !== memoryVersionId ||
+          memoryEdition.status === "loading" ? (
+            <View style={styles.memoryEditionStatus} testID="memory-edition-loading">
+              <ActivityIndicator size="small" color={colors.primary} />
+              <Text style={[styles.memoryEditionStatusText, { color: colors.mutedForeground }]}>
+                Loading the offline {memoryVersionId} edition…
+              </Text>
+            </View>
+          ) : memoryEdition.status === "error" ? (
+            <View
+              style={[
+                styles.memoryEditionError,
+                { backgroundColor: colors.card, borderColor: colors.border },
+              ]}
+              testID="memory-edition-error"
+            >
+              <Text style={[styles.memoryEditionStatusText, { color: colors.destructive }]}>
+                Couldn’t load this offline edition. Your saved memory verses are unchanged.
+              </Text>
+              <Pressable
+                onPress={() => setMemoryEditionRetryCount((count) => count + 1)}
+                accessibilityRole="button"
+                testID="memory-edition-retry"
+              >
+                <Text style={[styles.memoryRetryText, { color: colors.primary }]}>Try again</Text>
+              </Pressable>
+            </View>
+          ) : (
+            MEMORY_VERSES.map((verse, i) => (
+              <VerseCard
+                key={verse.id}
+                verse={verse}
+                index={i}
+                translatedText={memoryEdition.verseTexts[verse.id]}
+                onOpenInBible={() => openInBible(verse)}
+              />
+            ))
+          )}
         </ScrollView>
       )}
     </View>
@@ -795,19 +971,67 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   verseIntroText: { fontSize: 13, fontFamily: "Inter_500Medium", flex: 1 },
-  verseCard: {
+  memoryVersionSection: { gap: 7, marginBottom: 4 },
+  memoryVersionLabel: {
+    fontSize: 10,
+    letterSpacing: 0.8,
+    fontFamily: "Inter_700Bold",
+  },
+  memoryVersionOptions: { flexDirection: "row", gap: 8 },
+  memoryVersionButton: {
+    flex: 1,
+    minHeight: 42,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderRadius: 11,
+  },
+  memoryVersionButtonText: { fontSize: 13, fontFamily: "Inter_700Bold" },
+  memoryEditionStatus: {
+    minHeight: 54,
     flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
+  },
+  memoryEditionStatusText: {
+    fontSize: 12,
+    fontFamily: "Inter_500Medium",
+    lineHeight: 18,
+  },
+  memoryEditionError: {
+    gap: 9,
+    padding: 12,
+    borderWidth: 1,
+    borderRadius: 12,
+  },
+  memoryRetryText: { fontSize: 13, fontFamily: "Inter_700Bold" },
+  verseCard: {
     borderRadius: 14,
     borderWidth: 1,
-    padding: 14,
     shadowColor: "#1A3BAE",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.04,
     shadowRadius: 4,
     elevation: 1,
+    overflow: "hidden",
   },
+  verseCardMain: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 12,
+    padding: 14,
+  },
+  verseReadButton: {
+    minHeight: 43,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    gap: 8,
+    paddingHorizontal: 14,
+  },
+  verseReadButtonText: { fontSize: 13, fontFamily: "Inter_600SemiBold" },
   verseNumBadge: {
     width: 30,
     height: 30,

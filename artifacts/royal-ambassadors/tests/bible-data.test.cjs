@@ -64,6 +64,54 @@ vm.runInNewContext(compiledDecoder, {
 });
 const { decodeBibleData } = decoderModule.exports;
 
+const compiledReferences = ts.transpileModule(
+  fs.readFileSync(path.join(dataDirectory, "references.ts"), "utf8"),
+  {
+    compilerOptions: {
+      module: ts.ModuleKind.CommonJS,
+      target: ts.ScriptTarget.ES2022,
+    },
+  },
+).outputText;
+const referencesModule = { exports: {} };
+vm.runInNewContext(compiledReferences, {
+  exports: referencesModule.exports,
+  module: referencesModule,
+});
+const { getBibleReferenceText, parseBibleReference } = referencesModule.exports;
+
+const compiledBookNames = ts.transpileModule(
+  fs.readFileSync(path.join(dataDirectory, "bookNames.ts"), "utf8"),
+  {
+    compilerOptions: {
+      module: ts.ModuleKind.CommonJS,
+      target: ts.ScriptTarget.ES2022,
+    },
+  },
+).outputText;
+const bookNamesModule = { exports: {} };
+vm.runInNewContext(compiledBookNames, {
+  exports: bookNamesModule.exports,
+  module: bookNamesModule,
+});
+
+const compiledMemoryVerses = ts.transpileModule(
+  fs.readFileSync(path.join(__dirname, "../data/verses.ts"), "utf8"),
+  {
+    compilerOptions: {
+      module: ts.ModuleKind.CommonJS,
+      target: ts.ScriptTarget.ES2022,
+    },
+  },
+).outputText;
+const memoryVersesModule = { exports: {} };
+vm.runInNewContext(compiledMemoryVerses, {
+  exports: memoryVersesModule.exports,
+  module: memoryVersesModule,
+});
+const { MEMORY_VERSES } = memoryVersesModule.exports;
+const { BIBLE_BOOK_NAMES: bibleBookNames } = bookNamesModule.exports;
+
 test("bundled English Bible editions contain 66 complete book structures", () => {
   const editions = Object.values(versions);
 
@@ -150,4 +198,48 @@ test("chapter navigation moves between chapters and across book boundaries", () 
 
   assert.equal(getAdjacentBibleChapter(kjv, 0, 0, "previous"), null);
   assert.equal(getAdjacentBibleChapter(kjv, 65, 21, "next"), null);
+});
+
+test("every memory verse resolves to bundled text in all supported editions", () => {
+  for (const verse of MEMORY_VERSES) {
+    assert.ok(parseBibleReference(verse.reference, bibleBookNames), verse.reference);
+    for (const books of Object.values(versions)) {
+      assert.ok(
+        getBibleReferenceText(books, verse.reference, bibleBookNames),
+        `${verse.reference} should exist in each bundled edition`,
+      );
+    }
+  }
+});
+
+test("memory verse references handle Psalm aliases and verse ranges", () => {
+  const psalm = parseBibleReference("Psalm 119:105", bibleBookNames);
+  assert.equal(psalm.bookIndex, 18);
+  assert.equal(psalm.chapterIndex, 118);
+  assert.equal(psalm.startVerseNumber, 105);
+
+  const range = parseBibleReference("Matthew 5:14-16", bibleBookNames);
+  assert.equal(range.startVerseNumber, 14);
+  assert.equal(range.endVerseNumber, 16);
+
+  const kjvText = getBibleReferenceText(
+    versions["en_kjv.json"],
+    "Matthew 5:14-16",
+    bibleBookNames,
+  );
+  const webText = getBibleReferenceText(
+    versions["en_web.json"],
+    "Matthew 5:14-16",
+    bibleBookNames,
+  );
+  assert.equal(
+    kjvText,
+    versions["en_kjv.json"][39].chapters[4].slice(13, 16).join(" "),
+  );
+  assert.notEqual(kjvText, webText);
+});
+
+test("Bible reference lookup rejects unknown or out-of-range locations", () => {
+  assert.equal(parseBibleReference("Missing Book 1:1", bibleBookNames), null);
+  assert.equal(getBibleReferenceText(versions["en_kjv.json"], "Genesis 999:1", bibleBookNames), null);
 });

@@ -1,6 +1,6 @@
 import Feather from "@expo/vector-icons/Feather";
-import { useRouter } from "expo-router";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -25,6 +25,7 @@ import {
   BibleVersionId,
   loadBibleBooks,
 } from "@/data/bible/catalog";
+import { parseBibleReference } from "@/data/bible/references";
 import {
   BibleSearchResult,
   MAX_BIBLE_SEARCH_RESULTS,
@@ -49,6 +50,14 @@ interface VerseItem {
   text: string;
 }
 
+function firstRouteParam(value?: string | string[]): string | undefined {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+function isBibleVersionId(value: string | undefined): value is BibleVersionId {
+  return BIBLE_VERSIONS.some((version) => version.id === value);
+}
+
 function cleanVerseText(text: string): string {
   return text.replace(/\s+/g, " ").replace(/\s+([,.;:!?])/g, "$1").trim();
 }
@@ -57,9 +66,17 @@ export default function BibleScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const routeParams = useLocalSearchParams<{
+    ref?: string | string[];
+    version?: string | string[];
+  }>();
+  const routeReference = firstRouteParam(routeParams.ref);
+  const routeVersion = firstRouteParam(routeParams.version);
   const topPadding = Platform.OS === "web" ? 67 : insets.top;
   const bottomPadding = Platform.OS === "web" ? 118 : insets.bottom + 92;
 
+  const bibleListRef = useRef<FlatList<VerseItem>>(null);
+  const appliedReferenceKey = useRef<string | null>(null);
   const [versionId, setVersionId] = useState<BibleVersionId>("KJV");
   const [books, setBooks] = useState<BibleBook[]>([]);
   const [loadStatus, setLoadStatus] = useState<"loading" | "ready" | "error">(
@@ -77,6 +94,11 @@ export default function BibleScreen() {
   const [debouncedSearchText, setDebouncedSearchText] = useState("");
   const [picker, setPicker] = useState<BiblePicker>(null);
   const [bookPickerQuery, setBookPickerQuery] = useState("");
+  const [highlightedVerseRange, setHighlightedVerseRange] = useState<{
+    start: number;
+    end: number;
+  } | null>(null);
+  const [focusVerseNumber, setFocusVerseNumber] = useState<number | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -98,6 +120,34 @@ export default function BibleScreen() {
   }, [versionId, retryCount]);
 
   useEffect(() => {
+    if (!routeReference && !routeVersion) {
+      appliedReferenceKey.current = null;
+      return;
+    }
+
+    const requestKey = `${routeReference ?? ""}\u0000${routeVersion ?? ""}`;
+    if (appliedReferenceKey.current === requestKey) return;
+    appliedReferenceKey.current = requestKey;
+
+    if (isBibleVersionId(routeVersion)) setVersionId(routeVersion);
+    if (routeReference) {
+      const location = parseBibleReference(routeReference, BIBLE_BOOK_NAMES);
+      if (location) {
+        setSelectedBookIndex(location.bookIndex);
+        setSelectedChapterIndex(location.chapterIndex);
+        setHighlightedVerseRange({
+          start: location.startVerseNumber,
+          end: location.endVerseNumber,
+        });
+        setFocusVerseNumber(location.startVerseNumber);
+        setMode("read");
+      }
+    }
+
+    router.setParams({ ref: undefined, version: undefined });
+  }, [routeReference, routeVersion, router]);
+
+  useEffect(() => {
     const timer = setTimeout(
       () => setDebouncedSearchText(searchText.trim()),
       250
@@ -111,6 +161,28 @@ export default function BibleScreen() {
     () => selectedChapter.map((text, index) => ({ number: index + 1, text })),
     [selectedChapter]
   );
+
+  useEffect(() => {
+    if (loadStatus !== "ready" || focusVerseNumber === null) return;
+
+    const index = Math.min(focusVerseNumber - 1, verseItems.length - 1);
+    if (index < 0) return;
+
+    const timer = setTimeout(() => {
+      bibleListRef.current?.scrollToIndex({
+        index,
+        viewPosition: 0.15,
+        animated: true,
+      });
+    }, 120);
+    return () => clearTimeout(timer);
+  }, [
+    focusVerseNumber,
+    loadStatus,
+    selectedBookIndex,
+    selectedChapterIndex,
+    verseItems.length,
+  ]);
 
   const searchResults = useMemo(
     () =>
@@ -171,6 +243,8 @@ export default function BibleScreen() {
         direction
       );
       if (!location) return;
+      setHighlightedVerseRange(null);
+      setFocusVerseNumber(null);
       setSelectedBookIndex(location.bookIndex);
       setSelectedChapterIndex(location.chapterIndex);
     },
@@ -205,6 +279,8 @@ export default function BibleScreen() {
     if (picker?.kind !== "book") return;
     if (picker.target === "read") {
       if (index !== null) {
+        setHighlightedVerseRange(null);
+        setFocusVerseNumber(null);
         setSelectedBookIndex(index);
         setSelectedChapterIndex(0);
       }
@@ -218,7 +294,11 @@ export default function BibleScreen() {
   const chooseChapter = (index: number | null) => {
     if (picker?.kind !== "chapter") return;
     if (picker.target === "read") {
-      if (index !== null) setSelectedChapterIndex(index);
+      if (index !== null) {
+        setHighlightedVerseRange(null);
+        setFocusVerseNumber(null);
+        setSelectedChapterIndex(index);
+      }
     } else {
       setSearchChapterIndex(index);
     }
@@ -227,13 +307,27 @@ export default function BibleScreen() {
 
   const openSearchResult = (result: BibleSearchResult) => {
     Keyboard.dismiss();
+    setHighlightedVerseRange(null);
+    setFocusVerseNumber(null);
     setSelectedBookIndex(result.bookIndex);
     setSelectedChapterIndex(result.chapterIndex);
     setMode("read");
   };
 
   const renderVerse = ({ item }: { item: VerseItem }) => (
-    <View style={styles.verseRow}>
+    <View
+      style={[
+        styles.verseRow,
+        highlightedVerseRange &&
+          item.number >= highlightedVerseRange.start &&
+          item.number <= highlightedVerseRange.end && {
+            backgroundColor: colors.goldLight,
+            borderRadius: 10,
+            marginHorizontal: -8,
+            paddingHorizontal: 8,
+          },
+      ]}
+    >
       <Text style={[styles.verseNumber, { color: colors.primary }]}>
         {item.number}
       </Text>
@@ -293,7 +387,7 @@ export default function BibleScreen() {
           hitSlop={10}
           style={styles.backButton}
           accessibilityRole="button"
-          accessibilityLabel="Back to tools"
+          accessibilityLabel="Go back"
           testID="bible-back-button"
         >
           <Feather name="arrow-left" size={21} color={colors.navy} />
@@ -486,6 +580,7 @@ export default function BibleScreen() {
             testID="bible-chapter-swipe-area"
           >
             <FlatList
+              ref={bibleListRef}
               key={`${selectedBookIndex}-${selectedChapterIndex}`}
               data={verseItems}
               keyExtractor={(item) => String(item.number)}
@@ -497,6 +592,21 @@ export default function BibleScreen() {
               showsVerticalScrollIndicator={false}
               initialNumToRender={24}
               windowSize={9}
+              onScrollToIndexFailed={({ index, averageItemLength }) => {
+                const list = bibleListRef.current;
+                if (!list || averageItemLength <= 0) return;
+                list.scrollToOffset({
+                  offset: averageItemLength * index,
+                  animated: false,
+                });
+                setTimeout(() => {
+                  list.scrollToIndex({
+                    index,
+                    viewPosition: 0.15,
+                    animated: true,
+                  });
+                }, 250);
+              }}
               ListHeaderComponent={
                 <View style={styles.chapterHeading}>
                   <Text style={[styles.chapterEyebrow, { color: colors.primary }]}>
