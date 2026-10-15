@@ -18,6 +18,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { AccessGate } from "@/components/AccessGate";
 import { UpdateDialog } from "@/components/UpdateDialog";
 import { AppProvider } from "@/context/AppContext";
+import { ManualAppUpdateProvider } from "@/context/ManualAppUpdateContext";
 import { useAppUpdate } from "@/hooks/useAppUpdate";
 import { getDeviceIdentity } from "@/services/deviceIdentity";
 import {
@@ -100,24 +101,26 @@ function RootLayoutNav() {
   }, []);
 
   return (
-    <>
-      {!unlockStateLoaded ? null : isUnlocked ? (
-        <Stack screenOptions={{ headerBackTitle: "Back" }}>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        </Stack>
-      ) : (
-        <AccessGate onUnlock={unlockApp} />
-      )}
-      <UpdateDialog
-        state={state}
-        onUpdate={startUpdate}
-        onCancel={cancelUpdate}
-        onDismiss={dismiss}
-        onRetry={checkNow}
-        onResumeInstall={resumeInstall}
-        onCancelPendingInstall={cancelPendingInstall}
-      />
-    </>
+    <ManualAppUpdateProvider value={checkNow}>
+      <>
+        {!unlockStateLoaded ? null : isUnlocked ? (
+          <Stack screenOptions={{ headerBackTitle: "Back" }}>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          </Stack>
+        ) : (
+          <AccessGate onUnlock={unlockApp} />
+        )}
+        <UpdateDialog
+          state={state}
+          onUpdate={startUpdate}
+          onCancel={cancelUpdate}
+          onDismiss={dismiss}
+          onRetry={checkNow}
+          onResumeInstall={resumeInstall}
+          onCancelPendingInstall={cancelPendingInstall}
+        />
+      </>
+    </ManualAppUpdateProvider>
   );
 }
 

@@ -4,3 +4,4 @@
 - [Access gates](access-gates.md) — app unlock is device-specific; rank access remains session-only.
 - [Storage-conscious builds](storage-conscious-builds.md) — audit bundle size first, remove only unused assets, and avoid repeated EAS attempts.
 - [Tools tab roadmap](tools-tab-roadmap.md) — Bible includes KJV/ASV/WEB; exclude four copyrighted editions pending rights; Reading Plan awaits content.
+- [Android APK updater](android-apk-updater.md) — keep Expo OTA updates disabled; use hosted update.json for Android release metadata and APK updates.

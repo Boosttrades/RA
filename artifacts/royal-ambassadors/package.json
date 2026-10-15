@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "EXPO_PACKAGER_PROXY_URL=https://$REPLIT_EXPO_DEV_DOMAIN EXPO_PUBLIC_DOMAIN=$REPLIT_DEV_DOMAIN EXPO_PUBLIC_REPL_ID=$REPL_ID REACT_NATIVE_PACKAGER_HOSTNAME=$REPLIT_DEV_DOMAIN pnpm exec expo start --localhost --port $PORT",
     "build": "node scripts/build.js",
+    "sync-release-metadata": "node scripts/sync-release-metadata.cjs",
     "serve": "node server/serve.js",
     "compress-bible-data": "node scripts/compress-bible-data.cjs",
     "typecheck": "tsc -p tsconfig.json --noEmit && pnpm run test",
@@ -58,7 +59,6 @@
     "expo-file-system": "^19.0.24",
     "expo-intent-launcher": "^13.0.8",
     "expo-notifications": "~0.32.17",
-    "expo-updates": "~29.0.20",
     "fflate": "^0.8.3"
   }
 }

@@ -19,8 +19,10 @@ import { updateLogger } from "./logger";
 const STORAGE_KEY = "@ra_pending_install";
 
 export interface PendingInstall {
-  /** Semver string of the APK sitting on disk. */
+  /** Android versionName of the APK sitting on disk. */
   version: string;
+  /** Android versionCode of the APK, when saved by the current updater. */
+  versionCode?: number;
   /** file:// URI of the verified APK. */
   localUri: string;
 }

@@ -152,6 +152,9 @@ eas login
 # Navigate to the mobile app
 cd artifacts/royal-ambassadors
 
+# Sync the Android app version and build code from the release update.json
+pnpm run sync-release-metadata
+
 # Build a debug APK (downloadable, no store needed)
 eas build --platform android --profile preview
 
@@ -162,6 +165,22 @@ eas build --platform android --profile production
 EAS builds in the cloud (~10–15 min) and gives you a download link for the `.apk`. Install it directly on any Android device without needing the Play Store.
 
 > The first build will prompt you to create an Android keystore — let EAS manage it automatically.
+
+### Android in-app updates
+
+Android builds use the in-app APK updater, not Expo's over-the-air update service.
+The app checks `https://raw.githubusercontent.com/Boosttrades/RA-updates/main/update.json`
+when the user taps **Check for Updates**. The feed must include `versionCode`,
+`versionName`, `apkUrl`, and `mandatory`; `releaseNotes` is optional. The Android
+build's package version name and build code are synced from that manifest with
+`pnpm run sync-release-metadata` before building. The app reads the installed
+version name/build code from Android package metadata after installation.
+
+Android requires each update APK to use the same package ID and signing key as
+the installed app, and a strictly higher `versionCode`. Keep `apkUrl` pointed at
+the APK built with the same `versionName` and `versionCode` in the feed. The
+system installer asks the user to confirm the installation. Updates are
+Android-only; Expo Go and the web preview cannot install APKs.
 
 ---
 

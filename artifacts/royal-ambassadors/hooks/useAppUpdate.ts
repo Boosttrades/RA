@@ -15,7 +15,7 @@
  *    manually tap "Check for Updates" to trigger a check.
  */
 
-import Constants from "expo-constants";
+import * as Application from "expo-application";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Platform } from "react-native";
 
@@ -27,7 +27,7 @@ import {
   downloadApk,
   fetchUpdateManifest,
   installApk,
-  isNewerVersion,
+  isNewerBuildCode,
   loadPendingInstall,
   postDownloadCompleteNotification,
   postDownloadStartNotification,
@@ -41,8 +41,24 @@ import { updateLogger } from "@/services/update/logger";
 
 const IDLE: UpdateState = { status: "idle" };
 
-function getInstalledVersion(): string {
-  return Constants.expoConfig?.version ?? "0.0.0";
+function getInstalledBuild(): { versionName: string; versionCode: number } {
+  if (Application.applicationId !== "com.royalambassadors.nigeria") {
+    throw new Error(
+      "APK updates are only available in the installed RA Guide app, not Expo Go or a web preview."
+    );
+  }
+
+  const versionName = Application.nativeApplicationVersion?.trim();
+  const rawVersionCode = Application.nativeBuildVersion;
+  const versionCode = rawVersionCode ? Number(rawVersionCode) : Number.NaN;
+
+  if (!versionName || !Number.isSafeInteger(versionCode) || versionCode < 1) {
+    throw new Error(
+      "Could not read this installed app's Android version name and build code."
+    );
+  }
+
+  return { versionName, versionCode };
 }
 
 export function useAppUpdate() {
@@ -57,10 +73,25 @@ export function useAppUpdate() {
       // 1. Resume a pending install if one exists from a previous session.
       const pending = await loadPendingInstall();
       if (pending) {
+        const installed = getInstalledBuild();
+        if (
+          pending.versionCode === undefined ||
+          pending.versionCode <= installed.versionCode
+        ) {
+          updateLogger.info("Pending APK is already installed or no longer usable", {
+            pendingVersionCode: pending.versionCode,
+            installedVersionCode: installed.versionCode,
+          });
+          await cleanupApk(pending.localUri);
+          await clearPendingInstall();
+          return;
+        }
+
         updateLogger.info("Resuming pending install from previous session", pending);
         setState({
           status: "pending-install",
-          version: pending.version,
+          versionName: pending.version,
+          versionCode: pending.versionCode,
           localUri: pending.localUri,
         });
         return;
@@ -83,14 +114,32 @@ export function useAppUpdate() {
 
     try {
       const manifest = await fetchUpdateManifest();
-      const installed = getInstalledVersion();
+      const installed = getInstalledBuild();
 
-      updateLogger.info("Version comparison", { installed, remote: manifest.version });
+      updateLogger.info("Build-code comparison", {
+        installed: installed.versionCode,
+        remote: manifest.versionCode,
+      });
 
-      if (isNewerVersion(installed, manifest.version)) {
+      if (manifest.versionCode < installed.versionCode) {
+        setState({
+          status: "error",
+          message:
+            `The update feed is behind this app (feed build ${manifest.versionCode}, ` +
+            `installed build ${installed.versionCode}). The publisher needs to update update.json.`,
+          retryable: false,
+        });
+        return;
+      }
+
+      if (isNewerBuildCode(installed.versionCode, manifest.versionCode)) {
         // If there's a stale pending APK for an older version, clear it.
         const pending = await loadPendingInstall();
-        if (pending && isNewerVersion(pending.version, manifest.version)) {
+        if (
+          pending &&
+          (pending.versionCode === undefined ||
+            manifest.versionCode > pending.versionCode)
+        ) {
           await cleanupApk(pending.localUri);
           await clearPendingInstall();
         }
@@ -115,7 +164,10 @@ export function useAppUpdate() {
    * Called when the user taps "Update Now".
    */
   const startUpdate = useCallback(async (manifest: UpdateManifest) => {
-    updateLogger.info("User confirmed update", { version: manifest.version });
+    updateLogger.info("User confirmed update", {
+      versionName: manifest.versionName,
+      versionCode: manifest.versionCode,
+    });
 
     // Request notification permission so we can show progress in the shade.
     await requestNotificationPermission();
@@ -124,7 +176,7 @@ export function useAppUpdate() {
     let localUri: string | null = null;
 
     try {
-      localUri = await downloadApk(manifest.downloadUrl, async (progress) => {
+      localUri = await downloadApk(manifest.apkUrl, async (progress) => {
         setState({ status: "downloading", progress });
 
         // Throttle notification updates to every ~5% to avoid flooding.
@@ -140,8 +192,12 @@ export function useAppUpdate() {
       await verifyApkFile(localUri);
 
       // Save the verified APK so we can resume if the user cancels the installer.
-      await savePendingInstall({ version: manifest.version, localUri });
-      await postDownloadCompleteNotification(manifest.version);
+      await savePendingInstall({
+        version: manifest.versionName,
+        versionCode: manifest.versionCode,
+        localUri,
+      });
+      await postDownloadCompleteNotification(manifest.versionName);
 
       setState({ status: "installing" });
       await installApk(localUri);

@@ -12,8 +12,8 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { SettingsDrawer } from "@/components/SettingsDrawer";
 import { APP_UNLOCK_PASSWORD } from "@/constants/access";
+import { useManualAppUpdate } from "@/context/ManualAppUpdateContext";
 import { useColors } from "@/hooks/useColors";
 
 interface Props {
@@ -25,7 +25,7 @@ export function AccessGate({ onUnlock }: Props) {
   const insets = useSafeAreaInsets();
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [updatesOpen, setUpdatesOpen] = useState(false);
+  const checkForUpdates = useManualAppUpdate();
 
   const handleUnlock = async () => {
     if (password !== APP_UNLOCK_PASSWORD) {
@@ -126,25 +126,21 @@ export function AccessGate({ onUnlock }: Props) {
           </View>
         </View>
 
-        <Pressable
-          onPress={() => setUpdatesOpen(true)}
-          style={[styles.updateButton, { borderColor: colors.border }]}
-          accessibilityRole="button"
-          accessibilityLabel="Open app updates"
-          testID="open-updates-button"
-        >
-          <Ionicons name="refresh-outline" size={19} color={colors.primary} />
-          <Text style={[styles.updateButtonText, { color: colors.primary }]}>
-            Check for Updates
-          </Text>
-        </Pressable>
+        {Platform.OS === "android" && (
+          <Pressable
+            onPress={checkForUpdates}
+            style={[styles.updateButton, { borderColor: colors.border }]}
+            accessibilityRole="button"
+            accessibilityLabel="Check for app updates"
+            testID="check-for-app-updates-button"
+          >
+            <Ionicons name="refresh-outline" size={19} color={colors.primary} />
+            <Text style={[styles.updateButtonText, { color: colors.primary }]}>
+              Check for Updates
+            </Text>
+          </Pressable>
+        )}
       </View>
-
-      <SettingsDrawer
-        visible={updatesOpen}
-        onClose={() => setUpdatesOpen(false)}
-        lockedMode
-      />
     </>
   );
 }

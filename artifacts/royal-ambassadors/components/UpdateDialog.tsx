@@ -6,6 +6,7 @@
 
 import React, { useEffect, useRef } from "react";
 import {
+  ActivityIndicator,
   Animated,
   Modal,
   Platform,
@@ -18,7 +19,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useColors } from "@/hooks/useColors";
 import { UpdateManifest, UpdateState } from "@/services/update";
-import Constants from "expo-constants";
+import * as Application from "expo-application";
 
 interface Props {
   state: UpdateState;
@@ -30,8 +31,10 @@ interface Props {
   onCancelPendingInstall: (localUri: string) => void;
 }
 
-function getInstalledVersion(): string {
-  return Constants.expoConfig?.version ?? "—";
+function getInstalledVersionLabel(): string {
+  const versionName = Application.nativeApplicationVersion ?? "—";
+  const versionCode = Application.nativeBuildVersion;
+  return versionCode ? `${versionName} · build ${versionCode}` : versionName;
 }
 
 export function UpdateDialog({
@@ -46,6 +49,7 @@ export function UpdateDialog({
   if (Platform.OS !== "android") return null;
 
   const visible =
+    state.status === "checking" ||
     state.status === "up-to-date" ||
     state.status === "update-available" ||
     state.status === "downloading" ||
@@ -62,7 +66,7 @@ export function UpdateDialog({
       statusBarTranslucent
       onRequestClose={
         state.status === "up-to-date" ||
-        state.status === "update-available" ||
+        (state.status === "update-available" && !state.manifest.mandatory) ||
         state.status === "pending-install" ||
         state.status === "error"
           ? onDismiss
@@ -116,6 +120,19 @@ function DialogContent({
     },
   ];
 
+  // ── Checking ───────────────────────────────────────────────────────────────
+  if (state.status === "checking") {
+    return (
+      <View style={cardStyle}>
+        <ActivityIndicator size="large" color={c.primary} />
+        <Text style={[styles.title, { color: c.text }]}>Checking for Updates</Text>
+        <Text style={[styles.body, { color: c.mutedForeground }]}>
+          Checking the RA update feed for a newer Android build…
+        </Text>
+      </View>
+    );
+  }
+
   // ── Up to Date ─────────────────────────────────────────────────────────────
   // You're using the latest version
   if (state.status === "up-to-date") {
@@ -131,7 +148,7 @@ function DialogContent({
         <View style={styles.versionRow}>
           <VersionChip
             label="Current"
-            version={getInstalledVersion()}
+            version={getInstalledVersionLabel()}
             color={c.successForeground}
             bg={c.success}
           />
@@ -158,20 +175,21 @@ function DialogContent({
         </View>
         <Text style={[styles.title, { color: c.text }]}>Update Ready to Install</Text>
         <Text style={[styles.body, { color: c.mutedForeground }]}>
-          Version {state.version} has already been downloaded and verified.
+          Version {state.versionName} (build {state.versionCode ?? "unknown"}){" "}
+          has already been downloaded and verified.
           You can install it now — no re-download needed.
         </Text>
         <View style={styles.versionRow}>
           <VersionChip
             label="Installed"
-            version={getInstalledVersion()}
+            version={getInstalledVersionLabel()}
             color={c.mutedForeground}
             bg={c.muted}
           />
           <Text style={[styles.arrow, { color: c.mutedForeground }]}>→</Text>
           <VersionChip
             label="Ready"
-            version={state.version}
+            version={`${state.versionName}${state.versionCode ? ` · build ${state.versionCode}` : ""}`}
             color={c.primaryForeground}
             bg={c.primary}
           />
@@ -205,33 +223,49 @@ function DialogContent({
         </View>
         <Text style={[styles.title, { color: c.text }]}>Update Available</Text>
         <Text style={[styles.body, { color: c.mutedForeground }]}>
-          A new version of RA Guide is ready.
-          You can use the app normally while it downloads.
+          A new Android build of RA Guide is ready to download.
         </Text>
         <View style={styles.versionRow}>
           <VersionChip
             label="Installed"
-            version={getInstalledVersion()}
+            version={getInstalledVersionLabel()}
             color={c.mutedForeground}
             bg={c.muted}
           />
           <Text style={[styles.arrow, { color: c.mutedForeground }]}>→</Text>
           <VersionChip
             label="New"
-            version={state.manifest.version}
+            version={`${state.manifest.versionName} · build ${state.manifest.versionCode}`}
             color={c.primaryForeground}
             bg={c.primary}
           />
         </View>
-        <View style={styles.buttonRow}>
+        {state.manifest.releaseNotes ? (
+          <Text style={[styles.body, { color: c.mutedForeground }]}>
+            {state.manifest.releaseNotes}
+          </Text>
+        ) : null}
+        <View
+          style={[
+            styles.buttonRow,
+            state.manifest.mandatory && styles.mandatoryButtonRow,
+          ]}
+        >
+          {!state.manifest.mandatory && (
+            <Pressable
+              style={[styles.btn, styles.btnOutline, { borderColor: c.border }]}
+              onPress={onDismiss}
+            >
+              <Text style={[styles.btnText, { color: c.mutedForeground }]}>Later</Text>
+            </Pressable>
+          )}
           <Pressable
-            style={[styles.btn, styles.btnOutline, { borderColor: c.border }]}
-            onPress={onDismiss}
-          >
-            <Text style={[styles.btnText, { color: c.mutedForeground }]}>Later</Text>
-          </Pressable>
-          <Pressable
-            style={[styles.btn, styles.btnPrimary, { backgroundColor: c.primary }]}
+            style={[
+              styles.btn,
+              styles.btnPrimary,
+              state.manifest.mandatory && styles.mandatoryButton,
+              { backgroundColor: c.primary },
+            ]}
             onPress={() => onUpdate(state.manifest)}
           >
             <Text style={[styles.btnText, { color: c.primaryForeground }]}>
@@ -446,6 +480,12 @@ const styles = StyleSheet.create({
   buttonRow: {
     flexDirection: "row",
     gap: 12,
+  },
+  mandatoryButtonRow: {
+    justifyContent: "center",
+  },
+  mandatoryButton: {
+    flex: 1,
   },
   btn: {
     flex: 1,

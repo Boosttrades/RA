@@ -3,10 +3,13 @@
  * Shared types for the in-app update system.
  */
 
-/** Shape of the remote update.json hosted on GitHub Raw. */
+/** Normalized release metadata from the remote update.json hosted on GitHub Raw. */
 export interface UpdateManifest {
-  version: string;
-  downloadUrl: string;
+  versionName: string;
+  versionCode: number;
+  apkUrl: string;
+  mandatory: boolean;
+  releaseNotes?: string;
 }
 
 /** Granular download progress reported to the UI. */
@@ -30,6 +33,11 @@ export type UpdateState =
    * downloaded but cancelled the installer). The user can install without
    * re-downloading.
    */
-  | { status: "pending-install"; version: string; localUri: string }
+  | {
+      status: "pending-install";
+      versionName: string;
+      versionCode?: number;
+      localUri: string;
+    }
   | { status: "installing" }
   | { status: "error"; message: string; retryable: boolean };

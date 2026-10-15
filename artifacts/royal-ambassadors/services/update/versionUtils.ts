@@ -18,22 +18,11 @@ function parseParts(version: string): number[] {
     });
 }
 
-/**
- * Returns true if `remote` is strictly newer than `installed`.
- * Compares major, minor, and patch components in order.
- */
-export function isNewerVersion(installed: string, remote: string): boolean {
-  const a = parseParts(installed);
-  const b = parseParts(remote);
-  const len = Math.max(a.length, b.length);
-
-  for (let i = 0; i < len; i++) {
-    const ai = a[i] ?? 0;
-    const bi = b[i] ?? 0;
-    if (bi > ai) return true;
-    if (bi < ai) return false;
-  }
-  return false; // equal
+/** Android only accepts an in-place APK upgrade when its versionCode is higher. */
+export function isNewerBuildCode(installed: number, remote: number): boolean {
+  return Number.isSafeInteger(installed) &&
+    Number.isSafeInteger(remote) &&
+    remote > installed;
 }
 
 /**

@@ -30,7 +30,7 @@ Offline-first mobile app (Expo/React Native) for the Royal Ambassadors of Nigeri
   - `context/AppContext.tsx` — global state (user, ranks, bookmarks, **themePreference**)
   - `constants/colors.ts` — light + dark color palettes
   - `hooks/useColors.ts` — returns active palette based on themePreference
-  - `components/SettingsDrawer.tsx` — slide-in settings panel (theme + update checker)
+  - `components/SettingsDrawer.tsx` — slide-in settings panel (theme + Android APK updater)
   - `data/ranks.ts` — **source of truth** for all rank data (exact manual wording)
   - `data/manualContent.ts` — canonical reference for manual text
   - `eas.json` — APK build profiles: `preview` → .apk, `production` → .aab
@@ -41,7 +41,7 @@ Offline-first mobile app (Expo/React Native) for the Royal Ambassadors of Nigeri
 
 - All app data is local (AsyncStorage) — no login, no internet required from the mobile app
 - `themePreference` ("light" | "dark" | "system") is persisted in AsyncStorage and controls the active palette globally via `useColors` + `AppContext`
-- `expo-updates` used for OTA updates — works in production/EAS builds; gracefully reports dev mode in Expo Go
+- Android in-app updates download APKs from the release `update.json`; Expo OTA updates are disabled
 - `tar` override in `pnpm-workspace.yaml` works around a Replit package firewall timing issue on 2026-07-21 — remove `tar: "file:/tmp/tar-pkg"` override after 2026-07-22
 - `data/ranks.ts` requirements are verbatim from the printed manual — do not paraphrase
 
@@ -55,14 +55,13 @@ Offline-first mobile app (Expo/React Native) for the Royal Ambassadors of Nigeri
 
 ## User preferences
 
-- Updates are published from the user's own Replit account — keep OTA update checking via expo-updates
+- Android release `versionName` and `versionCode` come from the hosted update.json; sync them before EAS builds
 - Do not summarise, shorten, or paraphrase rank requirements — preserve exact wording from the manual
 
 ## Gotchas
 
 - The `tar` package override (`file:/tmp/tar-pkg`) in `pnpm-workspace.yaml` points to `/tmp` which is ephemeral — if the override breaks after a restart, re-download: `curl -s -o /tmp/tar-7.5.17.tgz https://registry.npmjs.org/tar/-/tar-7.5.17.tgz && mkdir -p /tmp/tar-pkg && tar -xzf /tmp/tar-7.5.17.tgz -C /tmp/tar-pkg --strip-components=1`
-- expo-updates version check warns about version mismatch (0.28.18 vs ~29.x) — safe to ignore for now; update when upgrading Expo SDK
-- Run `eas login` then `eas build --profile preview --platform android` from `artifacts/royal-ambassadors/` to build the APK
+- From `artifacts/royal-ambassadors/`, run `eas login`, then `pnpm run sync-release-metadata && eas build --profile preview --platform android` to build an APK whose package version matches the release feed. The sync command stops if the feed's build code is lower than the app's current configured code.
 
 ## Pointers
 

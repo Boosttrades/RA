@@ -7,7 +7,7 @@ export { downloadApk, cancelDownload, cleanupApk, getApkLocalPath } from "./apkD
 export { installApk } from "./apkInstaller";
 export { verifyApkFile } from "./certificateVerifier";
 export { fetchUpdateManifest } from "./updateChecker";
-export { isNewerVersion, isValidVersion } from "./versionUtils";
+export { isNewerBuildCode, isValidVersion } from "./versionUtils";
 export {
   setupUpdateNotificationChannel,
   requestNotificationPermission,

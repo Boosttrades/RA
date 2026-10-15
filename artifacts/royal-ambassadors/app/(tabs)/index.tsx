@@ -17,6 +17,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { SettingsDrawer } from "@/components/SettingsDrawer";
 import { useApp } from "@/context/AppContext";
+import { useManualAppUpdate } from "@/context/ManualAppUpdateContext";
 import { RANKS } from "@/data/ranks";
 import { getDailyVerse } from "@/data/verses";
 import { useColors } from "@/hooks/useColors";
@@ -33,6 +34,7 @@ export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const { userName, currentRankId, bookmarkedVerseIds, toggleBookmark } = useApp();
   const router = useRouter();
+  const checkForUpdates = useManualAppUpdate();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const currentRank = useMemo(
@@ -69,16 +71,30 @@ export default function HomeScreen() {
         <Text style={[styles.headerTitle, { color: colors.primary }]}>
           RA Guide
         </Text>
-        <Pressable
-          style={styles.headerBtn}
-          hitSlop={10}
-          onPress={() => router.push("/profile")}
-          accessibilityRole="button"
-          accessibilityLabel="Open profile"
-          testID="home-profile-button"
-        >
-          <Feather name="user" size={22} color={colors.primary} />
-        </Pressable>
+        <View style={styles.headerActions}>
+          {Platform.OS === "android" && (
+            <Pressable
+              style={styles.headerBtn}
+              hitSlop={10}
+              onPress={checkForUpdates}
+              accessibilityRole="button"
+              accessibilityLabel="Check for app updates"
+              testID="home-check-for-updates-button"
+            >
+              <Feather name="download-cloud" size={21} color={colors.primary} />
+            </Pressable>
+          )}
+          <Pressable
+            style={styles.headerBtn}
+            hitSlop={10}
+            onPress={() => router.push("/profile")}
+            accessibilityRole="button"
+            accessibilityLabel="Open profile"
+            testID="home-profile-button"
+          >
+            <Feather name="user" size={22} color={colors.primary} />
+          </Pressable>
+        </View>
       </View>
 
       <ScrollView
@@ -236,6 +252,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   headerTitle: { fontSize: 18, fontFamily: "Inter_700Bold" },
+  headerActions: { flexDirection: "row", alignItems: "center", gap: 6 },
   greetingSection: {
     paddingHorizontal: 24,
     paddingTop: 28,
