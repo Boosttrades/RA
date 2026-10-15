@@ -171,10 +171,12 @@ EAS builds in the cloud (~10–15 min) and gives you a download link for the `.a
 Android builds use the in-app APK updater, not Expo's over-the-air update service.
 The app checks `https://raw.githubusercontent.com/Boosttrades/RA-updates/main/update.json`
 when the user taps **Check for Updates**. The feed must include `versionCode`,
-`versionName`, `apkUrl`, and `mandatory`; `releaseNotes` is optional. The Android
-build's package version name and build code are synced from that manifest with
-`pnpm run sync-release-metadata` before building. The app reads the installed
-version name/build code from Android package metadata after installation.
+`versionName`, `apkUrl`, and `mandatory`; `releaseNotes` is optional. Regardless
+of the `mandatory` value, an available update always asks the user to choose
+**Update Now** or **Later**. The Android build's package version name and build
+code are synced from that manifest with `pnpm run sync-release-metadata` before
+building. The app reads the installed version name/build code from Android
+package metadata after installation.
 
 Android requires each update APK to use the same package ID and signing key as
 the installed app, and a strictly higher `versionCode`. Keep `apkUrl` pointed at

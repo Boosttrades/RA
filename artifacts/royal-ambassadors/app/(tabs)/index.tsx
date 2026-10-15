@@ -72,18 +72,25 @@ export default function HomeScreen() {
           RA Guide
         </Text>
         <View style={styles.headerActions}>
-          {Platform.OS === "android" && (
-            <Pressable
-              style={styles.headerBtn}
-              hitSlop={10}
-              onPress={checkForUpdates}
-              accessibilityRole="button"
-              accessibilityLabel="Check for app updates"
-              testID="home-check-for-updates-button"
-            >
-              <Feather name="download-cloud" size={21} color={colors.primary} />
-            </Pressable>
-          )}
+          <Pressable
+            style={[
+              styles.updateHeaderButton,
+              { borderColor: colors.border },
+              Platform.OS !== "android" && styles.updateHeaderButtonDisabled,
+            ]}
+            hitSlop={8}
+            onPress={Platform.OS === "android" ? checkForUpdates : undefined}
+            disabled={Platform.OS !== "android"}
+            accessibilityRole="button"
+            accessibilityLabel="Check for app updates"
+            accessibilityState={{ disabled: Platform.OS !== "android" }}
+            testID="home-check-for-updates-button"
+          >
+            <Feather name="download-cloud" size={16} color={colors.primary} />
+            <Text style={[styles.updateHeaderButtonText, { color: colors.primary }]}>
+              Update
+            </Text>
+          </Pressable>
           <Pressable
             style={styles.headerBtn}
             hitSlop={10}
@@ -253,6 +260,18 @@ const styles = StyleSheet.create({
   },
   headerTitle: { fontSize: 18, fontFamily: "Inter_700Bold" },
   headerActions: { flexDirection: "row", alignItems: "center", gap: 6 },
+  updateHeaderButton: {
+    minHeight: 36,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 5,
+    paddingHorizontal: 9,
+    borderRadius: 10,
+    borderWidth: 1,
+  },
+  updateHeaderButtonDisabled: { opacity: 0.62 },
+  updateHeaderButtonText: { fontSize: 12, fontFamily: "Inter_600SemiBold" },
   greetingSection: {
     paddingHorizontal: 24,
     paddingTop: 28,

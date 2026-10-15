@@ -126,12 +126,18 @@ export function AccessGate({ onUnlock }: Props) {
           </View>
         </View>
 
-        {Platform.OS === "android" && (
+        <View style={styles.updateActionGroup}>
           <Pressable
-            onPress={checkForUpdates}
-            style={[styles.updateButton, { borderColor: colors.border }]}
+            onPress={Platform.OS === "android" ? checkForUpdates : undefined}
+            disabled={Platform.OS !== "android"}
+            style={[
+              styles.updateButton,
+              { borderColor: colors.border },
+              Platform.OS !== "android" && styles.updateButtonDisabled,
+            ]}
             accessibilityRole="button"
             accessibilityLabel="Check for app updates"
+            accessibilityState={{ disabled: Platform.OS !== "android" }}
             testID="check-for-app-updates-button"
           >
             <Ionicons name="refresh-outline" size={19} color={colors.primary} />
@@ -139,7 +145,12 @@ export function AccessGate({ onUnlock }: Props) {
               Check for Updates
             </Text>
           </Pressable>
-        )}
+          {Platform.OS !== "android" && (
+            <Text style={[styles.updateHint, { color: colors.mutedForeground }]}>
+              APK updates are available in the installed Android app.
+            </Text>
+          )}
+        </View>
       </View>
     </>
   );
@@ -239,8 +250,17 @@ const styles = StyleSheet.create({
     gap: 9,
     marginBottom: 8,
   },
+  updateActionGroup: { width: "100%", alignItems: "center", marginBottom: 8 },
+  updateButtonDisabled: { opacity: 0.62 },
   updateButtonText: {
     fontSize: 14,
     fontFamily: "Inter_600SemiBold",
+  },
+  updateHint: {
+    fontSize: 12,
+    fontFamily: "Inter_400Regular",
+    textAlign: "center",
+    lineHeight: 17,
+    marginTop: 4,
   },
 });

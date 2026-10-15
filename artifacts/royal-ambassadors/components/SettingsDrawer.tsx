@@ -167,38 +167,50 @@ export function SettingsDrawer({ visible, onClose }: Props) {
           </View>
         </View>
 
-        {Platform.OS === "android" && (
-          <View style={styles.section}>
-            <Text style={[styles.sectionLabel, { color: colors.mutedForeground }]}>
-              APP UPDATES
-            </Text>
-            <View
+        <View style={styles.section}>
+          <Text style={[styles.sectionLabel, { color: colors.mutedForeground }]}>
+            APP UPDATES
+          </Text>
+          <View
+            style={[
+              styles.optionGroup,
+              { backgroundColor: colors.background, borderColor: colors.border },
+            ]}
+          >
+            <Pressable
+              onPress={() => {
+                if (Platform.OS !== "android") return;
+                onClose();
+                checkForUpdates();
+              }}
+              disabled={Platform.OS !== "android"}
               style={[
-                styles.optionGroup,
-                { backgroundColor: colors.background, borderColor: colors.border },
+                styles.optionRow,
+                Platform.OS !== "android" && styles.disabledOptionRow,
               ]}
+              accessibilityRole="button"
+              accessibilityLabel="Check for app updates"
+              accessibilityState={{ disabled: Platform.OS !== "android" }}
+              testID="settings-check-for-updates-button"
             >
-              <Pressable
-                onPress={() => {
-                  onClose();
-                  checkForUpdates();
-                }}
-                style={styles.optionRow}
-              >
-                <Ionicons name="refresh-outline" size={20} color={colors.primary} />
-                <Text style={[styles.optionLabel, { color: colors.foreground }]}>
-                  Check for Updates
-                </Text>
-                <Feather
-                  name="chevron-right"
-                  size={18}
-                  color={colors.mutedForeground}
-                  style={{ marginLeft: "auto" }}
-                />
-              </Pressable>
-            </View>
+              <Ionicons name="refresh-outline" size={20} color={colors.primary} />
+              <Text style={[styles.optionLabel, { color: colors.foreground }]}>
+                Check for Updates
+              </Text>
+              <Feather
+                name="chevron-right"
+                size={18}
+                color={colors.mutedForeground}
+                style={{ marginLeft: "auto" }}
+              />
+            </Pressable>
           </View>
-        )}
+          {Platform.OS !== "android" && (
+            <Text style={[styles.updateHint, { color: colors.mutedForeground }]}>
+              APK updates are available in the installed Android app.
+            </Text>
+          )}
+        </View>
 
         {/* Version */}
         <Text style={[styles.versionText, { color: colors.mutedForeground }]}>
@@ -266,6 +278,14 @@ const styles = StyleSheet.create({
     paddingVertical: 13,
     paddingHorizontal: 16,
     gap: 12,
+  },
+  disabledOptionRow: { opacity: 0.62 },
+  updateHint: {
+    fontSize: 12,
+    fontFamily: "Inter_400Regular",
+    marginTop: 8,
+    marginLeft: 4,
+    lineHeight: 17,
   },
   optionLabel: {
     fontSize: 15,

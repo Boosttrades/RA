@@ -66,7 +66,7 @@ export function UpdateDialog({
       statusBarTranslucent
       onRequestClose={
         state.status === "up-to-date" ||
-        (state.status === "update-available" && !state.manifest.mandatory) ||
+        state.status === "update-available" ||
         state.status === "pending-install" ||
         state.status === "error"
           ? onDismiss
@@ -245,25 +245,17 @@ function DialogContent({
             {state.manifest.releaseNotes}
           </Text>
         ) : null}
-        <View
-          style={[
-            styles.buttonRow,
-            state.manifest.mandatory && styles.mandatoryButtonRow,
-          ]}
-        >
-          {!state.manifest.mandatory && (
-            <Pressable
-              style={[styles.btn, styles.btnOutline, { borderColor: c.border }]}
-              onPress={onDismiss}
-            >
-              <Text style={[styles.btnText, { color: c.mutedForeground }]}>Later</Text>
-            </Pressable>
-          )}
+        <View style={styles.buttonRow}>
+          <Pressable
+            style={[styles.btn, styles.btnOutline, { borderColor: c.border }]}
+            onPress={onDismiss}
+          >
+            <Text style={[styles.btnText, { color: c.mutedForeground }]}>Later</Text>
+          </Pressable>
           <Pressable
             style={[
               styles.btn,
               styles.btnPrimary,
-              state.manifest.mandatory && styles.mandatoryButton,
               { backgroundColor: c.primary },
             ]}
             onPress={() => onUpdate(state.manifest)}
@@ -480,12 +472,6 @@ const styles = StyleSheet.create({
   buttonRow: {
     flexDirection: "row",
     gap: 12,
-  },
-  mandatoryButtonRow: {
-    justifyContent: "center",
-  },
-  mandatoryButton: {
-    flex: 1,
   },
   btn: {
     flex: 1,
