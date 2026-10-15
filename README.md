@@ -184,6 +184,11 @@ the APK built with the same `versionName` and `versionCode` in the feed. The
 system installer asks the user to confirm the installation. Updates are
 Android-only; Expo Go and the web preview cannot install APKs.
 
+If the user declines Android's installer prompt, the verified APK stays in
+persistent app storage. The next update check offers **Install Now** for that
+saved APK instead of downloading it again. It is removed after the app detects
+that the new build was installed, or if the user chooses **Delete Download**.
+
 ---
 
 ## Official RA Ranks (from the manual)

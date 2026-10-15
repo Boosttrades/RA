@@ -10,13 +10,12 @@ import { Platform } from "react-native";
 import { getContentUriAsync } from "expo-file-system/legacy";
 import * as IntentLauncher from "expo-intent-launcher";
 import { updateLogger } from "./logger";
-import { cleanupApk } from "./apkDownloader";
 
 /**
  * Opens Android's native package installer for the APK at `localUri`.
  * The system installer enforces signature matching before modifying any app.
- * Schedules a cleanup of the APK file after a short delay (giving the
- * installer time to read the file before we delete it).
+ * Leaves the APK in persistent app storage. The caller clears it only after
+ * Android reports the target build is installed or the user removes it.
  *
  * @throws On non-Android platforms, or if the content URI cannot be obtained.
  */
@@ -56,9 +55,4 @@ export async function installApk(localUri: string): Promise<void> {
       "Could not open the Android installer. Please check that installing from unknown sources is enabled in your device settings."
     );
   }
-
-  // Clean up after giving the installer time to read the file (30 seconds).
-  setTimeout(() => {
-    void cleanupApk(localUri);
-  }, 30_000);
 }

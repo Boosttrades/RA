@@ -1,6 +1,6 @@
 /**
  * update/apkDownloader.ts
- * Downloads an APK from a validated HTTPS URL into the app's cache directory.
+ * Downloads an APK from a validated HTTPS URL into persistent app documents.
  * Reports progress via a callback and cleans up stale downloads.
  *
  * expo-file-system v19+ moved the classic function-based API to the /legacy
@@ -9,7 +9,7 @@
  */
 
 import {
-  cacheDirectory,
+  documentDirectory,
   createDownloadResumable,
   deleteAsync,
   getInfoAsync,
@@ -20,7 +20,7 @@ import {
 import { DownloadProgress } from "./types";
 import { updateLogger } from "./logger";
 
-/** Filename used for the downloaded APK in the cache directory. */
+/** One prepared APK is retained in internal app storage until installed or removed. */
 const APK_FILENAME = "ra-update.apk";
 
 /** Network timeout for the download in ms (5 minutes for large APKs). */
@@ -33,11 +33,14 @@ let activeDownload: DownloadResumable | null = null;
  * Returns the local path where the APK will be stored.
  */
 export function getApkLocalPath(): string {
-  return `${cacheDirectory}${APK_FILENAME}`;
+  if (!documentDirectory) {
+    throw new Error("Persistent app storage is unavailable for the update APK.");
+  }
+  return `${documentDirectory}${APK_FILENAME}`;
 }
 
 /**
- * Downloads the APK from `url` into the cache directory.
+ * Downloads the APK from `url` into persistent app storage.
  * Calls `onProgress` with live progress updates.
  * Returns the local file URI on success.
  * Throws if the URL is not HTTPS, a download is already in progress, or the download fails.

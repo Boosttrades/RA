@@ -199,7 +199,9 @@ function DialogContent({
             style={[styles.btn, styles.btnOutline, { borderColor: c.border }]}
             onPress={() => onCancelPendingInstall(state.localUri)}
           >
-            <Text style={[styles.btnText, { color: c.mutedForeground }]}>Cancel</Text>
+            <Text style={[styles.btnText, { color: c.mutedForeground }]}>
+              Delete Download
+            </Text>
           </Pressable>
           <Pressable
             style={[styles.btn, styles.btnPrimary, { backgroundColor: c.primary }]}
@@ -334,7 +336,7 @@ function DialogContent({
           The Android installer is opening. Follow the on-screen prompts to
           complete the update.{"\n"}
           <Text style={styles.hint}>
-            If you cancel the installer, open the app again to install without re-downloading.
+            If you cancel the installer, check for updates again to install this saved APK without downloading it again.
           </Text>
         </Text>
       </View>

@@ -3,8 +3,8 @@
  * Persists a verified-but-not-yet-installed APK across app restarts.
  *
  * When a download + verification completes but the user cancels (or ignores)
- * the Android installer prompt, the APK stays on disk. On next app launch we
- * detect it here and offer "Install Now" without re-downloading.
+ * the Android installer prompt, the APK stays in app documents. On the next
+ * update check or app launch we offer "Install Now" without re-downloading.
  *
  * The record is cleared when:
  *  - The user cancels the install explicitly from the UI
@@ -33,7 +33,10 @@ export async function savePendingInstall(install: PendingInstall): Promise<void>
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(install));
     updateLogger.info("Saved pending install record", install);
   } catch (err) {
-    updateLogger.warn("Failed to save pending install record", err);
+    updateLogger.error("Failed to save pending install record", err);
+    throw new Error(
+      "Could not save the downloaded update for later installation. Please try again."
+    );
   }
 }
 

@@ -7,10 +7,9 @@
  *    If found, surfaces it without re-downloading.
  *  - Posts / updates an Android notification during download so the user
  *    can background the app and still track progress.
- *  - APK is NOT deleted after the installer is handed off. Instead it is
- *    saved as a "pending install" record. It is only deleted when the user
- *    explicitly cancels from the UI, or when a newer remote version
- *    supersedes it.
+ *  - A verified APK is kept in persistent app storage after the installer is
+ *    handed off. If installation is declined, another update check reuses it.
+ *    It is deleted only after installation is detected or the user removes it.
  *  - Does NOT automatically check for updates on app startup. Users must
  *    manually tap "Check for Updates" to trigger a check.
  */
@@ -113,8 +112,32 @@ export function useAppUpdate() {
     setState({ status: "checking" });
 
     try {
-      const manifest = await fetchUpdateManifest();
       const installed = getInstalledBuild();
+      const pending = await loadPendingInstall();
+      if (pending) {
+        if (
+          pending.versionCode !== undefined &&
+          pending.versionCode > installed.versionCode
+        ) {
+          updateLogger.info("Reusing previously downloaded APK", pending);
+          setState({
+            status: "pending-install",
+            versionName: pending.version,
+            versionCode: pending.versionCode,
+            localUri: pending.localUri,
+          });
+          return;
+        }
+
+        updateLogger.info("Removing a pending APK that is already installed or invalid", {
+          pendingVersionCode: pending.versionCode,
+          installedVersionCode: installed.versionCode,
+        });
+        await cleanupApk(pending.localUri);
+        await clearPendingInstall();
+      }
+
+      const manifest = await fetchUpdateManifest();
 
       updateLogger.info("Build-code comparison", {
         installed: installed.versionCode,
@@ -133,17 +156,6 @@ export function useAppUpdate() {
       }
 
       if (isNewerBuildCode(installed.versionCode, manifest.versionCode)) {
-        // If there's a stale pending APK for an older version, clear it.
-        const pending = await loadPendingInstall();
-        if (
-          pending &&
-          (pending.versionCode === undefined ||
-            manifest.versionCode > pending.versionCode)
-        ) {
-          await cleanupApk(pending.localUri);
-          await clearPendingInstall();
-        }
-
         setState({ status: "update-available", manifest });
       } else {
         setState({ status: "up-to-date" });
@@ -169,13 +181,34 @@ export function useAppUpdate() {
       versionCode: manifest.versionCode,
     });
 
-    // Request notification permission so we can show progress in the shade.
-    await requestNotificationPermission();
-    await postDownloadStartNotification();
-
     let localUri: string | null = null;
 
     try {
+      const installed = getInstalledBuild();
+      const pending = await loadPendingInstall();
+      if (
+        pending &&
+        pending.versionCode !== undefined &&
+        pending.versionCode > installed.versionCode
+      ) {
+        setState({
+          status: "pending-install",
+          versionName: pending.version,
+          versionCode: pending.versionCode,
+          localUri: pending.localUri,
+        });
+        return;
+      }
+
+      if (pending) {
+        await cleanupApk(pending.localUri);
+        await clearPendingInstall();
+      }
+
+      // Request notification permission so we can show progress in the shade.
+      await requestNotificationPermission();
+      await postDownloadStartNotification();
+
       localUri = await downloadApk(manifest.apkUrl, async (progress) => {
         setState({ status: "downloading", progress });
 
