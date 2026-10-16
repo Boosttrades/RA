@@ -182,6 +182,7 @@ export function useAppUpdate() {
     });
 
     let localUri: string | null = null;
+    let pendingSaved = false;
 
     try {
       const installed = getInstalledBuild();
@@ -230,6 +231,7 @@ export function useAppUpdate() {
         versionCode: manifest.versionCode,
         localUri,
       });
+      pendingSaved = true;
       await postDownloadCompleteNotification(manifest.versionName);
 
       setState({ status: "installing" });
@@ -244,7 +246,7 @@ export function useAppUpdate() {
 
       await dismissDownloadNotification();
 
-      if (localUri) {
+      if (localUri && !pendingSaved) {
         await cleanupApk(localUri);
         await clearPendingInstall();
       }
